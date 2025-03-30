@@ -12,7 +12,7 @@ const Dashboard = () => {
     <DashboardLayout>
       <>
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-medical-gray-900">
+          <h1 className="text-2xl font-bold text-medical-gray-900 text-blue-600">
             Dashboard
           </h1>
           <p className="text-medical-gray-600">Welcome back, Dr. Smith</p>

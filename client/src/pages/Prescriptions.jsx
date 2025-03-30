@@ -1,29 +1,23 @@
 import React from "react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { 
-  FileText, 
-  Plus, 
-  Search, 
-  Filter, 
-  Download 
-} from "lucide-react";
+import { FileText, Plus, Search, Filter, Download } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 
 const prescriptions = [
@@ -76,12 +70,14 @@ const Prescriptions = () => {
     <DashboardLayout>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-medical-gray-900">Prescriptions</h1>
+          <h1 className="text-2xl font-bold text-medical-gray-900 text-blue-600">
+            Prescriptions
+          </h1>
           <p className="text-medical-gray-600">
             Manage and generate patient prescriptions
           </p>
         </div>
-        <Button className="bg-medical-primary hover:bg-medical-primary/90">
+        <Button className="bg-medical-primary hover:bg-medical-primary/90 bg-blue-500">
           <Plus size={16} className="mr-2" />
           New Prescription
         </Button>
@@ -94,16 +90,19 @@ const Prescriptions = () => {
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-medical-gray-500" />
               <Input
                 placeholder="Search prescriptions..."
-                className="pl-9"
+                className="pl-9 border border-gray-300"
               />
             </div>
             <div className="flex gap-3">
               <Select defaultValue="all">
-                <SelectTrigger className="w-[150px]">
-                  <span className="flex items-center">
-                    <Filter size={14} className="mr-2 text-medical-gray-500" />
-                    <SelectValue placeholder="Status" />
-                  </span>
+                <SelectTrigger className="w-[180px]">
+                  <div className="flex items-center gap-2">
+                    <Filter size={14} className="text-medical-gray-500" />
+                    <SelectValue
+                      placeholder="Status"
+                      className="whitespace-nowrap"
+                    />
+                  </div>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Status</SelectItem>

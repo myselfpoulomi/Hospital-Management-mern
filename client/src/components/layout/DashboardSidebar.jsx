@@ -41,7 +41,7 @@ const DashboardSidebar = () => {
     <Sidebar className="border-r border-gray-200">
       <SidebarHeader className="px-6 py-5 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="text-xl font-bold text-medical-gray-800">
+          <span className="text-[25px] font-bold text-medical-gray-800 text-blue-700">
             HealthBoard
           </span>
         </div>
@@ -84,7 +84,7 @@ const DashboardSidebar = () => {
             </AvatarFallback>
           </Avatar>
           <div className="ml-3">
-            <div className="text-sm font-medium text-medical-gray-800">
+            <div className="text-sm font-semibold text-medical-gray-800 text-black">
               Dr. Smith
             </div>
             <div className="text-xs text-medical-gray-500">Administrator</div>
