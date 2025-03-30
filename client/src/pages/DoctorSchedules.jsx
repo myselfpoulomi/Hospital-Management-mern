@@ -29,7 +29,7 @@ const DoctorSchedules = () => {
     <DashboardLayout>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-medical-gray-900">Doctor Schedules</h1>
+          <h1 className="text-2xl font-bold text-medical-gray-900 text-blue-600">Doctor Schedules</h1>
           <p className="text-medical-gray-600">Manage doctor routines and appointments</p>
         </div>
         <Button className="bg-medical-primary hover:bg-medical-primary/90">
@@ -42,7 +42,7 @@ const DoctorSchedules = () => {
           <CardTitle className="text-lg font-medium">Doctor Schedules</CardTitle>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="today">
+          <Tabs defaultValue="today" className="">
             <TabsList>
               <TabsTrigger value="today">Today</TabsTrigger>
               <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
@@ -66,14 +66,17 @@ const DoctorSchedules = () => {
 
 const ScheduleCard = ({ schedule }) => {
   return (
-    <Card>
-      <CardContent>
-        <h3>{schedule.doctor}</h3>
+    <Card className="mb-3">
+      <CardContent className="flex flex-col items-start justify-center">
+        <h3 className="pt-3">{schedule.doctor}</h3>
         <p>{schedule.specialty}</p>
         <p>{schedule.date} - {schedule.startTime} to {schedule.endTime}</p>
         <p>{schedule.patients} patients</p>
-        <Badge>{schedule.status}</Badge>
-        <Button variant="outline">View Details</Button>
+        <div>
+        <Badge className="bg-green-600 mr-3">{schedule.status}</Badge>
+        <Button className="py-2" variant="outline">View Details</Button>
+        </div>
+        
       </CardContent>
     </Card>
   );
