@@ -128,7 +128,7 @@ const Medicine = () => {
     <DashboardLayout>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-medical-gray-900">
+          <h1 className="text-2xl font-bold text-medical-gray-900 text-blue-600">
             Medicine Management
           </h1>
           <p className="text-medical-gray-600">
@@ -153,10 +153,13 @@ const Medicine = () => {
                 <div className="flex gap-3">
                   <Select defaultValue="all">
                     <SelectTrigger className="w-[150px]">
-                      <span className="flex items-center">
-                        <Filter size={14} className="mr-2 text-medical-gray-500" />
+                      <div className="flex items-center">
+                        <Filter
+                          size={14}
+                          className="mr-2 text-medical-gray-500"
+                        />
                         <SelectValue placeholder="Status" />
-                      </span>
+                      </div>
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All Status</SelectItem>
@@ -174,9 +177,11 @@ const Medicine = () => {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="mt-5">
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg font-medium">Medicine Inventory</CardTitle>
+              <CardTitle className="text-lg font-medium">
+                Medicine Inventory
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <Table>
@@ -196,15 +201,17 @@ const Medicine = () => {
                       <TableCell>{medicine.id}</TableCell>
                       <TableCell>{medicine.name}</TableCell>
                       <TableCell>{medicine.category}</TableCell>
-                      <TableCell className="text-right">{medicine.stock}</TableCell>
+                      <TableCell className="text-right">
+                        {medicine.stock}
+                      </TableCell>
                       <TableCell>
                         <Badge
-                          className={`${
+                          className={`transition-colors duration-300 ease-in-out cursor-pointer ${
                             medicine.status === "In Stock"
-                              ? "bg-green-50 text-green-600"
+                              ? "bg-green-50 text-green-600 hover:bg-green-100"
                               : medicine.status === "Low Stock"
-                              ? "bg-orange-50 text-orange-600"
-                              : "bg-red-50 text-red-600"
+                              ? "bg-orange-50 text-orange-600 hover:bg-orange-100"
+                              : "bg-red-50 text-red-600 hover:bg-red-100"
                           }`}
                         >
                           {medicine.status}
