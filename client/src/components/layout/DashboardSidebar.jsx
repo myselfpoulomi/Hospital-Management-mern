@@ -104,8 +104,11 @@ const DashboardSidebar = () => {
             size="sm"
             className="w-full justify-start text-medical-gray-600 hover:text-medical-gray-900"
           >
+            <Link to="/login" className="flex items-center">
             <LogOut size={16} className="mr-2" />
             Logout
+            </Link>
+           
           </Button>
         </div>
       </SidebarFooter>

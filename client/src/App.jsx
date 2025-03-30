@@ -9,6 +9,9 @@ import BedStatus from "./pages/BedStatus";
 import Financial from "./pages/Financial";
 import NotFound from "./pages/NotFound";
 
+import { LogIn } from "lucide-react";
+import Login from "./pages/Login";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -17,6 +20,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Dashboard />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/prescriptions" element={<Prescriptions />} />
           <Route path="/doctor-schedules" element={<DoctorSchedules />} />
           <Route path="/medicine" element={<Medicine />} />
