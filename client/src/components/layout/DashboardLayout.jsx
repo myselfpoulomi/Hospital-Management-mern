@@ -8,7 +8,7 @@ const DashboardLayout = ({ children }) => {
       <div className="min-h-screen flex w-full bg-white">
         <DashboardSidebar />
         <main className="flex-1 overflow-x-hidden overflow-y-auto">
-          <div className="p-6">{children}</div>
+          <div className="p-6 w-full flex-1">{children}</div>
         </main>
       </div>
     </SidebarProvider>

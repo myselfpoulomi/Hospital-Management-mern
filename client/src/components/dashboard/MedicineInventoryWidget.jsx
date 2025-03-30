@@ -37,7 +37,7 @@ const medicines = [
 
 const MedicineInventoryWidget = () => {
   return (
-    <Card className="w-full">
+    <Card className="">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg font-medium">Medicine Inventory</CardTitle>
       </CardHeader>
@@ -49,7 +49,7 @@ const MedicineInventoryWidget = () => {
             <div className="col-span-2">Stock</div>
             <div className="col-span-2">Status</div>
           </div>
-          <div className="divide-y">
+          <div className="divide-y w-full flex-1">
             {medicines.map((medicine, index) => (
               <div key={index} className="grid grid-cols-12 items-center p-3 text-sm">
                 <div className="col-span-5 font-medium text-medical-gray-800">

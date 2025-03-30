@@ -121,7 +121,7 @@ const BedStatus = () => {
   return (
     <DashboardLayout>
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-medical-gray-900">Bed Status</h1>
+        <h1 className="text-2xl font-bold text-medical-gray-900 text-blue-600">Bed Status</h1>
         <p className="text-medical-gray-600">
           Monitor and manage hospital bed availability
         </p>

@@ -17,8 +17,6 @@ import {
   Plus,
   Filter,
   Download,
-  Pill,
-  AlertTriangle,
 } from "lucide-react";
 import {
   Select,
@@ -27,7 +25,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Progress } from "@/components/ui/progress";
 
 const medicines = [
   {
@@ -60,73 +57,12 @@ const medicines = [
     expiryDate: "2024-08-20",
     status: "Low Stock",
   },
-  {
-    id: "MED-004",
-    name: "Insulin Regular",
-    category: "Hormones",
-    stock: 125,
-    reorderLevel: 100,
-    supplier: "DiabeCare",
-    expiryDate: "2023-12-10",
-    status: "Low Stock",
-  },
-  {
-    id: "MED-005",
-    name: "Losartan 50mg",
-    category: "Antihypertensives",
-    stock: 850,
-    reorderLevel: 200,
-    supplier: "GlobalMed",
-    expiryDate: "2024-03-18",
-    status: "In Stock",
-  },
-  {
-    id: "MED-006",
-    name: "Salbutamol Inhaler",
-    category: "Respiratory",
-    stock: 320,
-    reorderLevel: 100,
-    supplier: "RespiCare",
-    expiryDate: "2024-06-05",
-    status: "In Stock",
-  },
-  {
-    id: "MED-007",
-    name: "Epinephrine 1mg",
-    category: "Emergency",
-    stock: 50,
-    reorderLevel: 50,
-    supplier: "EmergMed",
-    expiryDate: "2023-11-30",
-    status: "Low Stock",
-  },
-  {
-    id: "MED-008",
-    name: "Morphine 10mg",
-    category: "Analgesics",
-    stock: 0,
-    reorderLevel: 30,
-    supplier: "PainRelief Inc",
-    expiryDate: "2024-01-15",
-    status: "Out of Stock",
-  },
-];
-
-const categories = [
-  { name: "Analgesics", count: 28 },
-  { name: "Antibiotics", count: 35 },
-  { name: "Antihypertensives", count: 22 },
-  { name: "Hormones", count: 15 },
-  { name: "Respiratory", count: 18 },
-  { name: "Emergency", count: 12 },
-  { name: "Cardiovascular", count: 25 },
-  { name: "Dermatological", count: 20 },
 ];
 
 const Medicine = () => {
   return (
-    <DashboardLayout>
-      <div className="flex items-center justify-between mb-6">
+    <DashboardLayout className="w-full">
+      <div className="flex-1 w-full  flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-medical-gray-900 text-blue-600">
             Medicine Management
@@ -135,15 +71,15 @@ const Medicine = () => {
             Monitor and manage hospital medicine inventory
           </p>
         </div>
-        <Button className="bg-medical-primary hover:bg-medical-primary/90">
+        <Button className="bg-medical-primary hover:bg-medical-primary/90 bg-blue-500">
           <Plus size={16} className="mr-2" />
           Add Medicine
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
-        <div className="lg:col-span-3">
-          <Card>
+      <div className="flex gap-6 mb-6 w-full flex-1">
+        <div className="w-full">
+          <Card className="w-full">
             <CardContent className="pt-6">
               <div className="flex flex-col sm:flex-row gap-4">
                 <div className="relative flex-1">
@@ -154,10 +90,7 @@ const Medicine = () => {
                   <Select defaultValue="all">
                     <SelectTrigger className="w-[150px]">
                       <div className="flex items-center">
-                        <Filter
-                          size={14}
-                          className="mr-2 text-medical-gray-500"
-                        />
+                        <Filter size={14} className="mr-2 text-medical-gray-500" />
                         <SelectValue placeholder="Status" />
                       </div>
                     </SelectTrigger>
@@ -177,51 +110,51 @@ const Medicine = () => {
             </CardContent>
           </Card>
 
-          <Card className="mt-5">
+          <Card className="mt-5 w-full">
             <CardHeader className="pb-2">
               <CardTitle className="text-lg font-medium">
                 Medicine Inventory
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>ID</TableHead>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Category</TableHead>
-                    <TableHead className="text-right">Stock</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Expiry Date</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {medicines.map((medicine) => (
-                    <TableRow key={medicine.id}>
-                      <TableCell>{medicine.id}</TableCell>
-                      <TableCell>{medicine.name}</TableCell>
-                      <TableCell>{medicine.category}</TableCell>
-                      <TableCell className="text-right">
-                        {medicine.stock}
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          className={`transition-colors duration-300 ease-in-out cursor-pointer ${
-                            medicine.status === "In Stock"
-                              ? "bg-green-50 text-green-600 hover:bg-green-100"
-                              : medicine.status === "Low Stock"
-                              ? "bg-orange-50 text-orange-600 hover:bg-orange-100"
-                              : "bg-red-50 text-red-600 hover:bg-red-100"
-                          }`}
-                        >
-                          {medicine.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>{medicine.expiryDate}</TableCell>
+              <div className="w-full overflow-x-auto">
+                <Table className="w-full">
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>ID</TableHead>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Category</TableHead>
+                      <TableHead className="text-right">Stock</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Expiry Date</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {medicines.map((medicine) => (
+                      <TableRow key={medicine.id}>
+                        <TableCell>{medicine.id}</TableCell>
+                        <TableCell>{medicine.name}</TableCell>
+                        <TableCell>{medicine.category}</TableCell>
+                        <TableCell className="text-right">{medicine.stock}</TableCell>
+                        <TableCell>
+                          <Badge
+                            className={`transition-colors duration-300 ease-in-out cursor-pointer ${
+                              medicine.status === "In Stock"
+                                ? "bg-green-50 text-green-600 hover:bg-green-100"
+                                : medicine.status === "Low Stock"
+                                ? "bg-orange-50 text-orange-600 hover:bg-orange-100"
+                                : "bg-red-50 text-red-600 hover:bg-red-100"
+                            }`}
+                          >
+                            {medicine.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>{medicine.expiryDate}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             </CardContent>
           </Card>
         </div>
