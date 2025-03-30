@@ -97,41 +97,6 @@ const Financial = () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
-        <FinancialStatCard
-          title="Today's Revenue"
-          value="$4,238"
-          trend="up"
-          percent="8.2"
-          icon={<DollarSign size={20} />}
-          description="Today's earnings"
-        />
-        <FinancialStatCard
-          title="Weekly Revenue"
-          value="$28,650"
-          trend="up"
-          percent="5.4"
-          icon={<TrendingUp size={20} />}
-          description="vs. last week"
-        />
-        <FinancialStatCard
-          title="Average Bill"
-          value="$275"
-          trend="down"
-          percent="2.1"
-          icon={<Clipboard size={20} />}
-          description="per patient"
-        />
-        <FinancialStatCard
-          title="Patients Billed"
-          value="145"
-          trend="up"
-          percent="12.3"
-          icon={<Users size={20} />}
-          description="today"
-        />
-      </div>
-
       <div className="mb-6">
         <RevenueChart />
       </div>
