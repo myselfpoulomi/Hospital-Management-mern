@@ -42,8 +42,8 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-medical-primary">Hospital Management System</h2>
-          <p className="mt-2 text-gray-600">Admin Portal</p>
+          <h2 className="text-3xl font-bold text-medical-primary text-blue-700">Health Board Hub</h2>
+          <p className="mt-2 text-gray-700">Admin Portal</p>
         </div>
 
         <Card className="w-full">
