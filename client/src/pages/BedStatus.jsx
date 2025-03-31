@@ -140,10 +140,10 @@ const BedStatus = () => {
             <div className="flex gap-3">
               <Select defaultValue="all">
                 <SelectTrigger className="w-[170px]">
-                  <span className="flex items-center">
+                  <div className="flex items-center">
                     <Filter size={14} className="mr-2 text-medical-gray-500" />
                     <SelectValue placeholder="All Departments" />
-                  </span>
+                  </div>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Departments</SelectItem>
@@ -153,7 +153,7 @@ const BedStatus = () => {
                   <SelectItem value="emergency">Emergency Ward</SelectItem>
                 </SelectContent>
               </Select>
-              <Button className="bg-medical-primary hover:bg-medical-primary/90">
+              <Button className="bg-medical-primary hover:bg-medical-primary/90 bg-blue-600">
                 Add Admission
               </Button>
             </div>

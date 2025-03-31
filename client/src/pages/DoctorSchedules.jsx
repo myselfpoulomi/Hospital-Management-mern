@@ -32,7 +32,7 @@ const DoctorSchedules = () => {
           <h1 className="text-2xl font-bold text-medical-gray-900 text-blue-600">Doctor Schedules</h1>
           <p className="text-medical-gray-600">Manage doctor routines and appointments</p>
         </div>
-        <Button className="bg-medical-primary hover:bg-medical-primary/90">
+        <Button className="bg-medical-primary hover:bg-medical-primary/90 bg-blue-500">
           <Plus size={16} className="mr-2" />
           Add Schedule
         </Button>

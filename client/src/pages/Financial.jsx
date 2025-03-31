@@ -91,7 +91,7 @@ const Financial = () => {
   return (
     <DashboardLayout>
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-medical-gray-900">Financial Overview</h1>
+        <h1 className="text-2xl font-bold text-medical-gray-900 text-blue-700">Financial Overview</h1>
         <p className="text-medical-gray-600">
           Monitor revenue, expenses, and financial performance
         </p>
@@ -111,10 +111,10 @@ const Financial = () => {
               <div className="flex gap-3">
                 <Select defaultValue="all">
                   <SelectTrigger className="w-[150px]">
-                    <span className="flex items-center">
+                    <div className="flex items-center">
                       <Filter size={14} className="mr-2 text-medical-gray-500" />
                       <SelectValue placeholder="Status" />
-                    </span>
+                    </div>
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Status</SelectItem>
