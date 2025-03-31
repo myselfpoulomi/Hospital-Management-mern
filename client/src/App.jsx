@@ -11,6 +11,7 @@ import NotFound from "./pages/NotFound";
 
 import { LogIn } from "lucide-react";
 import Login from "./pages/Login";
+import PatientsPage from "./pages/Patient/PatientsPage";
 
 const queryClient = new QueryClient();
 
@@ -26,12 +27,12 @@ const App = () => (
           <Route path="/medicine" element={<Medicine />} />
           <Route path="/bed-status" element={<BedStatus />} />
           <Route path="/financial" element={<Financial />} />
+          <Route path="/patients" element={<PatientsPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
 );
-
 
 export default App;
