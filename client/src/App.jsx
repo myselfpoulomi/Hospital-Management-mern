@@ -12,6 +12,7 @@ import NotFound from "./pages/NotFound";
 import { LogIn } from "lucide-react";
 import Login from "./pages/Login";
 import PatientsPage from "./pages/Patient/PatientsPage";
+import DoctorsPage from "./pages/Doctor/DoctorsPage";
 
 const queryClient = new QueryClient();
 
@@ -23,7 +24,7 @@ const App = () => (
           <Route path="/" element={<Dashboard />} />
           <Route path="/login" element={<Login />} />
           <Route path="/prescriptions" element={<Prescriptions />} />
-          <Route path="/doctor-schedules" element={<DoctorSchedules />} />
+          <Route path="/doctors" element={<DoctorsPage />} />
           <Route path="/medicine" element={<Medicine />} />
           <Route path="/bed-status" element={<BedStatus />} />
           <Route path="/financial" element={<Financial />} />

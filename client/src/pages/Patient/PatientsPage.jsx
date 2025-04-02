@@ -146,7 +146,7 @@ const PatientsPage = () => {
         </div>
 
         <div className="bg-white shadow rounded-lg overflow-hidden">
-          <div className="p-4 border-b flex justify-between items-center mb-5">
+          <div className="p-4 border-b flex justify-between items-center mb-5 gap-4">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-medical-gray-500" />
               <Input
