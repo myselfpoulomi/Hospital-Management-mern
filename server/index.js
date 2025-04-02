@@ -1,15 +1,22 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import DoctorRoutes from './routes/DoctorRoutes.js';
+import cors from 'cors';
 
 // Load environment variables
 dotenv.config();
 
 const app = express();
 
-app.get("/", (req, res) => {
-    res.send("API called");
-});
+// Enable CORS
+app.use(cors());
+
+// Parse JSON request bodies
+app.use(express.json());
+
+// Define routes
+app.use("/Doctors", DoctorRoutes);
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI, {
