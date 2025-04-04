@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import axios from "axios";
 
 const RegisterDoctorDialog = ({ open, onOpenChange, onSuccess }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -17,6 +18,7 @@ const RegisterDoctorDialog = ({ open, onOpenChange, onSuccess }) => {
   const [doctorId, setDoctorId] = useState("");
   const [degree, setDegree] = useState("");
   const [specialization, setSpecialization] = useState("");
+  const [numOfPatients, setNumOfPatients] = useState("");
 
   const [errors, setErrors] = useState({});
 
@@ -26,6 +28,9 @@ const RegisterDoctorDialog = ({ open, onOpenChange, onSuccess }) => {
     if (!doctorId.trim()) newErrors.doctorId = "Doctor ID is required";
     if (!degree.trim()) newErrors.degree = "Degree is required";
     if (!specialization.trim()) newErrors.specialization = "Specialization is required";
+    if (!numOfPatients.trim() || isNaN(numOfPatients) || Number(numOfPatients) <= 0)
+      newErrors.numOfPatients = "Enter a valid number of patients";
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -33,31 +38,34 @@ const RegisterDoctorDialog = ({ open, onOpenChange, onSuccess }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
-
+  
     setIsSubmitting(true);
     try {
-      // Simulated API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // Future API can use this structure
-      const doctorData = { name, doctorId, degree, specialization };
-      console.log("Submitting doctor data:", doctorData);
-
+      const response = await axios.post("http://localhost:4000/doctors/addDoc", {
+        doctor_id: doctorId,  // Match backend key name
+        full_name: name,      // Match backend key name
+        degree,
+        specialization,
+        numOfPatients: Number(numOfPatients),
+      });
+  
+      console.log("Doctor registered successfully:", response.data);
       onSuccess();
-
-      // Reset inputs
+  
+      // Reset form fields
       setName("");
       setDoctorId("");
       setDegree("");
       setSpecialization("");
+      setNumOfPatients("");
       onOpenChange(false);
     } catch (error) {
-      console.error("Error registering doctor:", error);
+      console.error("Error registering doctor:", error.response?.data?.message || error.message);
     } finally {
       setIsSubmitting(false);
     }
   };
-
+  
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
@@ -71,10 +79,7 @@ const RegisterDoctorDialog = ({ open, onOpenChange, onSuccess }) => {
             <Input
               name="name"
               value={name}
-              onChange={(e) => {
-                setName(e.target.value);
-                console.log("Name:", e.target.value);
-              }}
+              onChange={(e) => setName(e.target.value)}
               placeholder="Dr. John Smith"
             />
             {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
@@ -85,10 +90,7 @@ const RegisterDoctorDialog = ({ open, onOpenChange, onSuccess }) => {
             <Input
               name="doctorId"
               value={doctorId}
-              onChange={(e) => {
-                setDoctorId(e.target.value);
-                console.log("Doctor ID:", e.target.value);
-              }}
+              onChange={(e) => setDoctorId(e.target.value)}
               placeholder="DOC-001"
             />
             {errors.doctorId && <p className="text-red-500 text-sm">{errors.doctorId}</p>}
@@ -99,10 +101,7 @@ const RegisterDoctorDialog = ({ open, onOpenChange, onSuccess }) => {
             <Input
               name="degree"
               value={degree}
-              onChange={(e) => {
-                setDegree(e.target.value);
-                console.log("Degree:", e.target.value);
-              }}
+              onChange={(e) => setDegree(e.target.value)}
               placeholder="MD, PhD"
             />
             {errors.degree && <p className="text-red-500 text-sm">{errors.degree}</p>}
@@ -113,13 +112,23 @@ const RegisterDoctorDialog = ({ open, onOpenChange, onSuccess }) => {
             <Input
               name="specialization"
               value={specialization}
-              onChange={(e) => {
-                setSpecialization(e.target.value);
-                console.log("Specialization:", e.target.value);
-              }}
+              onChange={(e) => setSpecialization(e.target.value)}
               placeholder="Cardiology, Neurology, etc."
             />
             {errors.specialization && <p className="text-red-500 text-sm">{errors.specialization}</p>}
+          </div>
+
+          <div>
+            <label className="block mb-1">Number of Patients</label>
+            <Input
+              name="numOfPatients"
+              value={numOfPatients}
+              type="number"
+              min="1"
+              onChange={(e) => setNumOfPatients(e.target.value)}
+              placeholder="Enter Number of Patients"
+            />
+            {errors.numOfPatients && <p className="text-red-500 text-sm">{errors.numOfPatients}</p>}
           </div>
 
           <DialogFooter className="mt-6">
