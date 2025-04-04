@@ -8,7 +8,16 @@ import DashboardLayout from "@/components/layout/DashboardLayout";
 
 const DoctorsPage = () => {
   const [isRegisterDialogOpen, setIsRegisterDialogOpen] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0); // added
   const { toast } = useToast();
+
+  const handleSuccess = () => {
+    toast({
+      title: "Doctor registered",
+      description: "The doctor has been successfully registered.",
+    });
+    setRefreshKey((prev) => prev + 1); // trigger re-fetch
+  };
 
   return (
     <DashboardLayout className="w-full">
@@ -29,17 +38,12 @@ const DoctorsPage = () => {
           </Button>
         </div>
 
-        <DoctorsList />
+        <DoctorsList refresh={refreshKey} />
 
         <RegisterDoctorDialog
           open={isRegisterDialogOpen}
           onOpenChange={setIsRegisterDialogOpen}
-          onSuccess={() => {
-            toast({
-              title: "Doctor registered",
-              description: "The doctor has been successfully registered.",
-            });
-          }}
+          onSuccess={handleSuccess}
         />
       </div>
     </DashboardLayout>

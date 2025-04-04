@@ -12,14 +12,11 @@ import axios from "axios";
 
 const RegisterDoctorDialog = ({ open, onOpenChange, onSuccess }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Separate state for each input
   const [name, setName] = useState("");
   const [doctorId, setDoctorId] = useState("");
   const [degree, setDegree] = useState("");
   const [specialization, setSpecialization] = useState("");
   const [numOfPatients, setNumOfPatients] = useState("");
-
   const [errors, setErrors] = useState({});
 
   const validate = () => {
@@ -30,7 +27,6 @@ const RegisterDoctorDialog = ({ open, onOpenChange, onSuccess }) => {
     if (!specialization.trim()) newErrors.specialization = "Specialization is required";
     if (!numOfPatients.trim() || isNaN(numOfPatients) || Number(numOfPatients) <= 0)
       newErrors.numOfPatients = "Enter a valid number of patients";
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -38,21 +34,21 @@ const RegisterDoctorDialog = ({ open, onOpenChange, onSuccess }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
-  
+
     setIsSubmitting(true);
     try {
       const response = await axios.post("http://localhost:4000/doctors/addDoc", {
-        doctor_id: doctorId,  // Match backend key name
-        full_name: name,      // Match backend key name
+        doctor_id: doctorId,
+        full_name: name,
         degree,
         specialization,
         numOfPatients: Number(numOfPatients),
       });
-  
+
       console.log("Doctor registered successfully:", response.data);
       onSuccess();
-  
-      // Reset form fields
+
+      // Reset form
       setName("");
       setDoctorId("");
       setDegree("");
@@ -65,7 +61,7 @@ const RegisterDoctorDialog = ({ open, onOpenChange, onSuccess }) => {
       setIsSubmitting(false);
     }
   };
-  
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
