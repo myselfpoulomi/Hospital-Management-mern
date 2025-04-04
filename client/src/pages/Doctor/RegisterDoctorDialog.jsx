@@ -1,7 +1,4 @@
 import { useState } from "react";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Dialog,
   DialogContent,
@@ -9,54 +6,50 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-
-
-const formSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  doctorId: z.string().min(1, "Doctor ID is required"),
-  degree: z.string().min(1, "Degree is required"),
-  specialization: z.string().min(1, "Specialization is required"),
-});
-
 const RegisterDoctorDialog = ({ open, onOpenChange, onSuccess }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [inputName, setinputName] = useState(false);
 
-  const handleNameChange = (event) => {
-    setinputName(event.target.value.name);
-    console.log(event.target.value.name);
-    
+  // Separate state for each input
+  const [name, setName] = useState("");
+  const [doctorId, setDoctorId] = useState("");
+  const [degree, setDegree] = useState("");
+  const [specialization, setSpecialization] = useState("");
+
+  const [errors, setErrors] = useState({});
+
+  const validate = () => {
+    let newErrors = {};
+    if (name.trim().length < 2) newErrors.name = "Name must be at least 2 characters";
+    if (!doctorId.trim()) newErrors.doctorId = "Doctor ID is required";
+    if (!degree.trim()) newErrors.degree = "Degree is required";
+    if (!specialization.trim()) newErrors.specialization = "Specialization is required";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
-  const form = useForm({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      doctorId: "",
-      degree: "",
-      specialization: "",
-    },
-  });
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validate()) return;
 
-  const onSubmit = async (data) => {
     setIsSubmitting(true);
-    
     try {
-      // console.log("Registering doctor:", data);
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Simulated API call
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Future API can use this structure
+      const doctorData = { name, doctorId, degree, specialization };
+      console.log("Submitting doctor data:", doctorData);
+
       onSuccess();
-      form.reset();
+
+      // Reset inputs
+      setName("");
+      setDoctorId("");
+      setDegree("");
+      setSpecialization("");
       onOpenChange(false);
     } catch (error) {
       console.error("Error registering doctor:", error);
@@ -71,75 +64,73 @@ const RegisterDoctorDialog = ({ open, onOpenChange, onSuccess }) => {
         <DialogHeader>
           <DialogTitle>Register New Doctor</DialogTitle>
         </DialogHeader>
-        
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block mb-1">Full Name</label>
+            <Input
               name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Full Name</FormLabel>
-                  <FormControl>
-                    <Input onChange={handleNameChange} placeholder="Dr. John Smith" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              value={name}
+              onChange={(e) => {
+                setName(e.target.value);
+                console.log("Name:", e.target.value);
+              }}
+              placeholder="Dr. John Smith"
             />
-            
-            <FormField
-              control={form.control}
+            {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
+          </div>
+
+          <div>
+            <label className="block mb-1">Doctor ID</label>
+            <Input
               name="doctorId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Doctor ID</FormLabel>
-                  <FormControl>
-                    <Input placeholder="DOC-001" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              value={doctorId}
+              onChange={(e) => {
+                setDoctorId(e.target.value);
+                console.log("Doctor ID:", e.target.value);
+              }}
+              placeholder="DOC-001"
             />
-            
-            <FormField
-              control={form.control}
+            {errors.doctorId && <p className="text-red-500 text-sm">{errors.doctorId}</p>}
+          </div>
+
+          <div>
+            <label className="block mb-1">Degree</label>
+            <Input
               name="degree"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Degree</FormLabel>
-                  <FormControl>
-                    <Input placeholder="MD, PhD" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              value={degree}
+              onChange={(e) => {
+                setDegree(e.target.value);
+                console.log("Degree:", e.target.value);
+              }}
+              placeholder="MD, PhD"
             />
-            
-            <FormField
-              control={form.control}
+            {errors.degree && <p className="text-red-500 text-sm">{errors.degree}</p>}
+          </div>
+
+          <div>
+            <label className="block mb-1">Specialization</label>
+            <Input
               name="specialization"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Specialization</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Cardiology, Neurology, etc." {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              value={specialization}
+              onChange={(e) => {
+                setSpecialization(e.target.value);
+                console.log("Specialization:", e.target.value);
+              }}
+              placeholder="Cardiology, Neurology, etc."
             />
-            
-            <DialogFooter className="mt-6">
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-                Cancel
-              </Button>
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Registering..." : "Register Doctor"}
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
+            {errors.specialization && <p className="text-red-500 text-sm">{errors.specialization}</p>}
+          </div>
+
+          <DialogFooter className="mt-6">
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Registering..." : "Register Doctor"}
+            </Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );
