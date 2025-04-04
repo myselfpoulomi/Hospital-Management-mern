@@ -20,6 +20,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
+
+
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   doctorId: z.string().min(1, "Doctor ID is required"),
@@ -29,6 +31,13 @@ const formSchema = z.object({
 
 const RegisterDoctorDialog = ({ open, onOpenChange, onSuccess }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [inputName, setinputName] = useState(false);
+
+  const handleNameChange = (event) => {
+    setinputName(event.target.value.name);
+    console.log(event.target.value.name);
+    
+  };
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -44,7 +53,7 @@ const RegisterDoctorDialog = ({ open, onOpenChange, onSuccess }) => {
     setIsSubmitting(true);
     
     try {
-      console.log("Registering doctor:", data);
+      // console.log("Registering doctor:", data);
       await new Promise(resolve => setTimeout(resolve, 1000));
       onSuccess();
       form.reset();
@@ -72,7 +81,7 @@ const RegisterDoctorDialog = ({ open, onOpenChange, onSuccess }) => {
                 <FormItem>
                   <FormLabel>Full Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Dr. John Smith" {...field} />
+                    <Input onChange={handleNameChange} placeholder="Dr. John Smith" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
