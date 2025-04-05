@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { useForm } from "react-hook-form";
@@ -35,8 +35,15 @@ const AddMedicineForm = ({ isOpen, onClose }) => {
     handleSubmit,
     reset,
     setValue,
+    watch,
     formState: { errors },
   } = useForm();
+
+  const watchAllFields = watch();
+
+  useEffect(() => {
+    console.log("Form Data Changed:", watchAllFields);
+  }, [watchAllFields]);
 
   const onSubmit = (data) => {
     if (!data.expiryDate) {
@@ -76,13 +83,21 @@ const AddMedicineForm = ({ isOpen, onClose }) => {
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="id">Medicine ID*</Label>
-              <Input id="id" placeholder="e.g., MED-004" {...register("id", { required: "ID is required" })} />
+              <Input
+                id="id"
+                placeholder="e.g., MED-004"
+                {...register("id", { required: "ID is required" })}
+              />
               {errors.id && <p className="text-sm text-red-500">{errors.id.message}</p>}
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="name">Medicine Name*</Label>
-              <Input id="name" placeholder="e.g., Ibuprofen 200mg" {...register("name", { required: "Name is required" })} />
+              <Input
+                id="name"
+                placeholder="e.g., Ibuprofen 200mg"
+                {...register("name", { required: "Name is required" })}
+              />
               {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
             </div>
           </div>
