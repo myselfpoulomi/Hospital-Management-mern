@@ -30,61 +30,67 @@ import { toast } from "@/hooks/use-toast";
 
 const AddMedicineForm = ({ isOpen, onClose }) => {
   const [date, setDate] = useState(undefined);
+  const [category, setCategory] = useState("");
+  const [status, setStatus] = useState("");
 
   const {
     register,
     handleSubmit,
     reset,
     setValue,
-    watch,
     formState: { errors },
   } = useForm();
 
-  const watchAllFields = watch();
+  useEffect(() => {
+    register("expiryDate", { required: "Expiry date is required" });
+    register("category", { required: "Category is required" });
+    register("status", { required: "Status is required" });
+  }, [register]);
 
   useEffect(() => {
-    console.log("Form Data Changed:", watchAllFields);
-  }, [watchAllFields]);
+    if (date) setValue("expiryDate", date);
+    if (category) setValue("category", category);
+    if (status) setValue("status", status);
+  }, [date, category, status, setValue]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      reset();
+      setDate(undefined);
+      setCategory("");
+      setStatus("");
+    }
+  }, [isOpen, reset]);
 
   const onSubmit = async (data) => {
-    if (!data.expiryDate) {
-      toast({ title: "Error", description: "Expiry date is required." });
-      return;
-    }
-  
     if (isNaN(Number(data.stock)) || Number(data.stock) <= 0) {
       toast({ title: "Error", description: "Stock must be a positive number." });
       return;
     }
-  
+
     const formattedData = {
       medicineId: data.id,
       medicineName: data.name,
       category: data.category,
       stockQuantity: Number(data.stock),
       status: data.status,
-      expiryDate: new Date(data.expiryDate).toISOString(), // Mongo accepts ISO string
+      expiryDate: new Date(data.expiryDate).toISOString(),
     };
-  
-    console.log("Sending to backend:", formattedData);
-  
+
     try {
-      const res = await axios.post(
-        "http://localhost:4000/Medicine/addMedicine",
-        formattedData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-  
+      await axios.post("http://localhost:4000/Medicine/addMedicine", formattedData, {
+        headers: { "Content-Type": "application/json" },
+      });
+
       toast({
         title: "Medicine Added",
         description: `${data.name} has been added to inventory.`,
       });
-  
+
       reset();
+      setDate(undefined);
+      setCategory("");
+      setStatus("");
       onClose();
     } catch (error) {
       console.error("API Error:", error.response?.data || error.message);
@@ -95,11 +101,12 @@ const AddMedicineForm = ({ isOpen, onClose }) => {
       });
     }
   };
-  
-  
 
   const handleClose = () => {
     reset();
+    setDate(undefined);
+    setCategory("");
+    setStatus("");
     onClose();
   };
 
@@ -136,7 +143,7 @@ const AddMedicineForm = ({ isOpen, onClose }) => {
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="category">Category*</Label>
-              <Select onValueChange={(value) => setValue("category", value)}>
+              <Select onValueChange={setCategory} value={category}>
                 <SelectTrigger id="category">
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
@@ -168,7 +175,7 @@ const AddMedicineForm = ({ isOpen, onClose }) => {
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="status">Status*</Label>
-              <Select onValueChange={(value) => setValue("status", value)}>
+              <Select onValueChange={setStatus} value={status}>
                 <SelectTrigger id="status">
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
@@ -200,15 +207,16 @@ const AddMedicineForm = ({ isOpen, onClose }) => {
                     selected={date}
                     onSelect={(newDate) => {
                       setDate(newDate);
-                      newDate && setValue("expiryDate", newDate);
                     }}
-                    disabled={(date) => date < new Date()}
+                    disabled={(d) => d < new Date()}
                     initialFocus
                     className="pointer-events-auto"
                   />
                 </PopoverContent>
               </Popover>
-              {errors.expiryDate && <p className="text-sm text-red-500">{errors.expiryDate.message}</p>}
+              {errors.expiryDate && (
+                <p className="text-sm text-red-500">{errors.expiryDate.message}</p>
+              )}
             </div>
           </div>
 
