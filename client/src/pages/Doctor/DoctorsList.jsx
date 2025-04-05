@@ -37,6 +37,7 @@ const DoctorsList = ({ refresh }) => {
           <CardHeader className="p-2">
             <CardTitle className="text-xl">{doctor.full_name}</CardTitle>
             <CardDescription>{doctor.degree}</CardDescription>
+            <p className="text-sm text-gray-500 mt-1">ID: {doctor.doctor_id}</p> {/* ✅ Doctor ID */}
           </CardHeader>
           <CardContent className="p-2">
             <div className="grid gap-2">
