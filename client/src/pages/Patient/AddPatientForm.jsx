@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 
-const AddPatientForm = ({ onSubmit }) => {
+const AddPatientForm = ({ onSubmit, initialData = null }) => {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -25,6 +25,13 @@ const AddPatientForm = ({ onSubmit }) => {
     allergies: "",
     medicalHistory: "",
   });
+
+  // 🔄 Fill form when editing
+  useEffect(() => {
+    if (initialData) {
+      setFormData({ ...formData, ...initialData });
+    }
+  }, [initialData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -51,17 +58,25 @@ const AddPatientForm = ({ onSubmit }) => {
     }
 
     try {
-      const response = await axios.post(
-        "http://localhost:4000/Patients/addPatient",
-        formData,
-        { headers: { "Content-Type": "application/json" } }
-      );
-
-      if (onSubmit) {
-        onSubmit(formData); // or use response.data
+      if (initialData?._id) {
+        // 🔁 Update
+        await axios.put(
+          `http://localhost:4000/Patients/updatePatient/${initialData._id}`,
+          formData,
+          { headers: { "Content-Type": "application/json" } }
+        );
+      } else {
+        // ➕ Add
+        await axios.post(
+          "http://localhost:4000/Patients/addPatient",
+          formData,
+          { headers: { "Content-Type": "application/json" } }
+        );
       }
+
+      onSubmit?.(); // trigger parent update
     } catch (error) {
-      console.error("Error adding patient:", error);
+      console.error("Error submitting form:", error);
     }
   };
 
@@ -81,7 +96,10 @@ const AddPatientForm = ({ onSubmit }) => {
       <div className="grid grid-cols-2 gap-4">
         <div>
           <Label>Gender</Label>
-          <Select onValueChange={(value) => handleSelectChange(value, "gender")} value={formData.gender}>
+          <Select
+            onValueChange={(value) => handleSelectChange(value, "gender")}
+            value={formData.gender}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Select gender" />
             </SelectTrigger>
@@ -94,7 +112,14 @@ const AddPatientForm = ({ onSubmit }) => {
         </div>
         <div>
           <Label htmlFor="dateOfBirth">Date of Birth</Label>
-          <Input id="dateOfBirth" name="dateOfBirth" type="date" value={formData.dateOfBirth} onChange={handleChange} required />
+          <Input
+            id="dateOfBirth"
+            name="dateOfBirth"
+            type="date"
+            value={formData.dateOfBirth}
+            onChange={handleChange}
+            required
+          />
         </div>
       </div>
 
@@ -117,7 +142,10 @@ const AddPatientForm = ({ onSubmit }) => {
       <div className="grid grid-cols-2 gap-4">
         <div>
           <Label>Blood Type</Label>
-          <Select onValueChange={(value) => handleSelectChange(value, "bloodType")} value={formData.bloodType}>
+          <Select
+            onValueChange={(value) => handleSelectChange(value, "bloodType")}
+            value={formData.bloodType}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Select blood type" />
             </SelectTrigger>
@@ -141,7 +169,9 @@ const AddPatientForm = ({ onSubmit }) => {
 
       <div className="flex justify-end gap-2">
         <Button type="button" variant="outline">Cancel</Button>
-        <Button type="submit" className="bg-blue-600 hover:bg-blue-700">Save Patient</Button>
+        <Button type="submit" className="bg-blue-600 hover:bg-blue-700">
+          {initialData ? "Update Patient" : "Save Patient"}
+        </Button>
       </div>
     </form>
   );

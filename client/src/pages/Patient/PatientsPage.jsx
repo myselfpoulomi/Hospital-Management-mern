@@ -28,6 +28,7 @@ const PatientsPage = () => {
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [isAddPatientOpen, setIsAddPatientOpen] = useState(false);
   const [isViewDetailsOpen, setIsViewDetailsOpen] = useState(false);
+  const [editingPatient, setEditingPatient] = useState(null); // 👈 for edit mode
 
   useEffect(() => {
     fetchPatients();
@@ -42,13 +43,24 @@ const PatientsPage = () => {
     }
   };
 
-  const handleAddPatient = (newPatientData) => {
-    fetchPatients(); // Re-fetch the updated patient list
-    setIsAddPatientOpen(false);
-    toast({
-      title: "Patient added",
-      description: "New patient has been added successfully.",
-    });
+  const handleAddOrUpdatePatient = async (data) => {
+    try {
+      if (editingPatient) {
+        // Editing mode
+        await axios.put(`http://localhost:4000/Patients/updatePatient/${editingPatient._id}`, data);
+        toast({ title: "Patient updated", description: "Patient updated successfully." });
+      } else {
+        // Add mode
+        await axios.post("http://localhost:4000/Patients/addPatient", data);
+        toast({ title: "Patient added", description: "New patient added successfully." });
+      }
+
+      fetchPatients();
+      setIsAddPatientOpen(false);
+      setEditingPatient(null); // reset editing mode
+    } catch (error) {
+      console.error("Error saving patient:", error);
+    }
   };
 
   const handleDelete = async (id) => {
@@ -57,7 +69,7 @@ const PatientsPage = () => {
       fetchPatients();
       toast({
         title: "Patient deleted",
-        description: `Patient ${id} has been deleted successfully.`,
+        description: `Patient ${id} deleted successfully.`,
       });
     } catch (error) {
       console.error("Error deleting patient:", error);
@@ -80,18 +92,32 @@ const PatientsPage = () => {
             <p className="text-gray-600">Manage patient records and information</p>
           </div>
 
-          <Dialog open={isAddPatientOpen} onOpenChange={setIsAddPatientOpen}>
+          <Dialog open={isAddPatientOpen} onOpenChange={(open) => {
+            setIsAddPatientOpen(open);
+            if (!open) setEditingPatient(null); // reset form when dialog closes
+          }}>
             <DialogTrigger asChild>
-              <Button className="bg-blue-600 hover:bg-blue-700">
+              <Button
+                className="bg-blue-600 hover:bg-blue-700"
+                onClick={() => {
+                  setEditingPatient(null); // make sure it's add mode
+                  setIsAddPatientOpen(true);
+                }}
+              >
                 <Plus className="mr-2 h-4 w-4" />
                 Add Patient
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[600px]">
               <DialogHeader>
-                <DialogTitle>Add New Patient</DialogTitle>
+                <DialogTitle>
+                  {editingPatient ? "Update Patient" : "Add New Patient"}
+                </DialogTitle>
               </DialogHeader>
-              <AddPatientForm onSubmit={handleAddPatient} />
+              <AddPatientForm
+                onSubmit={handleAddOrUpdatePatient}
+                initialData={editingPatient}
+              />
             </DialogContent>
           </Dialog>
         </div>
@@ -112,7 +138,7 @@ const PatientsPage = () => {
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="flex items-center">
                   <Filter className="mr-2 h-4 w-4" />
-                  All Patient
+                  All Patients
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
@@ -137,7 +163,9 @@ const PatientsPage = () => {
                 {filteredPatients.map((patient) => (
                   <tr key={patient._id}>
                     <td className="px-6 py-3">{patient._id}</td>
-                    <td className="px-6 py-3">{patient.firstName} {patient.lastName}</td>
+                    <td className="px-6 py-3">
+                      {patient.firstName} {patient.lastName}
+                    </td>
                     <td className="px-6 py-3">{patient.gender}</td>
                     <td className="px-6 py-3">{patient.contactNumber}</td>
                     <td className="px-6 py-3">{patient.bloodType}</td>
@@ -152,7 +180,14 @@ const PatientsPage = () => {
                       >
                         <FileText className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="sm">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setEditingPatient(patient);
+                          setIsAddPatientOpen(true);
+                        }}
+                      >
                         <Edit className="h-4 w-4" />
                       </Button>
                       <Button

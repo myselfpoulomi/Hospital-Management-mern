@@ -6,7 +6,7 @@ import {getAllPatients,getPatientById,addPatient,updatePatient,deletePatient} fr
 router.get("/", getAllPatients);
 router.get("/:id",getPatientById);
 router.post("/addPatient",addPatient);
-router.put("/:id",updatePatient);
-router.delete("/:id",deletePatient);
+router.put("/updatePatient/:id",updatePatient);
+router.delete("/deletePatient/:id",deletePatient);
 
 export default router
