@@ -1,15 +1,37 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Card,
+  CardContent,
+} from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import AddMedicineForm from "./Medicine/AddMedicineForm";
+import { Edit, Trash2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
+import { Funnel, Download } from "lucide-react";
 
 const Medicine = () => {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [medicines, setMedicines] = useState([]);
+  const [selectedMedicine, setSelectedMedicine] = useState(null); // For update
+  const [filterStatus, setFilterStatus] = useState("All Medicine");
+
 
   const fetchMedicines = async () => {
     try {
@@ -25,23 +47,62 @@ const Medicine = () => {
   }, []);
 
   const handleMedicineAdded = (newMedicine) => {
-    // Add the new medicine to the state after adding it
-    setMedicines((prevMedicines) => [...prevMedicines, newMedicine]);
+    fetchMedicines();
     setIsAddDialogOpen(false);
+    setSelectedMedicine(null);
+  };
+
+  const handleMedicineDelete = async (_id) => {
+    try {
+      await axios.delete(`http://localhost:4000/medicine/deleteMedicine/${_id}`);
+      setMedicines((prevMedicines) =>
+        prevMedicines.filter((medicine) => medicine._id !== _id)
+      );
+    } catch (error) {
+      console.error("Error deleting medicine:", error);
+    }
+  };
+
+  const handleEditClick = (medicine) => {
+    setSelectedMedicine(medicine);
+    setIsAddDialogOpen(true);
   };
 
   return (
     <DashboardLayout className="w-full">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-semibold">Medicine Inventory</h1>
-        <Button onClick={() => setIsAddDialogOpen(true)}>+ Add Medicine</Button>
+      <div className="mb-4 flex justify-between items-start">
+        <div>
+          <h2 className="text-xl font-bold text-blue-700">Medicine Management</h2>
+          <p className="text-sm text-muted-foreground">Monitor and manage hospital medicine inventory</p>
+        </div>
+        <Button className="bg-blue-600" onClick={() => setIsAddDialogOpen(true)}>+ Add Medicine</Button>
       </div>
 
-      <Card className="mt-6">
-        <CardHeader>
-          <CardTitle>Current Inventory</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-4">
+        <Input placeholder="Search medicines..." className="md:w-full" />
+        <div className="flex items-center gap-2">
+        <DropdownMenu>
+  <DropdownMenuTrigger asChild>
+    <Button variant="outline" className="flex items-center gap-1">
+      <Funnel className="h-4 w-4" /> {filterStatus}
+    </Button>
+  </DropdownMenuTrigger>
+  <DropdownMenuContent>
+    <DropdownMenuItem onClick={() => setFilterStatus("All Medicine")}>All</DropdownMenuItem>
+    <DropdownMenuItem onClick={() => setFilterStatus("In Stock")}>In Stock</DropdownMenuItem>
+    <DropdownMenuItem onClick={() => setFilterStatus("Low Stock")}>Low Stock</DropdownMenuItem>
+    <DropdownMenuItem onClick={() => setFilterStatus("Out of Stock")}>Out of Stock</DropdownMenuItem>
+  </DropdownMenuContent>
+</DropdownMenu>
+
+          <Button variant="outline" className="flex items-center gap-1">
+            <Download className="h-4 w-4" /> Export
+          </Button>
+        </div>
+      </div>
+
+      <Card>
+        <CardContent className="p-0">
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
@@ -51,33 +112,58 @@ const Medicine = () => {
                   <TableHead>Category</TableHead>
                   <TableHead className="text-right">Stock</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead>Expiry</TableHead>
+                  <TableHead>Expiry Date</TableHead>
+                  <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {medicines.map((medicine) => (
-                  <TableRow key={medicine.medicineId}>
-                    <TableCell>{medicine.medicineId}</TableCell>
-                    <TableCell>{medicine.medicineName}</TableCell>
-                    <TableCell>{medicine.category}</TableCell>
-                    <TableCell className="text-right">{medicine.stockQuantity}</TableCell>
-                    <TableCell>
-                      <Badge
-                        className={
-                          medicine.status === "In Stock"
-                            ? "bg-green-100 text-green-600"
-                            : medicine.status === "Low Stock"
-                            ? "bg-yellow-100 text-yellow-600"
-                            : "bg-red-100 text-red-600"
-                        }
-                      >
-                        {medicine.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>{new Date(medicine.expiryDate).toLocaleDateString()}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
+  {medicines
+    .filter((medicine) => {
+      if (filterStatus === "All Medicine") return true;
+      return medicine.status === filterStatus;
+    })
+    .map((medicine) => (
+      <TableRow key={medicine._id}>
+        <TableCell>{medicine.medicineId}</TableCell>
+        <TableCell>{medicine.medicineName}</TableCell>
+        <TableCell>{medicine.category}</TableCell>
+        <TableCell className="text-right">{medicine.stockQuantity}</TableCell>
+        <TableCell>
+          <Badge
+            className={
+              medicine.status === "In Stock"
+                ? "bg-green-100 text-green-600"
+                : medicine.status === "Low Stock"
+                ? "bg-yellow-100 text-yellow-600"
+                : "bg-red-100 text-red-600"
+            }
+          >
+            {medicine.status}
+          </Badge>
+        </TableCell>
+        <TableCell>{new Date(medicine.expiryDate).toLocaleDateString()}</TableCell>
+        <TableCell>
+          <div className="flex gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => handleEditClick(medicine)}
+            >
+              <Edit className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => handleMedicineDelete(medicine._id)}
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
+        </TableCell>
+      </TableRow>
+    ))}
+</TableBody>
+
             </Table>
           </div>
         </CardContent>
@@ -85,8 +171,12 @@ const Medicine = () => {
 
       <AddMedicineForm
         isOpen={isAddDialogOpen}
-        onClose={() => setIsAddDialogOpen(false)}
-        onMedicineAdded={handleMedicineAdded}  // Pass the callback to the form
+        onClose={() => {
+          setIsAddDialogOpen(false);
+          setSelectedMedicine(null);
+        }}
+        onMedicineAdded={handleMedicineAdded}
+        selectedMedicine={selectedMedicine}
       />
     </DashboardLayout>
   );

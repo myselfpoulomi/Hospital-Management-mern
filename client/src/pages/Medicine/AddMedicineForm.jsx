@@ -28,8 +28,8 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { toast } from "@/hooks/use-toast";
 
-const AddMedicineForm = ({ isOpen, onClose, onMedicineAdded }) => {  // Get the callback as a prop
-  const [date, setDate] = useState(undefined);
+const AddMedicineForm = ({ isOpen, onClose, onMedicineAdded, selectedMedicine }) => {
+  const [date, setDate] = useState();
   const [category, setCategory] = useState("");
   const [status, setStatus] = useState("");
 
@@ -48,12 +48,6 @@ const AddMedicineForm = ({ isOpen, onClose, onMedicineAdded }) => {  // Get the 
   }, [register]);
 
   useEffect(() => {
-    if (date) setValue("expiryDate", date);
-    if (category) setValue("category", category);
-    if (status) setValue("status", status);
-  }, [date, category, status, setValue]);
-
-  useEffect(() => {
     if (!isOpen) {
       reset();
       setDate(undefined);
@@ -62,44 +56,50 @@ const AddMedicineForm = ({ isOpen, onClose, onMedicineAdded }) => {  // Get the 
     }
   }, [isOpen, reset]);
 
-  const onSubmit = async (data) => {
-    if (isNaN(Number(data.stock)) || Number(data.stock) <= 0) {
-      toast({ title: "Error", description: "Stock must be a positive number." });
-      return;
+  useEffect(() => {
+    if (selectedMedicine) {
+      setValue("id", selectedMedicine.medicineId);
+      setValue("name", selectedMedicine.medicineName);
+      setValue("stock", selectedMedicine.stockQuantity);
+      setCategory(selectedMedicine.category);
+      setStatus(selectedMedicine.status);
+      setDate(new Date(selectedMedicine.expiryDate));
     }
+  }, [selectedMedicine, setValue]);
 
-    const formattedData = {
+  useEffect(() => {
+    if (date) setValue("expiryDate", date);
+    if (category) setValue("category", category);
+    if (status) setValue("status", status);
+  }, [date, category, status, setValue]);
+
+  const onSubmit = async (data) => {
+    const payload = {
       medicineId: data.id,
       medicineName: data.name,
-      category: data.category,
+      category: category,
       stockQuantity: Number(data.stock),
-      status: data.status,
+      status: status,
       expiryDate: new Date(data.expiryDate).toISOString(),
     };
 
     try {
-      const response = await axios.post("http://localhost:4000/Medicine/addMedicine", formattedData, {
-        headers: { "Content-Type": "application/json" },
-      });
+      if (selectedMedicine) {
+        await axios.put(`http://localhost:4000/medicine/updateMedicine/${selectedMedicine._id}`, payload);
+        toast({ title: "Medicine Updated", description: `${data.name} updated successfully.` });
+      } else {
+        await axios.post("http://localhost:4000/medicine/addMedicine", payload);
+        toast({ title: "Medicine Added", description: `${data.name} added to inventory.` });
+      }
 
-      toast({
-        title: "Medicine Added",
-        description: `${data.name} has been added to inventory.`,
-      });
-
-      // Pass the newly added medicine back to the parent
-      onMedicineAdded(response.data);  // Call the callback with the new medicine
-
+      onMedicineAdded();
       reset();
-      setDate(undefined);
-      setCategory("");
-      setStatus("");
       onClose();
     } catch (error) {
-      console.error("API Error:", error.response?.data || error.message);
+      console.error("Error submitting form:", error);
       toast({
-        title: "Failed to Add Medicine",
-        description: error.response?.data?.message || "An error occurred.",
+        title: "Failed",
+        description: "An error occurred while saving medicine.",
         variant: "destructive",
       });
     }
@@ -117,28 +117,22 @@ const AddMedicineForm = ({ isOpen, onClose, onMedicineAdded }) => {  // Get the 
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold">Add New Medicine</DialogTitle>
+          <DialogTitle className="text-xl font-bold">
+            {selectedMedicine ? "Update Medicine" : "Add New Medicine"}
+          </DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 py-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="id">Medicine ID*</Label>
-              <Input
-                id="id"
-                placeholder="e.g., MED-004"
-                {...register("id", { required: "ID is required" })}
-              />
+              <Input id="id" {...register("id", { required: "ID is required" })} />
               {errors.id && <p className="text-sm text-red-500">{errors.id.message}</p>}
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="name">Medicine Name*</Label>
-              <Input
-                id="name"
-                placeholder="e.g., Ibuprofen 200mg"
-                {...register("name", { required: "Name is required" })}
-              />
+              <Input id="name" {...register("name", { required: "Name is required" })} />
               {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
             </div>
           </div>
@@ -164,13 +158,7 @@ const AddMedicineForm = ({ isOpen, onClose, onMedicineAdded }) => {  // Get the 
 
             <div className="space-y-2">
               <Label htmlFor="stock">Stock Quantity*</Label>
-              <Input
-                id="stock"
-                type="number"
-                min="1"
-                placeholder="e.g., 500"
-                {...register("stock", { required: "Stock quantity is required" })}
-              />
+              <Input id="stock" type="number" min="1" {...register("stock", { required: "Stock is required" })} />
               {errors.stock && <p className="text-sm text-red-500">{errors.stock.message}</p>}
             </div>
           </div>
@@ -195,38 +183,23 @@ const AddMedicineForm = ({ isOpen, onClose, onMedicineAdded }) => {  // Get the 
               <Label htmlFor="expiryDate">Expiry Date*</Label>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start text-left font-normal"
-                    id="expiryDate"
-                  >
+                  <Button variant="outline" className="w-full justify-start text-left font-normal">
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {date ? format(date, "PPP") : <span>Select date</span>}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={date}
-                    onSelect={(newDate) => {
-                      setDate(newDate);
-                    }}
-                    initialFocus
-                  />
+                  <Calendar mode="single" selected={date} onSelect={setDate} initialFocus />
                 </PopoverContent>
               </Popover>
-              {errors.expiryDate && (
-                <p className="text-sm text-red-500">{errors.expiryDate.message}</p>
-              )}
+              {errors.expiryDate && <p className="text-sm text-red-500">{errors.expiryDate.message}</p>}
             </div>
           </div>
 
           <DialogFooter className="mt-6">
-            <Button type="button" variant="outline" onClick={handleClose}>
-              Cancel
-            </Button>
+            <Button type="button" variant="outline" onClick={handleClose}>Cancel</Button>
             <Button type="submit" className="bg-blue-600 hover:bg-blue-700">
-              Add Medicine
+              {selectedMedicine ? "Update Medicine" : "Add Medicine"}
             </Button>
           </DialogFooter>
         </form>
