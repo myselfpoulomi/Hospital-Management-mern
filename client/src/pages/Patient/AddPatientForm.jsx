@@ -1,10 +1,14 @@
-
-
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const AddPatientForm = ({ onSubmit, initialData = null, onCancel }) => {
   const [formData, setFormData] = useState({
@@ -22,9 +26,40 @@ const AddPatientForm = ({ onSubmit, initialData = null, onCancel }) => {
 
   useEffect(() => {
     if (initialData) {
-      setFormData((prev) => ({ ...prev, ...initialData }));
+      setFormData({
+        firstName: initialData.firstName || "",
+        lastName: initialData.lastName || "",
+        gender: formatGender(initialData.gender),
+        dateOfBirth: formatDate(initialData.dateOfBirth),
+        contactNumber: initialData.contactNumber || "",
+        email: initialData.email || "",
+        address: initialData.address || "",
+        bloodType: formatBloodType(initialData.bloodType),
+        allergies: initialData.allergies || "",
+        medicalHistory: initialData.medicalHistory || "",
+      });
     }
   }, [initialData]);
+
+  const formatDate = (dateStr) => {
+    if (!dateStr) return "";
+    const date = new Date(dateStr);
+    return date.toISOString().split("T")[0]; // "yyyy-mm-dd"
+  };
+
+  const formatGender = (gender) => {
+    if (!gender) return "";
+    const g = gender.toLowerCase();
+    if (g === "male" || g === "female" || g === "other") {
+      return g.charAt(0).toUpperCase() + g.slice(1);
+    }
+    return "";
+  };
+
+  const formatBloodType = (bt) => {
+    if (!bt) return "";
+    return bt.toUpperCase();
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -72,7 +107,10 @@ const AddPatientForm = ({ onSubmit, initialData = null, onCancel }) => {
         </div>
         <div>
           <Label>Gender</Label>
-          <Select value={formData.gender} onValueChange={(value) => handleSelectChange(value, "gender")}>
+          <Select
+            value={formData.gender}
+            onValueChange={(value) => handleSelectChange(value, "gender")}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Select gender" />
             </SelectTrigger>
@@ -85,7 +123,12 @@ const AddPatientForm = ({ onSubmit, initialData = null, onCancel }) => {
         </div>
         <div>
           <Label>Date of Birth</Label>
-          <Input type="date" name="dateOfBirth" value={formData.dateOfBirth} onChange={handleChange} />
+          <Input
+            type="date"
+            name="dateOfBirth"
+            value={formData.dateOfBirth}
+            onChange={handleChange}
+          />
         </div>
         <div>
           <Label>Contact Number</Label>
@@ -101,7 +144,10 @@ const AddPatientForm = ({ onSubmit, initialData = null, onCancel }) => {
         </div>
         <div>
           <Label>Blood Type</Label>
-          <Select value={formData.bloodType} onValueChange={(value) => handleSelectChange(value, "bloodType")}>
+          <Select
+            value={formData.bloodType}
+            onValueChange={(value) => handleSelectChange(value, "bloodType")}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Select blood type" />
             </SelectTrigger>
