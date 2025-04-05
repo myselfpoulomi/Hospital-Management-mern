@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -28,15 +28,17 @@ const AddPatientForm = ({ onSubmit }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    console.log(`${name}: ${value}`);
   };
 
   const handleSelectChange = (value, name) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
+    console.log(`${name}: ${value}`);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit();
+    onSubmit(formData); // also pass form data here
   };
 
   return (
@@ -44,18 +46,33 @@ const AddPatientForm = ({ onSubmit }) => {
       <div className="grid grid-cols-2 gap-4">
         <div>
           <Label htmlFor="firstName">First Name</Label>
-          <Input id="firstName" name="firstName" value={formData.firstName} onChange={handleChange} required />
+          <Input
+            id="firstName"
+            name="firstName"
+            value={formData.firstName}
+            onChange={handleChange}
+            required
+          />
         </div>
         <div>
           <Label htmlFor="lastName">Last Name</Label>
-          <Input id="lastName" name="lastName" value={formData.lastName} onChange={handleChange} required />
+          <Input
+            id="lastName"
+            name="lastName"
+            value={formData.lastName}
+            onChange={handleChange}
+            required
+          />
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
           <Label htmlFor="gender">Gender</Label>
-          <Select onValueChange={(value) => handleSelectChange(value, "gender")} value={formData.gender}>
+          <Select
+            onValueChange={(value) => handleSelectChange(value, "gender")}
+            value={formData.gender}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Select gender" />
             </SelectTrigger>
@@ -68,30 +85,58 @@ const AddPatientForm = ({ onSubmit }) => {
         </div>
         <div>
           <Label htmlFor="dateOfBirth">Date of Birth</Label>
-          <Input id="dateOfBirth" name="dateOfBirth" type="date" value={formData.dateOfBirth} onChange={handleChange} required />
+          <Input
+            id="dateOfBirth"
+            name="dateOfBirth"
+            type="date"
+            value={formData.dateOfBirth}
+            onChange={handleChange}
+            required
+          />
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
           <Label htmlFor="contactNumber">Contact Number</Label>
-          <Input id="contactNumber" name="contactNumber" value={formData.contactNumber} onChange={handleChange} required />
+          <Input
+            id="contactNumber"
+            name="contactNumber"
+            value={formData.contactNumber}
+            onChange={handleChange}
+            required
+          />
         </div>
         <div>
           <Label htmlFor="email">Email</Label>
-          <Input id="email" name="email" type="email" value={formData.email} onChange={handleChange} />
+          <Input
+            id="email"
+            name="email"
+            type="email"
+            value={formData.email}
+            onChange={handleChange}
+          />
         </div>
       </div>
 
       <div>
         <Label htmlFor="address">Address</Label>
-        <Textarea id="address" name="address" value={formData.address} onChange={handleChange} rows={2} />
+        <Textarea
+          id="address"
+          name="address"
+          value={formData.address}
+          onChange={handleChange}
+          rows={2}
+        />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
           <Label htmlFor="bloodType">Blood Type</Label>
-          <Select onValueChange={(value) => handleSelectChange(value, "bloodType")} value={formData.bloodType}>
+          <Select
+            onValueChange={(value) => handleSelectChange(value, "bloodType")}
+            value={formData.bloodType}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Select blood type" />
             </SelectTrigger>
@@ -109,18 +154,33 @@ const AddPatientForm = ({ onSubmit }) => {
         </div>
         <div>
           <Label htmlFor="allergies">Allergies</Label>
-          <Input id="allergies" name="allergies" value={formData.allergies} onChange={handleChange} />
+          <Input
+            id="allergies"
+            name="allergies"
+            value={formData.allergies}
+            onChange={handleChange}
+          />
         </div>
       </div>
 
       <div>
         <Label htmlFor="medicalHistory">Medical History</Label>
-        <Textarea id="medicalHistory" name="medicalHistory" value={formData.medicalHistory} onChange={handleChange} rows={3} />
+        <Textarea
+          id="medicalHistory"
+          name="medicalHistory"
+          value={formData.medicalHistory}
+          onChange={handleChange}
+          rows={3}
+        />
       </div>
 
       <div className="flex justify-end gap-2">
-        <Button type="button" variant="outline">Cancel</Button>
-        <Button type="submit" className="bg-blue-600 hover:bg-blue-700">Save Patient</Button>
+        <Button type="button" variant="outline">
+          Cancel
+        </Button>
+        <Button type="submit" className="bg-blue-600 hover:bg-blue-700">
+          Save Patient
+        </Button>
       </div>
     </form>
   );
