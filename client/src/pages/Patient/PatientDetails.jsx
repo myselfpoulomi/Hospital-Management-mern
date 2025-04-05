@@ -50,52 +50,22 @@ const PatientDetails = ({ patient }) => {
         </TabsList>
 
         <TabsContent value="appointments" className="pt-4">
-          <Card>
-            <CardContent className="p-4">
-              <h3 className="font-medium">Upcoming Appointments</h3>
-              <Button variant="outline" size="sm">Add Appointment</Button>
-            </CardContent>
-          </Card>
+          <Card><CardContent className="p-4">Upcoming Appointments <Button variant="outline" size="sm">Add Appointment</Button></CardContent></Card>
         </TabsContent>
-
         <TabsContent value="prescriptions" className="pt-4">
-          <Card>
-            <CardContent className="p-4">
-              <h3 className="font-medium">Prescriptions</h3>
-              <Button variant="outline" size="sm">Add Prescription</Button>
-            </CardContent>
-          </Card>
+          <Card><CardContent className="p-4">Prescriptions <Button variant="outline" size="sm">Add Prescription</Button></CardContent></Card>
         </TabsContent>
-
         <TabsContent value="medications" className="pt-4">
-          <Card>
-            <CardContent className="p-4">
-              <h3 className="font-medium">Current Medications</h3>
-              <Button variant="outline" size="sm">Add Medication</Button>
-            </CardContent>
-          </Card>
+          <Card><CardContent className="p-4">Current Medications <Button variant="outline" size="sm">Add Medication</Button></CardContent></Card>
         </TabsContent>
-
         <TabsContent value="vitals" className="pt-4">
-          <Card>
-            <CardContent className="p-4">
-              <h3 className="font-medium">Vital Signs</h3>
-              <Button variant="outline" size="sm">Record Vitals</Button>
-            </CardContent>
-          </Card>
+          <Card><CardContent className="p-4">Vital Signs <Button variant="outline" size="sm">Record Vitals</Button></CardContent></Card>
         </TabsContent>
-
         <TabsContent value="history" className="pt-4">
-          <Card>
-            <CardContent className="p-4">
-              <h3 className="font-medium">Medical History</h3>
-              <Button variant="outline" size="sm">Add Record</Button>
-            </CardContent>
-          </Card>
+          <Card><CardContent className="p-4">Medical History <Button variant="outline" size="sm">Add Record</Button></CardContent></Card>
         </TabsContent>
       </Tabs>
     </div>
-    
   );
 };
 
