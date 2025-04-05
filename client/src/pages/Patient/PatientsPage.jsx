@@ -28,7 +28,7 @@ const PatientsPage = () => {
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [isAddPatientOpen, setIsAddPatientOpen] = useState(false);
   const [isViewDetailsOpen, setIsViewDetailsOpen] = useState(false);
-  const [editingPatient, setEditingPatient] = useState(null); // 👈 for edit mode
+  const [editingPatient, setEditingPatient] = useState(null);
 
   useEffect(() => {
     fetchPatients();
@@ -40,26 +40,43 @@ const PatientsPage = () => {
       setPatients(response.data);
     } catch (error) {
       console.error("Error fetching patients:", error);
+      toast({
+        variant: "destructive",
+        title: "Error fetching patients",
+        description: "Something went wrong while retrieving patient data.",
+      });
     }
   };
 
   const handleAddOrUpdatePatient = async (data) => {
     try {
       if (editingPatient) {
-        // Editing mode
-        await axios.put(`http://localhost:4000/Patients/updatePatient/${editingPatient._id}`, data);
-        toast({ title: "Patient updated", description: "Patient updated successfully." });
+        await axios.put(
+          `http://localhost:4000/Patients/updatePatient/${editingPatient._id}`,
+          data
+        );
+        toast({
+          title: "Patient updated",
+          description: "Patient updated successfully.",
+        });
       } else {
-        // Add mode
         await axios.post("http://localhost:4000/Patients/addPatient", data);
-        toast({ title: "Patient added", description: "New patient added successfully." });
+        toast({
+          title: "Patient added",
+          description: "New patient added successfully.",
+        });
       }
 
       fetchPatients();
       setIsAddPatientOpen(false);
-      setEditingPatient(null); // reset editing mode
+      setEditingPatient(null);
     } catch (error) {
       console.error("Error saving patient:", error);
+      toast({
+        variant: "destructive",
+        title: "Error saving patient",
+        description: "Failed to add or update the patient. Please try again.",
+      });
     }
   };
 
@@ -73,6 +90,11 @@ const PatientsPage = () => {
       });
     } catch (error) {
       console.error("Error deleting patient:", error);
+      toast({
+        variant: "destructive",
+        title: "Error deleting patient",
+        description: "Failed to delete the patient. Please try again.",
+      });
     }
   };
 
@@ -85,22 +107,25 @@ const PatientsPage = () => {
 
   return (
     <DashboardLayout>
-      <div className="">
+      <div>
         <div className="flex justify-between items-center mb-6">
           <div>
             <h1 className="text-2xl font-bold text-blue-600">Patients</h1>
             <p className="text-gray-600">Manage patient records and information</p>
           </div>
 
-          <Dialog open={isAddPatientOpen} onOpenChange={(open) => {
-            setIsAddPatientOpen(open);
-            if (!open) setEditingPatient(null); // reset form when dialog closes
-          }}>
+          <Dialog
+            open={isAddPatientOpen}
+            onOpenChange={(open) => {
+              setIsAddPatientOpen(open);
+              if (!open) setEditingPatient(null);
+            }}
+          >
             <DialogTrigger asChild>
               <Button
                 className="bg-blue-600 hover:bg-blue-700"
                 onClick={() => {
-                  setEditingPatient(null); // make sure it's add mode
+                  setEditingPatient(null);
                   setIsAddPatientOpen(true);
                 }}
               >
@@ -117,6 +142,7 @@ const PatientsPage = () => {
               <AddPatientForm
                 onSubmit={handleAddOrUpdatePatient}
                 initialData={editingPatient}
+                onClose={() => setIsAddPatientOpen(false)}
               />
             </DialogContent>
           </Dialog>
@@ -125,7 +151,7 @@ const PatientsPage = () => {
         <div className="bg-white shadow rounded-lg overflow-hidden">
           <div className="p-4 border-b flex justify-between items-center mb-5 gap-4">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-medical-gray-500" />
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
               <Input
                 placeholder="Search patients..."
                 className="pl-9 border border-gray-300"
