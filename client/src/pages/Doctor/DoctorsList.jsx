@@ -1,7 +1,13 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 const DoctorsList = ({ refresh }) => {
   const [doctors, setDoctors] = useState([]);
@@ -20,7 +26,7 @@ const DoctorsList = ({ refresh }) => {
 
   useEffect(() => {
     fetchDoctors();
-  }, [refresh]); // refresh triggers re-fetch
+  }, [refresh]);
 
   if (loading) return <p>Loading doctors...</p>;
 
@@ -40,7 +46,7 @@ const DoctorsList = ({ refresh }) => {
               </div>
               <div className="flex justify-between">
                 <span className="text-sm font-medium">Current Patients</span>
-                <span className="text-sm">{doctor.numOfPatients}</span>
+                <span className="text-sm">{doctor.patient_count}</span>
               </div>
               <div className="flex justify-between items-center mt-1">
                 <span className="text-sm font-medium">Status</span>

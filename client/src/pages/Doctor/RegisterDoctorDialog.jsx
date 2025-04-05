@@ -42,13 +42,12 @@ const RegisterDoctorDialog = ({ open, onOpenChange, onSuccess }) => {
         full_name: name,
         degree,
         specialization,
-        numOfPatients: Number(numOfPatients),
+        patient_count: Number(numOfPatients), // ✅ FIXED here
       });
 
       console.log("Doctor registered successfully:", response.data);
       onSuccess();
 
-      // Reset form
       setName("");
       setDoctorId("");
       setDegree("");
@@ -124,7 +123,9 @@ const RegisterDoctorDialog = ({ open, onOpenChange, onSuccess }) => {
               onChange={(e) => setNumOfPatients(e.target.value)}
               placeholder="Enter Number of Patients"
             />
-            {errors.numOfPatients && <p className="text-red-500 text-sm">{errors.numOfPatients}</p>}
+            {errors.numOfPatients && (
+              <p className="text-red-500 text-sm">{errors.numOfPatients}</p>
+            )}
           </div>
 
           <DialogFooter className="mt-6">
