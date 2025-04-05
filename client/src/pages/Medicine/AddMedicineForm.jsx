@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import axios from "axios";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { useForm } from "react-hook-form";
@@ -45,27 +46,57 @@ const AddMedicineForm = ({ isOpen, onClose }) => {
     console.log("Form Data Changed:", watchAllFields);
   }, [watchAllFields]);
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     if (!data.expiryDate) {
       toast({ title: "Error", description: "Expiry date is required." });
       return;
     }
-
+  
     if (isNaN(Number(data.stock)) || Number(data.stock) <= 0) {
       toast({ title: "Error", description: "Stock must be a positive number." });
       return;
     }
-
-    console.log("Form submitted:", data);
-
-    toast({
-      title: "Medicine Added",
-      description: `${data.name} has been added to inventory.`,
-    });
-
-    reset();
-    onClose();
+  
+    const formattedData = {
+      medicineId: data.id,
+      medicineName: data.name,
+      category: data.category,
+      stockQuantity: Number(data.stock),
+      status: data.status,
+      expiryDate: new Date(data.expiryDate).toISOString(), // Mongo accepts ISO string
+    };
+  
+    console.log("Sending to backend:", formattedData);
+  
+    try {
+      const res = await axios.post(
+        "http://localhost:4000/Medicine/addMedicine",
+        formattedData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+  
+      toast({
+        title: "Medicine Added",
+        description: `${data.name} has been added to inventory.`,
+      });
+  
+      reset();
+      onClose();
+    } catch (error) {
+      console.error("API Error:", error.response?.data || error.message);
+      toast({
+        title: "Failed to Add Medicine",
+        description: error.response?.data?.message || "An error occurred.",
+        variant: "destructive",
+      });
+    }
   };
+  
+  
 
   const handleClose = () => {
     reset();
