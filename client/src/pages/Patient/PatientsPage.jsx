@@ -212,7 +212,7 @@ const PatientsPage = () => {
             <table className="w-full border">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left">ID</th>
+                  <th className="px-6 py-3 text-left">Sl No</th>
                   <th className="px-6 py-3 text-left">Name</th>
                   <th className="px-6 py-3 text-left">Gender</th>
                   <th className="px-6 py-3 text-left">Contact</th>
@@ -221,9 +221,9 @@ const PatientsPage = () => {
                 </tr>
               </thead>
               <tbody>
-                {patients.map((patient) => (
+                {patients.map((patient,index) => (
                   <tr key={patient._id}>
-                    <td className="px-6 py-3">{patient._id}</td>
+                    <td className="px-6 py-3">{index+1}</td>
                     <td className="px-6 py-3">
                       {patient.firstName} {patient.lastName}
                     </td>
