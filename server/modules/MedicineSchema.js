@@ -15,7 +15,7 @@ const medicineSchema = new mongoose.Schema({
   category: {
     type: String,
     required: true,
-    enum: ['Analgesics', 'Antibiotics', 'Antihypertensives', 'Antiviral', 'Vaccines' ,'Other'], // Customize
+    enum: ['Analgesics', 'Antibiotics', 'Antihypertensives', 'Antivirals', 'Vaccines' ,'Other'], // Customize
   },
   stockQuantity: {
     type: Number,

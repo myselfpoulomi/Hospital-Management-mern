@@ -28,7 +28,7 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { toast } from "@/hooks/use-toast";
 
-const AddMedicineForm = ({ isOpen, onClose }) => {
+const AddMedicineForm = ({ isOpen, onClose, onMedicineAdded }) => {  // Get the callback as a prop
   const [date, setDate] = useState(undefined);
   const [category, setCategory] = useState("");
   const [status, setStatus] = useState("");
@@ -78,7 +78,7 @@ const AddMedicineForm = ({ isOpen, onClose }) => {
     };
 
     try {
-      await axios.post("http://localhost:4000/Medicine/addMedicine", formattedData, {
+      const response = await axios.post("http://localhost:4000/Medicine/addMedicine", formattedData, {
         headers: { "Content-Type": "application/json" },
       });
 
@@ -86,6 +86,9 @@ const AddMedicineForm = ({ isOpen, onClose }) => {
         title: "Medicine Added",
         description: `${data.name} has been added to inventory.`,
       });
+
+      // Pass the newly added medicine back to the parent
+      onMedicineAdded(response.data);  // Call the callback with the new medicine
 
       reset();
       setDate(undefined);
@@ -208,9 +211,7 @@ const AddMedicineForm = ({ isOpen, onClose }) => {
                     onSelect={(newDate) => {
                       setDate(newDate);
                     }}
-                    disabled={(d) => d < new Date()}
                     initialFocus
-                    className="pointer-events-auto"
                   />
                 </PopoverContent>
               </Popover>
