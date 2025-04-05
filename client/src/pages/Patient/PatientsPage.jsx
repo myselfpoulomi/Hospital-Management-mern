@@ -24,6 +24,7 @@ import DashboardLayout from "@/components/layout/DashboardLayout";
 const PatientsPage = () => {
   const { toast } = useToast();
   const [patients, setPatients] = useState([]);
+  const [allPatients, setAllPatients] = useState([]); // to store the full list
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [isAddPatientOpen, setIsAddPatientOpen] = useState(false);
@@ -38,12 +39,53 @@ const PatientsPage = () => {
     try {
       const response = await axios.get("http://localhost:4000/Patients/");
       setPatients(response.data);
+      setAllPatients(response.data);
     } catch (error) {
       console.error("Error fetching patients:", error);
       toast({
         variant: "destructive",
         title: "Error fetching patients",
         description: "Something went wrong while retrieving patient data.",
+      });
+    }
+  };
+
+  useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+      if (searchQuery.trim()) {
+        searchByName(searchQuery.trim());
+      } else {
+        fetchPatients();
+      }
+    }, 500);
+    return () => clearTimeout(delayDebounce);
+  }, [searchQuery]);
+
+  const searchByName = async (name) => {
+    const match = allPatients.find(
+      (p) =>
+        `${p.firstName} ${p.lastName}`.toLowerCase().includes(name.toLowerCase())
+    );
+
+    if (!match) {
+      setPatients([]);
+      toast({
+        variant: "destructive",
+        title: "No match found",
+        description: `No patient found with name: ${name}`,
+      });
+      return;
+    }
+
+    try {
+      const res = await axios.get(`http://localhost:4000/patients/${match._id}`);
+      setPatients([res.data]);
+    } catch (err) {
+      console.error("Error fetching patient by ID:", err);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to fetch patient details.",
       });
     }
   };
@@ -98,13 +140,6 @@ const PatientsPage = () => {
     }
   };
 
-  const filteredPatients = patients.filter(
-    (patient) =>
-      patient.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      patient.lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      patient._id.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
   return (
     <DashboardLayout>
       <div>
@@ -153,7 +188,7 @@ const PatientsPage = () => {
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
               <Input
-                placeholder="Search patients..."
+                placeholder="Search patients by name..."
                 className="pl-9 border border-gray-300"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -186,7 +221,7 @@ const PatientsPage = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredPatients.map((patient) => (
+                {patients.map((patient) => (
                   <tr key={patient._id}>
                     <td className="px-6 py-3">{patient._id}</td>
                     <td className="px-6 py-3">
