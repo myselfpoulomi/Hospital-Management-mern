@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -12,12 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import {
-  Search,
-  Plus,
-  Filter,
-  Download,
-} from "lucide-react";
+import { Search, Plus, Filter, Download } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -25,6 +20,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
+import AddMedicineForm from "./Medicine/AddMedicineForm.jsx"; // Update the path
 
 const medicines = [
   {
@@ -60,9 +57,11 @@ const medicines = [
 ];
 
 const Medicine = () => {
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+
   return (
     <DashboardLayout className="w-full">
-      <div className="flex-1 w-full  flex items-center justify-between mb-6">
+      <div className="flex-1 w-full flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-medical-gray-900 text-blue-600">
             Medicine Management
@@ -71,7 +70,10 @@ const Medicine = () => {
             Monitor and manage hospital medicine inventory
           </p>
         </div>
-        <Button className="bg-medical-primary hover:bg-medical-primary/90 bg-blue-500">
+        <Button
+          onClick={() => setIsAddDialogOpen(true)}
+          className="bg-medical-primary hover:bg-medical-primary/90 bg-blue-500"
+        >
           <Plus size={16} className="mr-2" />
           Add Medicine
         </Button>
@@ -112,9 +114,7 @@ const Medicine = () => {
 
           <Card className="mt-5 w-full">
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg font-medium">
-                Medicine Inventory
-              </CardTitle>
+              <CardTitle className="text-lg font-medium">Medicine Inventory</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="w-full overflow-x-auto">
@@ -159,6 +159,12 @@ const Medicine = () => {
           </Card>
         </div>
       </div>
+
+      {/* Add Medicine Dialog */}
+      <AddMedicineForm
+        isOpen={isAddDialogOpen}
+        onClose={() => setIsAddDialogOpen(false)}
+      />
     </DashboardLayout>
   );
 };
