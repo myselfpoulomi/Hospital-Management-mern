@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input"; // import Input component
+import { Input } from "@/components/ui/input";
 import { UserPlus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import DoctorsList from "./DoctorsList";
@@ -10,7 +10,7 @@ import DashboardLayout from "@/components/layout/DashboardLayout";
 const DoctorsPage = () => {
   const [isRegisterDialogOpen, setIsRegisterDialogOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
-  const [searchQuery, setSearchQuery] = useState(""); // search state
+  const [searchQuery, setSearchQuery] = useState("");
   const { toast } = useToast();
 
   const handleSuccess = () => {
@@ -31,16 +31,18 @@ const DoctorsPage = () => {
               Manage hospital doctors and specialists
             </p>
           </div>
-           {/* Search Bar */}
-        <div className="w-[900px]">
-          <Input
-            type="text"
-            placeholder="Search doctors..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full md:w-full"
-          />
-        </div>
+
+          {/* Search Bar */}
+          <div className="w-[900px]">
+            <Input
+              type="text"
+              placeholder="Search doctors..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full md:w-full"
+            />
+          </div>
+
           <Button
             onClick={() => setIsRegisterDialogOpen(true)}
             className="bg-blue-600 hover:bg-blue-700"
@@ -49,7 +51,6 @@ const DoctorsPage = () => {
             Register Doctor
           </Button>
         </div>
-
 
         <DoctorsList refresh={refreshKey} search={searchQuery} />
 
