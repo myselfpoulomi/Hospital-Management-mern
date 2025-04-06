@@ -2,7 +2,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Dashboard from "./pages/dashboard";
-import Prescriptions from "./pages/Prescriptions";
+import Prescriptions from "./pages/Prescription/Prescriptions";
 import DoctorSchedules from "./pages/DoctorSchedules";
 import Medicine from "./pages/Medicine";
 import BedStatus from "./pages/BedStatus";
