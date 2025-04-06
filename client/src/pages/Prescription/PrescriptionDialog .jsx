@@ -38,6 +38,17 @@ export const PrescriptionDialog = ({ onSubmit }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+  
+    // Log all form data
+    console.log({
+      patientName,
+      dob,
+      address,
+      price,
+      doctorId,
+    });
+  
+    // Submit data
     onSubmit({
       patientName,
       dob,
@@ -45,9 +56,11 @@ export const PrescriptionDialog = ({ onSubmit }) => {
       price,
       doctorId,
     });
+  
     setOpen(false);
     resetForm();
   };
+  
 
   const resetForm = () => {
     setPatientName("");
