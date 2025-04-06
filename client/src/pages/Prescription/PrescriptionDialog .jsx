@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -18,21 +18,23 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Plus } from "lucide-react";
-
-const doctors = [
-  { id: "1", name: "Dr. Emily Johnson" },
-  { id: "2", name: "Dr. Michael Chen" },
-  { id: "3", name: "Dr. Sarah Williams" },
-  { id: "4", name: "Dr. Robert Garcia" },
-];
+import axios from "axios";
 
 export const PrescriptionDialog = ({ onSubmit }) => {
   const [open, setOpen] = useState(false);
   const [patientName, setPatientName] = useState("");
   const [dob, setDob] = useState("");
   const [address, setAddress] = useState("");
-  const [price, setPrice] = useState(""); // NEW
+  const [price, setPrice] = useState("");
   const [doctorId, setDoctorId] = useState("");
+  const [doctors, setDoctors] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:4000/doctors/")
+      .then((res) => setDoctors(res.data))
+      .catch((err) => console.error("Failed to fetch doctors", err));
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -51,7 +53,7 @@ export const PrescriptionDialog = ({ onSubmit }) => {
     setPatientName("");
     setDob("");
     setAddress("");
-    setPrice(""); // NEW
+    setPrice("");
     setDoctorId("");
   };
 
@@ -130,8 +132,8 @@ export const PrescriptionDialog = ({ onSubmit }) => {
                 </SelectTrigger>
                 <SelectContent>
                   {doctors.map((doctor) => (
-                    <SelectItem key={doctor.id} value={doctor.id}>
-                      {doctor.name}
+                    <SelectItem key={doctor._id} value={doctor._id}>
+                      {doctor.full_name}
                     </SelectItem>
                   ))}
                 </SelectContent>
