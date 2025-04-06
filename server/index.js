@@ -5,7 +5,7 @@ import cors from 'cors';
 import DoctorRoutes from './routes/DoctorRoutes.js';
 import PatientRoutes from './routes/PatientRoutes.js';
 import MedicineRoutes from './routes/MedicineRoutes.js'
-
+import PrescriptionRoutes from './routes/PrescriptionRoutes.js'
 // Load environment variables
 dotenv.config();
 
@@ -25,6 +25,9 @@ app.use(express.json());
 app.use("/Doctors", DoctorRoutes);
 app.use("/Patients", PatientRoutes);
 app.use("/Medicine", MedicineRoutes);
+app.use("/Prescription", PrescriptionRoutes);
+
+
 
 // Connect to MongoDB
 const connectDB = async () => {

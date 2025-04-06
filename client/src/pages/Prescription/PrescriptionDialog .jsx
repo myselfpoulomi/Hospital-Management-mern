@@ -31,6 +31,7 @@ export const PrescriptionDialog = ({ onSubmit }) => {
   const [patientName, setPatientName] = useState("");
   const [dob, setDob] = useState("");
   const [address, setAddress] = useState("");
+  const [price, setPrice] = useState(""); // NEW
   const [doctorId, setDoctorId] = useState("");
 
   const handleSubmit = (e) => {
@@ -39,6 +40,7 @@ export const PrescriptionDialog = ({ onSubmit }) => {
       patientName,
       dob,
       address,
+      price,
       doctorId,
     });
     setOpen(false);
@@ -49,6 +51,7 @@ export const PrescriptionDialog = ({ onSubmit }) => {
     setPatientName("");
     setDob("");
     setAddress("");
+    setPrice(""); // NEW
     setDoctorId("");
   };
 
@@ -100,6 +103,21 @@ export const PrescriptionDialog = ({ onSubmit }) => {
                 onChange={(e) => setAddress(e.target.value)}
                 className="col-span-3"
                 required
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="price" className="text-right">
+                Price
+              </Label>
+              <Input
+                id="price"
+                type="number"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                className="col-span-3"
+                required
+                min="0"
+                step="0.01"
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
