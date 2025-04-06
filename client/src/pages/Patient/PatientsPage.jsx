@@ -231,7 +231,7 @@ const PatientsPage = () => {
                     <td className="px-6 py-3">{patient.contactNumber}</td>
                     <td className="px-6 py-3">{patient.bloodType}</td>
                     <td className="px-6 py-3 flex space-x-2">
-                      <Button
+                      {/* <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => {
@@ -240,7 +240,7 @@ const PatientsPage = () => {
                         }}
                       >
                         <FileText className="h-4 w-4" />
-                      </Button>
+                      </Button> */}
                       <Button
                         variant="ghost"
                         size="sm"
