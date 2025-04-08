@@ -7,7 +7,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
 import { Eye } from "lucide-react";
 
 export const PrescriptionTable = ({ prescriptions }) => {
@@ -24,21 +23,22 @@ export const PrescriptionTable = ({ prescriptions }) => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {prescriptions.map((prescription, index) => (
-            <TableRow key={prescription.id} className="text-sm">
-              <TableCell className="font-medium">{index + 1}</TableCell>
-              <TableCell>{prescription.patientName}</TableCell>
-              <TableCell>{prescription.doctor}</TableCell>
-              <TableCell>{prescription.date}</TableCell>
-              <TableCell>
-                <div className="flex items-center gap-1">
-                  <Eye className="h-4 w-4" />
-                  <span>View</span>
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
+  {prescriptions.map((prescription, index) => (
+    <TableRow key={prescription._id} className="text-sm">
+      <TableCell className="font-medium">{index + 1}</TableCell>
+      <TableCell>{prescription.patientName}</TableCell>
+      <TableCell>{prescription.assignedDoctor?.full_name || "N/A"}</TableCell>
+      <TableCell>{new Date(prescription.createdAt).toLocaleDateString()}</TableCell>
+      <TableCell>
+        <div className="flex items-center gap-1 text-blue-600 cursor-pointer hover:underline">
+          <Eye className="h-4 w-4" />
+          <span>View</span>
+        </div>
+      </TableCell>
+    </TableRow>
+  ))}
+</TableBody>
+
       </Table>
     </div>
   );

@@ -36,30 +36,36 @@ export const PrescriptionDialog = ({ onSubmit }) => {
       .catch((err) => console.error("Failed to fetch doctors", err));
   }, []);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
   
-    // Log all form data
-    console.log({
+    const newPrescription = {
       patientName,
       dob,
       address,
-      price,
-      doctorId,
-    });
+      price: parseFloat(price), // Ensure it's a number
+      assignedDoctor: doctorId, // ✅ Field name fixed
+    };
   
-    // Submit data
-    onSubmit({
-      patientName,
-      dob,
-      address,
-      price,
-      doctorId,
-    });
+    try {
+      const response = await axios.post(
+        "http://localhost:4000/Prescription/addPresciption",
+        newPrescription
+      );
+      console.log("Prescription added:", response.data);
   
-    setOpen(false);
-    resetForm();
+      // Call the parent handler (if needed)
+      onSubmit && onSubmit(response.data);
+  
+      setOpen(false);
+      resetForm();
+    } catch (error) {
+      console.error("Error adding prescription:", error);
+      alert("Failed to add prescription. Please try again.");
+    }
   };
+  
+  
   
 
   const resetForm = () => {
