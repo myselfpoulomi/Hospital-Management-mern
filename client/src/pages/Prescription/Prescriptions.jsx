@@ -12,9 +12,11 @@ const Prescriptions = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedPrescription, setSelectedPrescription] = useState(null);
+  const [doctors, setDoctors] = useState([]);
 
   useEffect(() => {
     fetchPrescriptions();
+    fetchDoctors();
   }, []);
 
   const fetchPrescriptions = async () => {
@@ -23,6 +25,15 @@ const Prescriptions = () => {
       setPrescriptions(response.data);
     } catch (error) {
       console.error("Failed to fetch prescriptions", error);
+    }
+  };
+
+  const fetchDoctors = async () => {
+    try {
+      const response = await axios.get("http://localhost:4000/doctors/");
+      setDoctors(response.data);
+    } catch (error) {
+      console.error("Failed to fetch doctors", error);
     }
   };
 
@@ -38,8 +49,15 @@ const Prescriptions = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:4000/prescription/deletePrescription/${id}`);
-      setPrescriptions((prev) => prev.filter((p) => p._id !== id));
+      const res = await axios.delete(
+        `http://localhost:4000/Prescription/deletePresciption/${id}`
+      );
+
+      if (res.status === 200 || res.status === 204) {
+        setPrescriptions((prev) => prev.filter((p) => p._id !== id));
+      } else {
+        console.error("Delete failed with status:", res.status);
+      }
     } catch (err) {
       console.error("Delete failed:", err);
     }
@@ -49,27 +67,37 @@ const Prescriptions = () => {
     try {
       if (selectedPrescription) {
         await axios.put(
-          `http://localhost:4000/prescription/updatePresciption/${selectedPrescription._id}`,
+          `http://localhost:4000/Prescription/updatePresciption/${selectedPrescription._id}`,
           formData
         );
-  
-        const updated = { ...formData, _id: selectedPrescription._id };
-  
+
+        const updatedDoctor = doctors.find(
+          (doc) => doc._id === formData.assignedDoctor
+        );
+
+        const updated = {
+          ...selectedPrescription,
+          ...formData,
+          assignedDoctor: updatedDoctor || selectedPrescription.assignedDoctor,
+        };
+
         setPrescriptions((prev) =>
           prev.map((p) => (p._id === updated._id ? updated : p))
         );
       } else {
-        const res = await axios.post("http://localhost:4000/prescription/addPrescription", formData);
+        const res = await axios.post(
+          "http://localhost:4000/prescription/addPrescription",
+          formData
+        );
         setPrescriptions((prev) => [...prev, res.data]);
       }
-  
+
       setDialogOpen(false);
       setSearchQuery("");
     } catch (err) {
       console.error("Submit failed:", err);
     }
   };
-  
 
   const filteredPrescriptions = prescriptions.filter((p) =>
     [p.patientName, p._id, p.assignedDoctor?.full_name]
