@@ -5,7 +5,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -17,16 +16,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus } from "lucide-react";
 import axios from "axios";
 
-export const PrescriptionDialog = ({ onSubmit }) => {
-  const [open, setOpen] = useState(false);
-  const [patientName, setPatientName] = useState("");
-  const [dob, setDob] = useState("");
-  const [address, setAddress] = useState("");
-  const [price, setPrice] = useState("");
-  const [doctorId, setDoctorId] = useState("");
+export const PrescriptionDialog = ({ open, onClose, onSubmit, initialData }) => {
+  const [form, setForm] = useState({
+    patientName: "",
+    dob: "",
+    address: "",
+    price: "",
+    assignedDoctor: "",
+  });
   const [doctors, setDoctors] = useState([]);
 
   useEffect(() => {
@@ -36,123 +35,98 @@ export const PrescriptionDialog = ({ onSubmit }) => {
       .catch((err) => console.error("Failed to fetch doctors", err));
   }, []);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-  
-    const newPrescription = {
-      patientName,
-      dob,
-      address,
-      price: parseFloat(price), // Ensure it's a number
-      assignedDoctor: doctorId, // ✅ Field name fixed
-    };
-  
-    try {
-      const response = await axios.post(
-        "http://localhost:4000/Prescription/addPresciption",
-        newPrescription
-      );
-      console.log("Prescription added:", response.data);
-  
-      // Call the parent handler (if needed)
-      onSubmit && onSubmit(response.data);
-  
-      setOpen(false);
+  useEffect(() => {
+    if (initialData) {
+      setForm({
+        patientName: initialData.patientName || "",
+        dob: initialData.dob?.split("T")[0] || "",
+        address: initialData.address || "",
+        price: initialData.price || "",
+        assignedDoctor: initialData.assignedDoctor?._id || "",
+      });
+    } else {
       resetForm();
-    } catch (error) {
-      console.error("Error adding prescription:", error);
-      alert("Failed to add prescription. Please try again.");
     }
-  };
-  
-  
-  
+  }, [initialData]);
 
   const resetForm = () => {
-    setPatientName("");
-    setDob("");
-    setAddress("");
-    setPrice("");
-    setDoctorId("");
+    setForm({ patientName: "", dob: "", address: "", price: "", assignedDoctor: "" });
+  };
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSelect = (value) => {
+    setForm({ ...form, assignedDoctor: value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const payload = { ...form, price: parseFloat(form.price) };
+    onSubmit(payload);
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button className="bg-blue-500 hover:bg-blue-600">
-          <Plus className="mr-2 h-4 w-4" /> New Prescription
-        </Button>
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[525px]">
         <DialogHeader>
-          <DialogTitle>Add New Prescription</DialogTitle>
+          <DialogTitle>{initialData ? "Edit" : "Add"} Prescription</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="patientName" className="text-right">
-                Patient Name
-              </Label>
+              <Label className="text-right">Patient Name</Label>
               <Input
-                id="patientName"
-                value={patientName}
-                onChange={(e) => setPatientName(e.target.value)}
+                name="patientName"
+                value={form.patientName}
+                onChange={handleChange}
                 className="col-span-3"
                 required
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="dob" className="text-right">
-                DOB
-              </Label>
+              <Label className="text-right">DOB</Label>
               <Input
-                id="dob"
                 type="date"
-                value={dob}
-                onChange={(e) => setDob(e.target.value)}
+                name="dob"
+                value={form.dob}
+                onChange={handleChange}
                 className="col-span-3"
                 required
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="address" className="text-right">
-                Address
-              </Label>
+              <Label className="text-right">Address</Label>
               <Input
-                id="address"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
+                name="address"
+                value={form.address}
+                onChange={handleChange}
                 className="col-span-3"
                 required
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="price" className="text-right">
-                Price
-              </Label>
+              <Label className="text-right">Price</Label>
               <Input
-                id="price"
                 type="number"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
+                name="price"
+                value={form.price}
+                onChange={handleChange}
                 className="col-span-3"
                 required
-                min="0"
-                step="0.01"
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="doctor" className="text-right">
-                Assigned Doctor
-              </Label>
-              <Select value={doctorId} onValueChange={setDoctorId}>
+              <Label className="text-right">Doctor</Label>
+              <Select value={form.assignedDoctor} onValueChange={handleSelect}>
                 <SelectTrigger className="col-span-3">
                   <SelectValue placeholder="Select a doctor" />
                 </SelectTrigger>
                 <SelectContent>
-                  {doctors.map((doctor) => (
-                    <SelectItem key={doctor._id} value={doctor._id}>
-                      {doctor.full_name}
+                  {doctors.map((doc) => (
+                    <SelectItem key={doc._id} value={doc._id}>
+                      {doc.full_name}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -160,7 +134,7 @@ export const PrescriptionDialog = ({ onSubmit }) => {
             </div>
           </div>
           <DialogFooter>
-            <Button type="submit">Save Prescription</Button>
+            <Button type="submit">{initialData ? "Update" : "Save"}</Button>
           </DialogFooter>
         </form>
       </DialogContent>

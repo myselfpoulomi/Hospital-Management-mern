@@ -3,15 +3,16 @@ import { PrescriptionDialog } from "./PrescriptionDialog ";
 import { PrescriptionTable } from "./PrescriptionTable ";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Download, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import axios from "axios";
 
 const Prescriptions = () => {
   const [prescriptions, setPrescriptions] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedPrescription, setSelectedPrescription] = useState(null);
 
-  // Fetch prescriptions from backend
   useEffect(() => {
     fetchPrescriptions();
   }, []);
@@ -25,15 +26,54 @@ const Prescriptions = () => {
     }
   };
 
-  const handleAddPrescription = () => {
-    fetchPrescriptions(); // Refetch after adding new one
+  const handleAdd = () => {
+    setSelectedPrescription(null);
+    setDialogOpen(true);
   };
 
-  const filteredPrescriptions = prescriptions.filter(
-    (prescription) =>
-      (prescription?.patientName?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
-      (prescription?._id?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
-      (prescription?.assignedDoctor?.full_name?.toLowerCase() || "").includes(searchQuery.toLowerCase())
+  const handleEdit = (prescription) => {
+    setSelectedPrescription(prescription);
+    setDialogOpen(true);
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`http://localhost:4000/prescription/deletePrescription/${id}`);
+      setPrescriptions((prev) => prev.filter((p) => p._id !== id));
+    } catch (err) {
+      console.error("Delete failed:", err);
+    }
+  };
+
+  const handleSubmit = async (formData) => {
+    try {
+      if (selectedPrescription) {
+        await axios.put(
+          `http://localhost:4000/prescription/updatePresciption/${selectedPrescription._id}`,
+          formData
+        );
+  
+        const updated = { ...formData, _id: selectedPrescription._id };
+  
+        setPrescriptions((prev) =>
+          prev.map((p) => (p._id === updated._id ? updated : p))
+        );
+      } else {
+        const res = await axios.post("http://localhost:4000/prescription/addPrescription", formData);
+        setPrescriptions((prev) => [...prev, res.data]);
+      }
+  
+      setDialogOpen(false);
+      setSearchQuery("");
+    } catch (err) {
+      console.error("Submit failed:", err);
+    }
+  };
+  
+
+  const filteredPrescriptions = prescriptions.filter((p) =>
+    [p.patientName, p._id, p.assignedDoctor?.full_name]
+      .some((val) => (val || "").toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   return (
@@ -54,13 +94,27 @@ const Prescriptions = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          <PrescriptionDialog onSubmit={handleAddPrescription} />
+          <Button className="bg-blue-500 hover:bg-blue-600" onClick={handleAdd}>
+            + New Prescription
+          </Button>
         </div>
 
         <div>
           <h2 className="text-lg font-semibold mb-2">Recent Prescriptions</h2>
-          <PrescriptionTable prescriptions={filteredPrescriptions} />
+          <PrescriptionTable
+            prescriptions={filteredPrescriptions}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onView={(prescription) => console.log("View:", prescription)}
+          />
         </div>
+
+        <PrescriptionDialog
+          open={dialogOpen}
+          onClose={() => setDialogOpen(false)}
+          onSubmit={handleSubmit}
+          initialData={selectedPrescription}
+        />
       </div>
     </DashboardLayout>
   );
