@@ -14,8 +14,9 @@ export const PrescriptionTable = ({ prescriptions, onEdit, onDelete }) => {
   const navigate = useNavigate();
 
   const handleView = (id) => {
-    navigate(`/prescriptions/${id}`);
+    navigate(`/prescription/${id}`);
   };
+  
 
   return (
     <div className="rounded-md border p-6">
