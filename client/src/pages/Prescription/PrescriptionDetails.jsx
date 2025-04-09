@@ -11,7 +11,6 @@ const PrescriptionDetails = () => {
   const { toast } = useToast();
 
   const [prescription, setPrescription] = useState(null);
-  const [doctor, setDoctor] = useState(null);
   const [age, setAge] = useState(null);
 
   const handleDownload = () => {
@@ -31,14 +30,12 @@ const PrescriptionDetails = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const presRes = await axios.get(`http://localhost:4000/Prescription/${id}`);
-        const presData = presRes.data;
-        console.log("Prescription data:", presData);
-        setPrescription(presData);
+        const res = await axios.get(`http://localhost:4000/Prescription/${id}`);
+        const data = res.data;
+        setPrescription(data);
 
-        // ✅ Calculate age from dob
-        if (presData.dob) {
-          const birthDate = new Date(presData.dob);
+        if (data.dob) {
+          const birthDate = new Date(data.dob);
           const today = new Date();
           let calculatedAge = today.getFullYear() - birthDate.getFullYear();
           const m = today.getMonth() - birthDate.getMonth();
@@ -47,17 +44,11 @@ const PrescriptionDetails = () => {
           }
           setAge(calculatedAge);
         }
-
-        // ✅ Fetch doctor if available
-        if (presData.doctorId) {
-          const docRes = await axios.get(`http://localhost:4000/Doctors/${presData.doctorId}`);
-          setDoctor(docRes.data);
-        }
       } catch (err) {
-        console.error("Error fetching data:", err);
+        console.error("Error fetching prescription:", err);
         toast({
-          title: "Fetch error",
-          description: "Could not load prescription or doctor data.",
+          title: "Error",
+          description: "Failed to load prescription details.",
           variant: "destructive",
         });
       }
@@ -77,6 +68,7 @@ const PrescriptionDetails = () => {
   }
 
   const currentDate = new Date().toLocaleDateString();
+  const doctor = prescription.assignedDoctor;
 
   return (
     <div className="flex flex-col justify-center items-center min-h-screen bg-blue-600 p-6">
@@ -85,12 +77,14 @@ const PrescriptionDetails = () => {
         <div className="px-8 pt-8 pb-4 flex justify-between items-start">
           <div>
             <h1 className="text-3xl font-bold text-blue-500">
-              {doctor ? `Dr. ${doctor.full_name}` : "Dr. Loading..."}
+              {doctor?.full_name || "Dr. Loading..."}
             </h1>
             <p className="text-gray-500 tracking-wider">
-              {doctor?.qualification || "Qualification"}
+              {doctor?.degree || "Qualification"}
             </p>
-            <p className="text-gray-400 text-sm mt-6">Certification 12345-20</p>
+            <p className="text-gray-400 text-sm mt-2">
+              Specialization: {doctor?.specialization || "N/A"}
+            </p>
           </div>
         </div>
 
@@ -116,9 +110,7 @@ const PrescriptionDetails = () => {
               </div>
               <div className="flex-1">
                 <label className="block text-sm font-medium text-gray-700">Date:</label>
-                <div className="mt-1 border-b border-gray-300 pb-1">
-                  {currentDate}
-                </div>
+                <div className="mt-1 border-b border-gray-300 pb-1">{currentDate}</div>
               </div>
             </div>
 
@@ -143,7 +135,7 @@ const PrescriptionDetails = () => {
             <div className="absolute bottom-4 right-8">
               <div className="border-t border-gray-300 pt-1 w-48 text-right">
                 <p className="text-gray-700 text-sm">
-                  {doctor?.full_name ? `Dr. ${doctor.full_name}` : "SIGNATURE"}
+                  {doctor?.full_name || "SIGNATURE"}
                 </p>
               </div>
             </div>
