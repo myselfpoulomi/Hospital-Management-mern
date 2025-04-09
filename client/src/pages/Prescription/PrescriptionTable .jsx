@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Table,
   TableBody,
@@ -9,7 +10,13 @@ import {
 } from "@/components/ui/table";
 import { Eye, Pencil, Trash2 } from "lucide-react";
 
-export const PrescriptionTable = ({ prescriptions, onView, onEdit, onDelete }) => {
+export const PrescriptionTable = ({ prescriptions, onEdit, onDelete }) => {
+  const navigate = useNavigate();
+
+  const handleView = (id) => {
+    navigate(`/prescriptions/${id}`);
+  };
+
   return (
     <div className="rounded-md border p-6">
       <Table>
@@ -33,7 +40,7 @@ export const PrescriptionTable = ({ prescriptions, onView, onEdit, onDelete }) =
                 <div className="flex items-center gap-6">
                   <Eye
                     className="h-4 w-4 text-blue-600 cursor-pointer hover:scale-110"
-                    onClick={() => onView(prescription)}
+                    onClick={() => handleView(prescription._id)}
                   />
                   <Pencil
                     className="h-4 w-4 text-green-600 cursor-pointer hover:scale-110"
