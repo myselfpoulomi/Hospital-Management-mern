@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -9,17 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import {
-  Calendar,
-  Download,
-  Filter,
-  DollarSign,
-  TrendingUp,
-  TrendingDown,
-  Users,
-  Clipboard,
-} from "lucide-react";
+import { Calendar, Download, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -29,69 +19,30 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import RevenueChart from "@/components/dashboard/RevenueChart";
-
-const transactions = [
-  {
-    id: "TX-2023-001",
-    patient: "John Smith",
-    service: "Cardiology Consultation",
-    date: "2023-06-15",
-    amount: 250.00,
-    status: "Paid",
-    method: "Credit Card",
-  },
-  {
-    id: "TX-2023-002",
-    patient: "Sarah Johnson",
-    service: "Laboratory Tests",
-    date: "2023-06-15",
-    amount: 180.50,
-    status: "Paid",
-    method: "Cash",
-  },
-  {
-    id: "TX-2023-003",
-    patient: "Robert Williams",
-    service: "X-Ray Imaging",
-    date: "2023-06-15",
-    amount: 320.00,
-    status: "Pending",
-    method: "Insurance",
-  },
-  {
-    id: "TX-2023-004",
-    patient: "Maria Garcia",
-    service: "Physical Therapy Session",
-    date: "2023-06-14",
-    amount: 150.00,
-    status: "Paid",
-    method: "Debit Card",
-  },
-  {
-    id: "TX-2023-005",
-    patient: "James Brown",
-    service: "Emergency Room Visit",
-    date: "2023-06-14",
-    amount: 950.00,
-    status: "Pending",
-    method: "Insurance",
-  },
-  {
-    id: "TX-2023-006",
-    patient: "Elizabeth Davis",
-    service: "Neurology Consultation",
-    date: "2023-06-14",
-    amount: 300.00,
-    status: "Paid",
-    method: "Credit Card",
-  },
-];
+import axios from "axios";
 
 const Financial = () => {
+  const [prescriptions, setPrescriptions] = useState([]);
+
+  const getPrescriptionPrice = async () => {
+    try {
+      const response = await axios.get("http://localhost:4000/prescription/");
+      setPrescriptions(response.data);
+    } catch (error) {
+      console.error("Error fetching prescription data:", error);
+    }
+  };
+
+  useEffect(() => {
+    getPrescriptionPrice();
+  }, []);
+
   return (
     <DashboardLayout>
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-medical-gray-900 text-blue-700">Financial Overview</h1>
+        <h1 className="text-2xl font-bold text-medical-gray-900 text-blue-700">
+          Financial Overview
+        </h1>
         <p className="text-medical-gray-600">
           Monitor revenue, expenses, and financial performance
         </p>
@@ -104,7 +55,7 @@ const Financial = () => {
       <div className="flex flex-col lg:flex-row gap-6">
         <Card className="flex-1">
           <CardHeader className="pb-2">
-            <CardTitle className="text-lg font-medium">Recent Transactions</CardTitle>
+            <CardTitle className="text-lg font-medium">Recent Prescriptions</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="mb-4 flex flex-col sm:flex-row justify-between gap-3">
@@ -119,13 +70,11 @@ const Financial = () => {
                   <SelectContent>
                     <SelectItem value="all">All Status</SelectItem>
                     <SelectItem value="paid">Paid</SelectItem>
-                    <SelectItem value="pending">Pending</SelectItem>
-                    <SelectItem value="failed">Failed</SelectItem>
                   </SelectContent>
                 </Select>
                 <Button variant="outline" className="flex items-center">
                   <Calendar size={14} className="mr-2" />
-                  <span>Jun 1 - Jun 15</span>
+                  <span>Last 15 Days</span>
                 </Button>
               </div>
               <Button variant="outline">
@@ -138,7 +87,7 @@ const Financial = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>ID</TableHead>
+                    <TableHead>Date & Time</TableHead>
                     <TableHead>Patient</TableHead>
                     <TableHead>Service</TableHead>
                     <TableHead>Amount</TableHead>
@@ -146,27 +95,19 @@ const Financial = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {transactions.map((transaction) => (
-                    <TableRow key={transaction.id}>
+                  {prescriptions.map((item) => (
+                    <TableRow key={item._id}>
                       <TableCell className="font-medium">
-                        {transaction.id}
+                        {new Date(item.createdAt).toLocaleString()}
                       </TableCell>
-                      <TableCell>{transaction.patient}</TableCell>
-                      <TableCell>{transaction.service}</TableCell>
+                      <TableCell>{item.patientName}</TableCell>
+                      <TableCell>Prescription</TableCell>
                       <TableCell className="font-medium">
-                        ${transaction.amount.toFixed(2)}
+                        ₹{item.price}
                       </TableCell>
                       <TableCell>
-                        <span
-                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                            transaction.status === "Paid"
-                              ? "bg-green-100 text-green-800"
-                              : transaction.status === "Pending"
-                              ? "bg-yellow-100 text-yellow-800"
-                              : "bg-red-100 text-red-800"
-                          }`}
-                        >
-                          {transaction.status}
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                          Paid
                         </span>
                       </TableCell>
                     </TableRow>
