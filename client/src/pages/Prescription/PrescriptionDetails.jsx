@@ -4,12 +4,15 @@ import { Phone, Mail, MapPin, Globe, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import axios from "axios";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 
 const PrescriptionDetails = () => {
   const { id } = useParams();
   const { toast } = useToast();
   const [prescription, setPrescription] = useState(null);
   const [age, setAge] = useState(null);
+  const printRef = useRef(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -44,6 +47,27 @@ const PrescriptionDetails = () => {
   const currentDate = new Date().toLocaleDateString();
   const doctor = prescription?.assignedDoctor;
 
+  const handleDownloadPdf = async () => {
+    const element = printRef.current;
+    if (!element) return;
+
+    const canvas = await html2canvas(element, { scale: 2 });
+    const data = canvas.toDataURL("image/png");
+
+    const pdf = new jsPDF({
+      orientation: "portrait",
+      unit: "px",
+      format: "a4",
+    });
+
+    const imgProps = pdf.getImageProperties(data);
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+    pdf.addImage(data, "PNG", 0, 0, pdfWidth, pdfHeight);
+    pdf.save("prescription.pdf");
+  };
+
   if (!prescription) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-blue-700 text-white">
@@ -53,8 +77,13 @@ const PrescriptionDetails = () => {
   }
 
   return (
-    <div className="min-h-screen bg-blue-50 flex items-center justify-center p-6">
-      <div className="w-full max-w-4xl bg-white rounded-xl shadow-lg border border-blue-100 min-h-[1000px] flex flex-col justify-between">
+    <div className="relative bg-blue-50 flex flex-col items-center justify-center p-6 min-h-screen">
+      {/* A4 Prescription View */}
+      <div
+        ref={printRef}
+        className="bg-white rounded-xl shadow-lg border border-blue-100 flex flex-col justify-between overflow-hidden"
+        style={{ width: "794px", height: "1123px" }} // A4 size
+      >
         {/* Header */}
         <div className="px-8 py-6 border-b border-blue-100 bg-blue-100 rounded-t-xl">
           <h1 className="text-3xl font-bold text-blue-700">
@@ -91,8 +120,8 @@ const PrescriptionDetails = () => {
           </div>
 
           <div className="mb-6">
-            <p className="text-sm text-gray-500 mb-1">Diagnosis</p>
-            <p className="border-b pb-1 font-medium">{prescription.diagnosis || "N/A"}</p>
+            <p className="text-sm text-gray-500 mb-8">Diagnosis</p>
+            <p className="border-b pb-1 font-medium">&nbsp;</p>
           </div>
         </div>
 
@@ -103,25 +132,15 @@ const PrescriptionDetails = () => {
           </div>
         </div>
 
-        {/* Signature + Download */}
-        <div className="px-8 py-6 flex justify-between items-end mt-7">
+        {/* Signature */}
+        <div className="px-8 py-6 flex justify-start items-end mt-7">
           <div>
             <div className="border-t border-gray-400 w-48 pt-1">
-              <p className="mt-8text-sm text-gray-600">{doctor?.full_name || "Doctor Signature"}</p>
+              <p className="mt-2 text-sm text-gray-600">
+                {doctor?.full_name || "Doctor Signature"}
+              </p>
             </div>
           </div>
-          <Button
-            onClick={() =>
-              toast({
-                title: "Download initiated",
-                description: "Preparing prescription...",
-              })
-            }
-            className="bg-blue-600 hover:bg-blue-700 text-white"
-          >
-            <Download className="w-4 h-4 mr-2" />
-            Download
-          </Button>
         </div>
 
         {/* Footer */}
@@ -137,6 +156,17 @@ const PrescriptionDetails = () => {
             <p><Globe className="inline w-3 h-3 mr-1" /> www.hospital.com</p>
           </div>
         </div>
+      </div>
+
+      {/* Download Button Fixed Bottom Right */}
+      <div className="fixed bottom-6 right-6 z-50">
+        <Button
+          onClick={handleDownloadPdf}
+          className="bg-blue-600 hover:bg-blue-700 text-white"
+        >
+          <Download className="w-4 h-4 mr-2" />
+          Download
+        </Button>
       </div>
     </div>
   );
