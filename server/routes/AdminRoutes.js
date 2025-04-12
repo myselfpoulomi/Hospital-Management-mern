@@ -1,12 +1,16 @@
-import express from 'express'
+import express from "express";
+import {
+  getAllAdmin,
+  getAdminbyId,
+  addAdmin,
+  loginAdmin,
+} from "../controlers/AdminControler.js"
+
 const router = express.Router();
-import {getAllAdmin,getAdminbyId,addAdmin} from '../controlers/AdminControler.js'
 
-// Define routes
 router.get("/", getAllAdmin);
-router.get("/:id",getAdminbyId);
-router.post("/addAdmin",addAdmin);
-// router.put("/:id",updateDoctor);
-// router.delete("/:id",deleteDoctor);
+router.get("/:id", getAdminbyId);
+router.post("/addAdmin", addAdmin);
+router.post("/login", loginAdmin);
 
-export default router
+export default router;
