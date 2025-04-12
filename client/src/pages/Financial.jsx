@@ -9,38 +9,53 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Calendar, Download, Filter } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Search } from "lucide-react";
 import RevenueChart from "@/components/dashboard/RevenueChart";
 import axios from "axios";
 
 const Financial = () => {
   const [prescriptions, setPrescriptions] = useState([]);
+  const [filteredPrescriptions, setFilteredPrescriptions] = useState([]);
   const [totalRevenue, setTotalRevenue] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const getPrescriptionPrice = async () => {
+  const fetchPrescriptions = async () => {
     try {
       const response = await axios.get("http://localhost:4000/prescription/");
-      const prescriptionData = response.data;
-      setPrescriptions(prescriptionData);
-
-      // Calculate total revenue
-      const total = prescriptionData.reduce((sum, p) => sum + p.price, 0);
+      const sorted = response.data.sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      );
+      setPrescriptions(sorted);
+      setFilteredPrescriptions(sorted); // Set initially to all
+      const total = sorted.reduce((sum, p) => sum + p.price, 0);
       setTotalRevenue(total);
     } catch (error) {
       console.error("Error fetching prescription data:", error);
     }
   };
 
+  const handleSearch = (event) => {
+    const value = event.target.value;
+    setSearchQuery(value);
+
+    if (value.trim() === "") {
+      // Show all if input is empty
+      setFilteredPrescriptions(prescriptions);
+      const total = prescriptions.reduce((sum, p) => sum + p.price, 0);
+      setTotalRevenue(total);
+    } else {
+      // Filter by patient name (case-insensitive)
+      const filtered = prescriptions.filter((p) =>
+        p.patientName.toLowerCase().includes(value.toLowerCase())
+      );
+      setFilteredPrescriptions(filtered);
+      const total = filtered.reduce((sum, p) => sum + p.price, 0);
+      setTotalRevenue(total);
+    }
+  };
+
   useEffect(() => {
-    getPrescriptionPrice();
+    fetchPrescriptions();
   }, []);
 
   return (
@@ -55,7 +70,7 @@ const Financial = () => {
       </div>
 
       <div className="mb-6">
-        <RevenueChart prescriptions={prescriptions} totalRevenue={totalRevenue} />
+        <RevenueChart prescriptions={filteredPrescriptions} totalRevenue={totalRevenue} />
       </div>
 
       <div className="flex flex-col lg:flex-row gap-6">
@@ -66,27 +81,17 @@ const Financial = () => {
           <CardContent>
             <div className="mb-4 flex flex-col sm:flex-row justify-between gap-3">
               <div className="flex gap-3">
-                <Select defaultValue="all">
-                  <SelectTrigger className="w-[150px]">
-                    <div className="flex items-center">
-                      <Filter size={14} className="mr-2 text-medical-gray-500" />
-                      <SelectValue placeholder="Status" />
-                    </div>
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="paid">Paid</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Button variant="outline" className="flex items-center">
-                  <Calendar size={14} className="mr-2" />
-                  <span>Last 15 Days</span>
-                </Button>
+                <div className="flex items-center border rounded-md px-3 py-2 w-[1550px]">
+                  <Search size={14} className="mr-2 text-medical-gray-500" />
+                  <input
+                    type="text"
+                    placeholder="Search by Patient Name"
+                    value={searchQuery}
+                    onChange={handleSearch}
+                    className="w-full outline-none"
+                  />
+                </div>
               </div>
-              <Button variant="outline">
-                <Download size={14} className="mr-2" />
-                Export
-              </Button>
             </div>
 
             <div className="rounded-md border">
@@ -101,7 +106,7 @@ const Financial = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {prescriptions.map((item) => (
+                  {filteredPrescriptions.map((item) => (
                     <TableRow key={item._id}>
                       <TableCell className="font-medium">
                         {new Date(item.createdAt).toLocaleString()}
@@ -118,6 +123,13 @@ const Financial = () => {
                       </TableCell>
                     </TableRow>
                   ))}
+                  {filteredPrescriptions.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={5} className="text-center py-4 text-gray-500">
+                        No prescriptions found.
+                      </TableCell>
+                    </TableRow>
+                  )}
                 </TableBody>
               </Table>
             </div>
