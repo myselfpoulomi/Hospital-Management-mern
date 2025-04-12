@@ -3,10 +3,11 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
+// Modified formatCurrency for INR
 const formatCurrency = (value) =>
-  new Intl.NumberFormat("en-US", {
+  new Intl.NumberFormat("en-IN", {
     style: "currency",
-    currency: "USD",
+    currency: "INR",
     maximumFractionDigits: 0,
   }).format(value);
 
@@ -67,7 +68,7 @@ const RevenueChart = ({ prescriptions, totalRevenue }) => {
               <TabsTrigger value="monthly">Monthly</TabsTrigger>
             </TabsList>
             <div className="text-2xl font-bold text-medical-gray-800">
-              {formatCurrency(totalRevenue)}
+              {formatCurrency(totalRevenue)} {/* Display total revenue in INR */}
             </div>
           </div>
 
@@ -85,7 +86,7 @@ const RevenueChart = ({ prescriptions, totalRevenue }) => {
                     tickLine={false}
                     tick={{ fontSize: 12 }}
                     tickFormatter={(value) =>
-                      timeframe === "monthly" ? `$${value / 1000}k` : `$${value}`
+                      timeframe === "monthly" ? `${formatCurrency(value / 1000)}k` : formatCurrency(value)
                     }
                   />
                   <Tooltip formatter={(value) => [formatCurrency(value), "Revenue"]} />
