@@ -1,43 +1,7 @@
 import React from "react";
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-const dailyData = [
-  { name: "12 AM", revenue: 4000 },
-  { name: "4 AM", revenue: 3000 },
-  { name: "8 AM", revenue: 5000 },
-  { name: "12 PM", revenue: 8000 },
-  { name: "4 PM", revenue: 7000 },
-  { name: "8 PM", revenue: 6000 },
-];
-
-const weeklyData = [
-  { name: "Mon", revenue: 24000 },
-  { name: "Tue", revenue: 21000 },
-  { name: "Wed", revenue: 30000 },
-  { name: "Thu", revenue: 28000 },
-  { name: "Fri", revenue: 32000 },
-  { name: "Sat", revenue: 18000 },
-  { name: "Sun", revenue: 15000 },
-];
-
-const monthlyData = [
-  { name: "Jan", revenue: 120000 },
-  { name: "Feb", revenue: 140000 },
-  { name: "Mar", revenue: 160000 },
-  { name: "Apr", revenue: 180000 },
-  { name: "May", revenue: 170000 },
-  { name: "Jun", revenue: 190000 },
-];
 
 const formatCurrency = (value) =>
   new Intl.NumberFormat("en-US", {
@@ -46,7 +10,49 @@ const formatCurrency = (value) =>
     maximumFractionDigits: 0,
   }).format(value);
 
-const RevenueChart = () => {
+const RevenueChart = ({ prescriptions, totalRevenue }) => {
+  const calculateRevenueData = (timeframe) => {
+    const today = new Date();
+    let data = [];
+
+    if (timeframe === "daily") {
+      // Group by 4-hour intervals for today
+      data = Array(6).fill(0).map((_, i) => {
+        const hour = i * 4;
+        const label = new Date(0, 0, 0, hour).toLocaleTimeString("en-US", { hour: "numeric", hour12: true });
+        return { name: label, revenue: 0 };
+      });
+      prescriptions.forEach((p) => {
+        const createdAt = new Date(p.createdAt);
+        if (createdAt.toDateString() === today.toDateString()) {
+          const hour = createdAt.getHours();
+          const index = Math.floor(hour / 4);
+          if (data[index]) data[index].revenue += p.price;
+        }
+      });
+    } else if (timeframe === "weekly") {
+      // Group by days of the week
+      const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+      data = weekDays.map((d) => ({ name: d, revenue: 0 }));
+      prescriptions.forEach((p) => {
+        const createdAt = new Date(p.createdAt);
+        const dayIndex = createdAt.getDay();
+        if (data[dayIndex]) data[dayIndex].revenue += p.price;
+      });
+    } else if (timeframe === "monthly") {
+      // Group by months
+      const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      data = months.map((m) => ({ name: m, revenue: 0 }));
+      prescriptions.forEach((p) => {
+        const createdAt = new Date(p.createdAt);
+        const monthIndex = createdAt.getMonth();
+        if (data[monthIndex]) data[monthIndex].revenue += p.price;
+      });
+    }
+
+    return data;
+  };
+
   return (
     <Card className="w-full">
       <CardHeader className="pb-3">
@@ -61,7 +67,7 @@ const RevenueChart = () => {
               <TabsTrigger value="monthly">Monthly</TabsTrigger>
             </TabsList>
             <div className="text-2xl font-bold text-medical-gray-800">
-              $168,420.00
+              {formatCurrency(totalRevenue)}
             </div>
           </div>
 
@@ -69,7 +75,7 @@ const RevenueChart = () => {
             <TabsContent key={index} value={timeframe} className="mt-0">
               <ResponsiveContainer width="100%" height={300}>
                 <AreaChart
-                  data={timeframe === "daily" ? dailyData : timeframe === "weekly" ? weeklyData : monthlyData}
+                  data={calculateRevenueData(timeframe)}
                   margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />

@@ -23,11 +23,17 @@ import axios from "axios";
 
 const Financial = () => {
   const [prescriptions, setPrescriptions] = useState([]);
+  const [totalRevenue, setTotalRevenue] = useState(0);
 
   const getPrescriptionPrice = async () => {
     try {
       const response = await axios.get("http://localhost:4000/prescription/");
-      setPrescriptions(response.data);
+      const prescriptionData = response.data;
+      setPrescriptions(prescriptionData);
+
+      // Calculate total revenue
+      const total = prescriptionData.reduce((sum, p) => sum + p.price, 0);
+      setTotalRevenue(total);
     } catch (error) {
       console.error("Error fetching prescription data:", error);
     }
@@ -49,7 +55,7 @@ const Financial = () => {
       </div>
 
       <div className="mb-6">
-        <RevenueChart />
+        <RevenueChart prescriptions={prescriptions} totalRevenue={totalRevenue} />
       </div>
 
       <div className="flex flex-col lg:flex-row gap-6">
