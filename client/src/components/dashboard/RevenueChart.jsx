@@ -1,7 +1,25 @@
 import React from "react";
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
 
 // Modified formatCurrency for INR
 const formatCurrency = (value) =>
@@ -11,18 +29,24 @@ const formatCurrency = (value) =>
     maximumFractionDigits: 0,
   }).format(value);
 
-const RevenueChart = ({ prescriptions, totalRevenue }) => {
+const RevenueChart = ({ prescriptions = [], totalRevenue = 0 }) => {
   const calculateRevenueData = (timeframe) => {
     const today = new Date();
     let data = [];
 
     if (timeframe === "daily") {
       // Group by 4-hour intervals for today
-      data = Array(6).fill(0).map((_, i) => {
-        const hour = i * 4;
-        const label = new Date(0, 0, 0, hour).toLocaleTimeString("en-US", { hour: "numeric", hour12: true });
-        return { name: label, revenue: 0 };
-      });
+      data = Array(6)
+        .fill(0)
+        .map((_, i) => {
+          const hour = i * 4;
+          const label = new Date(0, 0, 0, hour).toLocaleTimeString("en-US", {
+            hour: "numeric",
+            hour12: true,
+          });
+          return { name: label, revenue: 0 };
+        });
+
       prescriptions.forEach((p) => {
         const createdAt = new Date(p.createdAt);
         if (createdAt.toDateString() === today.toDateString()) {
@@ -35,6 +59,7 @@ const RevenueChart = ({ prescriptions, totalRevenue }) => {
       // Group by days of the week
       const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
       data = weekDays.map((d) => ({ name: d, revenue: 0 }));
+
       prescriptions.forEach((p) => {
         const createdAt = new Date(p.createdAt);
         const dayIndex = createdAt.getDay();
@@ -42,8 +67,12 @@ const RevenueChart = ({ prescriptions, totalRevenue }) => {
       });
     } else if (timeframe === "monthly") {
       // Group by months
-      const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const months = [
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+      ];
       data = months.map((m) => ({ name: m, revenue: 0 }));
+
       prescriptions.forEach((p) => {
         const createdAt = new Date(p.createdAt);
         const monthIndex = createdAt.getMonth();
@@ -68,7 +97,7 @@ const RevenueChart = ({ prescriptions, totalRevenue }) => {
               <TabsTrigger value="monthly">Monthly</TabsTrigger>
             </TabsList>
             <div className="text-2xl font-bold text-medical-gray-800">
-              {formatCurrency(totalRevenue)} {/* Display total revenue in INR */}
+              {formatCurrency(totalRevenue)}
             </div>
           </div>
 
@@ -80,17 +109,29 @@ const RevenueChart = ({ prescriptions, totalRevenue }) => {
                   margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12 }} />
+                  <XAxis
+                    dataKey="name"
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fontSize: 12 }}
+                  />
                   <YAxis
                     axisLine={false}
                     tickLine={false}
                     tick={{ fontSize: 12 }}
                     tickFormatter={(value) =>
-                      timeframe === "monthly" ? `${formatCurrency(value / 1000)}k` : formatCurrency(value)
+                      timeframe === "monthly"
+                        ? `${formatCurrency(value / 1000)}k`
+                        : formatCurrency(value)
                     }
                   />
                   <Tooltip formatter={(value) => [formatCurrency(value), "Revenue"]} />
-                  <Area type="monotone" dataKey="revenue" stroke="#1A73E8" fill="#E6F2FF" />
+                  <Area
+                    type="monotone"
+                    dataKey="revenue"
+                    stroke="#1A73E8"
+                    fill="#E6F2FF"
+                  />
                 </AreaChart>
               </ResponsiveContainer>
             </TabsContent>
