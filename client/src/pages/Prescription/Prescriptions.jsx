@@ -66,6 +66,7 @@ const Prescriptions = () => {
   const handleSubmit = async (formData) => {
     try {
       if (selectedPrescription) {
+        // Update prescription
         await axios.put(
           `http://localhost:4000/Prescription/updatePresciption/${selectedPrescription._id}`,
           formData
@@ -85,6 +86,7 @@ const Prescriptions = () => {
           prev.map((p) => (p._id === updated._id ? updated : p))
         );
       } else {
+        // Add new prescription
         const res = await axios.post(
           "http://localhost:4000/prescription/addPrescription",
           formData
@@ -99,9 +101,15 @@ const Prescriptions = () => {
     }
   };
 
+  // Filter prescriptions based on search query
   const filteredPrescriptions = prescriptions.filter((p) =>
-    [p.patientName, p._id, p.assignedDoctor?.full_name]
-      .some((val) => (val || "").toLowerCase().includes(searchQuery.toLowerCase()))
+    [
+      p.patientName?.full_name,
+      p._id,
+      p.assignedDoctor?.full_name,
+    ].some((val) =>
+      (val || "").toLowerCase().includes(searchQuery.toLowerCase())
+    )
   );
 
   return (

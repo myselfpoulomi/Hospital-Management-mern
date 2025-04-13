@@ -16,7 +16,6 @@ export const PrescriptionTable = ({ prescriptions, onEdit, onDelete }) => {
   const handleView = (id) => {
     navigate(`/prescription/${id}`);
   };
-  
 
   return (
     <div className="rounded-md border p-6">
@@ -34,7 +33,7 @@ export const PrescriptionTable = ({ prescriptions, onEdit, onDelete }) => {
           {prescriptions.map((prescription, index) => (
             <TableRow key={prescription._id} className="text-sm">
               <TableCell className="font-medium">{index + 1}</TableCell>
-              <TableCell>{prescription.patientName}</TableCell>
+              <TableCell>{prescription.patientName?.full_name || "N/A"}</TableCell> {/* Access full_name */}
               <TableCell>{prescription.assignedDoctor?.full_name || "N/A"}</TableCell>
               <TableCell>{new Date(prescription.createdAt).toLocaleDateString()}</TableCell>
               <TableCell>

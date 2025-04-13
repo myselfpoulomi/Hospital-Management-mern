@@ -2,9 +2,9 @@ import mongoose from "mongoose";
 
 const PrescriptionSchema = new mongoose.Schema({
   patientName: {
-    type: String,
-    required: true,
-    trim: true
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Patient',
+    required: true
   },
   dob: {
     type: Date,

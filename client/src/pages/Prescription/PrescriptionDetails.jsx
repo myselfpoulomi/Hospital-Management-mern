@@ -17,7 +17,7 @@ const PrescriptionDetails = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get(`http://localhost:4000/Prescription/${id}`);
+        const res = await axios.get(`http://localhost:4000/prescription/${id}`);
         const data = res.data;
         setPrescription(data);
 
@@ -78,20 +78,19 @@ const PrescriptionDetails = () => {
 
   return (
     <div className="relative bg-blue-50 flex flex-col items-center justify-center p-6 min-h-screen">
-      {/* A4 Prescription View */}
       <div
         ref={printRef}
         className="bg-white rounded-xl shadow-lg border border-blue-100 flex flex-col justify-between overflow-hidden"
-        style={{ width: "794px", height: "1123px" }} // A4 size
+        style={{ width: "794px", height: "1123px" }}
       >
         {/* Header */}
         <div className="px-8 py-6 border-b border-blue-100 bg-blue-100 rounded-t-xl">
           <h1 className="text-3xl font-bold text-blue-700">
             {doctor?.full_name || "Dr. Name"}
           </h1>
-          <p className="text-blue-600 text-sm">{doctor?.degree}</p>
+          <p className="text-blue-600 text-sm">{doctor?.degree || "MBBS, MD"}</p>
           <p className="text-blue-500 text-sm mt-1 italic">
-            Specialization: {doctor?.specialization || "N/A"}
+            Specialization: {doctor?.specialization || "General Medicine"}
           </p>
         </div>
 
@@ -100,7 +99,9 @@ const PrescriptionDetails = () => {
           <div className="grid grid-cols-2 gap-6 mb-4">
             <div>
               <p className="text-sm text-gray-500">Patient Name</p>
-              <p className="font-medium border-b pb-1">{prescription.patientName}</p>
+              <p className="font-medium border-b pb-1">
+                {prescription.patientName?.firstName} {prescription.patientName?.lastName}
+              </p>
             </div>
             <div>
               <p className="text-sm text-gray-500">Address</p>
@@ -119,16 +120,19 @@ const PrescriptionDetails = () => {
             </div>
           </div>
 
+          {/* Optional: Diagnosis */}
           <div className="mb-6">
-            <p className="text-sm text-gray-500 mb-8">Diagnosis</p>
-            <p className="border-b pb-1 font-medium">&nbsp;</p>
+            <p className="text-sm text-gray-500 mb-1">Diagnosis</p>
+            <p className="border-b pb-1 font-medium">
+              {prescription.diagnosis || "—"}
+            </p>
           </div>
         </div>
 
         {/* Writing Area */}
         <div className="px-8 flex-grow">
           <div className="min-h-[500px] border border-dashed border-blue-200 rounded-lg p-6 bg-white text-gray-400 italic">
-            Write Here....
+            Write Here...
           </div>
         </div>
 
@@ -158,7 +162,7 @@ const PrescriptionDetails = () => {
         </div>
       </div>
 
-      {/* Download Button Fixed Bottom Right */}
+      {/* Download Button */}
       <div className="fixed bottom-6 right-6 z-50">
         <Button
           onClick={handleDownloadPdf}

@@ -20,25 +20,32 @@ import axios from "axios";
 
 export const PrescriptionDialog = ({ open, onClose, onSubmit, initialData }) => {
   const [form, setForm] = useState({
-    patientName: "",
+    patientId: "",
     dob: "",
     address: "",
     price: "",
     assignedDoctor: "",
   });
+
   const [doctors, setDoctors] = useState([]);
+  const [patients, setPatients] = useState([]);
 
   useEffect(() => {
-    axios
-      .get("http://localhost:4000/doctors/")
+    axios.get("http://localhost:4000/doctors/")
       .then((res) => setDoctors(res.data))
       .catch((err) => console.error("Failed to fetch doctors", err));
   }, []);
 
   useEffect(() => {
+    axios.get("http://localhost:4000/Patients/")
+      .then((res) => setPatients(res.data))
+      .catch((err) => console.error("Failed to fetch patients", err));
+  }, []);
+
+  useEffect(() => {
     if (initialData) {
       setForm({
-        patientName: initialData.patientName || "",
+        patientId: initialData.patientName?._id || "",
         dob: initialData.dob?.split("T")[0] || "",
         address: initialData.address || "",
         price: initialData.price || "",
@@ -50,21 +57,78 @@ export const PrescriptionDialog = ({ open, onClose, onSubmit, initialData }) => 
   }, [initialData]);
 
   const resetForm = () => {
-    setForm({ patientName: "", dob: "", address: "", price: "", assignedDoctor: "" });
+    setForm({
+      patientId: "",
+      dob: "",
+      address: "",
+      price: "",
+      assignedDoctor: "",
+    });
   };
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSelect = (value) => {
-    setForm({ ...form, assignedDoctor: value });
+  const handlePatientSelect = (value) => {
+    const selected = patients.find((p) => p._id === value);
+    if (selected) {
+      setForm((prevForm) => ({
+        ...prevForm,
+        patientId: selected._id,
+        dob: selected.dateOfBirth?.split("T")[0] || "",
+        address: selected.address || "",
+      }));
+    }
   };
 
-  const handleSubmit = (e) => {
+  const handleDoctorSelect = (value) => {
+    setForm((prevForm) => ({
+      ...prevForm,
+      assignedDoctor: value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const payload = { ...form, price: parseFloat(form.price) };
-    onSubmit(payload);
+    const payload = {
+      patientName: form.patientId, // ✅ match backend schema
+      dob: form.dob,
+      address: form.address,
+      price: parseFloat(form.price),
+      assignedDoctor: form.assignedDoctor,
+    };
+    
+    try {
+      let res;
+      if (initialData) {
+        // Update prescription
+        res = await axios.put(
+          `http://localhost:4000/Prescription/updatePresciption/${initialData._id}`,
+          payload
+        );
+      } else {
+        // Add new prescription
+        res = await axios.post(
+          "http://localhost:4000/Prescription/addPresciption",
+          payload
+        );
+      }
+
+      console.log("Prescription saved:", res.data);
+    
+      if (onSubmit) onSubmit(res.data);  // Pass the new/updated data to the parent
+      resetForm();
+      onClose();
+    } catch (error) {
+      console.error("Error submitting prescription:", error);
+      if (error.response) {
+        console.log("Backend Error:", error.response.data);
+        alert(`Failed to save prescription: ${error.response.data.message || "Server error"}`);
+      } else {
+        alert("Failed to save prescription: Network or unknown error.");
+      }
+    }
   };
 
   return (
@@ -77,14 +141,20 @@ export const PrescriptionDialog = ({ open, onClose, onSubmit, initialData }) => 
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
               <Label className="text-right">Patient Name</Label>
-              <Input
-                name="patientName"
-                value={form.patientName}
-                onChange={handleChange}
-                className="col-span-3"
-                required
-              />
+              <Select value={form.patientId} onValueChange={handlePatientSelect}>
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="Select a patient" />
+                </SelectTrigger>
+                <SelectContent>
+                  {patients.map((patient) => (
+                    <SelectItem key={patient._id} value={patient._id}>
+                      {patient.full_name || `${patient.firstName} ${patient.lastName}`}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
+
             <div className="grid grid-cols-4 items-center gap-4">
               <Label className="text-right">DOB</Label>
               <Input
@@ -96,6 +166,7 @@ export const PrescriptionDialog = ({ open, onClose, onSubmit, initialData }) => 
                 required
               />
             </div>
+
             <div className="grid grid-cols-4 items-center gap-4">
               <Label className="text-right">Address</Label>
               <Input
@@ -106,6 +177,7 @@ export const PrescriptionDialog = ({ open, onClose, onSubmit, initialData }) => 
                 required
               />
             </div>
+
             <div className="grid grid-cols-4 items-center gap-4">
               <Label className="text-right">Price</Label>
               <Input
@@ -117,9 +189,10 @@ export const PrescriptionDialog = ({ open, onClose, onSubmit, initialData }) => 
                 required
               />
             </div>
+
             <div className="grid grid-cols-4 items-center gap-4">
               <Label className="text-right">Doctor</Label>
-              <Select value={form.assignedDoctor} onValueChange={handleSelect}>
+              <Select value={form.assignedDoctor} onValueChange={handleDoctorSelect}>
                 <SelectTrigger className="col-span-3">
                   <SelectValue placeholder="Select a doctor" />
                 </SelectTrigger>
@@ -133,6 +206,7 @@ export const PrescriptionDialog = ({ open, onClose, onSubmit, initialData }) => 
               </Select>
             </div>
           </div>
+
           <DialogFooter>
             <Button type="submit">{initialData ? "Update" : "Save"}</Button>
           </DialogFooter>

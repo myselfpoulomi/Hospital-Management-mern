@@ -2,22 +2,30 @@
 import Prescription from '../modules/PresciptionSchema.js';
 
 // Get all prescriptions
+// controllers/PrescriptionController.js
 const getAllPresciption = async (req, res) => {
   try {
-    const prescriptions = await Prescription.find().populate('assignedDoctor');
+    const prescriptions = await Prescription.find()
+      .populate('assignedDoctor')
+      .populate('patientName');  // Add this line
     res.status(200).json(prescriptions);
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch prescriptions", error });
   }
 };
 
+
 // Get a prescription by ID
 const getPresciptionById = async (req, res) => {
   try {
-    const prescription = await Prescription.findById(req.params.id).populate('assignedDoctor');
+    const prescription = await Prescription.findById(req.params.id)
+      .populate('assignedDoctor', 'full_name specialization')
+      .populate('patientName', 'full_name');
+
     if (!prescription) {
       return res.status(404).json({ message: "Prescription not found" });
     }
+
     res.status(200).json(prescription);
   } catch (error) {
     res.status(500).json({ message: "Error retrieving prescription", error });
@@ -38,7 +46,16 @@ const addPresciption = async (req, res) => {
     });
 
     await newPrescription.save();
-    res.status(201).json({ message: "Prescription added successfully", prescription: newPrescription });
+
+    // Populate after save for consistent response
+    const populated = await Prescription.findById(newPrescription._id)
+      .populate('assignedDoctor', 'full_name specialization')
+      .populate('patientName', 'full_name');
+
+    res.status(201).json({
+      message: "Prescription added successfully",
+      prescription: populated
+    });
   } catch (error) {
     res.status(400).json({ message: "Failed to add prescription", error });
   }
@@ -54,13 +71,18 @@ const updatePresciption = async (req, res) => {
       id,
       { patientName, dob, address, price, assignedDoctor },
       { new: true, runValidators: true }
-    );
+    )
+      .populate('assignedDoctor', 'full_name specialization')
+      .populate('patientName', 'full_name');
 
     if (!updated) {
       return res.status(404).json({ message: "Prescription not found" });
     }
 
-    res.status(200).json({ message: "Prescription updated successfully", prescription: updated });
+    res.status(200).json({
+      message: "Prescription updated successfully",
+      prescription: updated
+    });
   } catch (error) {
     res.status(400).json({ message: "Failed to update prescription", error });
   }
@@ -83,5 +105,10 @@ const deletePresciption = async (req, res) => {
   }
 };
 
-
-export {getAllPresciption,getPresciptionById,addPresciption,updatePresciption,deletePresciption}
+export {
+  getAllPresciption,
+  getPresciptionById,
+  addPresciption,
+  updatePresciption,
+  deletePresciption
+};
