@@ -20,8 +20,9 @@ const getPresciptionById = async (req, res) => {
   try {
     const prescription = await Prescription.findById(req.params.id)
       .populate('assignedDoctor', 'full_name specialization')
-      .populate('patientName', 'full_name');
-
+      .populate('patientName', 'firstName lastName');
+      console.log(prescription);
+      
     if (!prescription) {
       return res.status(404).json({ message: "Prescription not found" });
     }
