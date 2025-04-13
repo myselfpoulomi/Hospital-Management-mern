@@ -8,7 +8,7 @@ import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 
 const PrescriptionDetails = () => {
-  const { id } = useParams(); // Get the id from the URL params
+  const { id } = useParams();
   const { toast } = useToast();
   const [prescription, setPrescription] = useState(null);
   const [age, setAge] = useState(null);
@@ -19,7 +19,6 @@ const PrescriptionDetails = () => {
       try {
         const res = await axios.get(`http://localhost:4000/Prescription/${id}`);
         const data = res.data;
-        console.log("Prescription data:", data); // Debug line
         setPrescription(data);
 
         if (data.dob) {
@@ -85,16 +84,26 @@ const PrescriptionDetails = () => {
         style={{ width: "794px", height: "1123px" }}
       >
         {/* Header */}
-        <div className="px-8 py-6 border-b border-blue-100 bg-blue-100 rounded-t-xl">
-          <h1 className="text-3xl font-bold text-blue-700">
-            {doctor?.full_name || "Dr. Name"}
-          </h1>
-          <p className="text-blue-600 text-sm">
-            {doctor?.degree || "MBBS, MD"}
-          </p>
-          <p className="text-blue-500 text-sm mt-1 italic">
-            Specialization: {doctor?.specialization || "General Medicine"}
-          </p>
+        <div className="px-8 py-6 border-b border-blue-100 bg-blue-100 rounded-t-xl flex justify-between items-start">
+          <div>
+            <h1 className="text-3xl font-bold text-blue-700">
+              {doctor?.full_name || "Dr. Name"}
+            </h1>
+            <p className="text-blue-600 text-sm">
+              {doctor?.degree || "MBBS, MD"}
+            </p>
+            <p className="text-blue-500 text-sm mt-1 italic">
+              Specialization: {doctor?.specialization || "General Medicine"}
+            </p>
+          </div>
+
+          {/* Hospital Name at Top-Right */}
+          <div className="text-right">
+            <h2 className="font-bold text-4xl  text-blue-600">Health Hub</h2>
+            <p className="text-sm text-blue-600">
+              Care. Compassion. Commitment.
+            </p>
+          </div>
         </div>
 
         {/* Patient Info */}
@@ -135,7 +144,7 @@ const PrescriptionDetails = () => {
           <div className="mb-6">
             <p className="text-sm text-gray-500 mb-5">Diagnosis</p>
             <p className="border-b pb-1 font-medium">
-              
+              {/* Optional: Add prescription.diagnosis here if available */}
             </p>
           </div>
         </div>
@@ -161,23 +170,20 @@ const PrescriptionDetails = () => {
         {/* Footer */}
         <div className="bg-blue-100 rounded-b-xl px-8 py-4 text-sm text-blue-700 flex justify-between">
           <div>
-            <h3 className="font-semibold">Your Hospital Name</h3>
-            <p className="text-xs text-blue-600">
+            <h3 className="font-bold text-3xl">Health Hub</h3>
+            <p className="text-sm text-blue-600">
               Care. Compassion. Commitment.
             </p>
           </div>
           <div className="text-right text-xs space-y-1 text-blue-600">
             <p>
-              <Phone className="inline w-3 h-3 mr-1" /> 55 47 79 94 15
+              <Phone className="inline w-3 h-3 mr-1" /> 101010101
             </p>
             <p>
-              <Mail className="inline w-3 h-3 mr-1" /> email@hospital.com
+              <Mail className="inline w-3 h-3 mr-1" /> healthhub@hospital.com
             </p>
             <p>
-              <MapPin className="inline w-3 h-3 mr-1" /> Address Line
-            </p>
-            <p>
-              <Globe className="inline w-3 h-3 mr-1" /> www.hospital.com
+              <MapPin className="inline w-3 h-3 mr-1" /> Durgapur,West Bengal 
             </p>
           </div>
         </div>
