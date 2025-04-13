@@ -18,7 +18,12 @@ import {
 } from "@/components/ui/select";
 import axios from "axios";
 
-export const PrescriptionDialog = ({ open, onClose, onSubmit, initialData }) => {
+export const PrescriptionDialog = ({
+  open,
+  onClose,
+  onPrescriptionUpdated,
+  initialData,
+}) => {
   const [form, setForm] = useState({
     patientId: "",
     dob: "",
@@ -34,9 +39,7 @@ export const PrescriptionDialog = ({ open, onClose, onSubmit, initialData }) => 
     axios.get("http://localhost:4000/doctors/")
       .then((res) => setDoctors(res.data))
       .catch((err) => console.error("Failed to fetch doctors", err));
-  }, []);
 
-  useEffect(() => {
     axios.get("http://localhost:4000/Patients/")
       .then((res) => setPatients(res.data))
       .catch((err) => console.error("Failed to fetch patients", err));
@@ -92,23 +95,21 @@ export const PrescriptionDialog = ({ open, onClose, onSubmit, initialData }) => 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const payload = {
-      patientName: form.patientId, // ✅ match backend schema
+      patientName: form.patientId,
       dob: form.dob,
       address: form.address,
       price: parseFloat(form.price),
       assignedDoctor: form.assignedDoctor,
     };
-    
+
     try {
       let res;
       if (initialData) {
-        // Update prescription
         res = await axios.put(
           `http://localhost:4000/Prescription/updatePresciption/${initialData._id}`,
           payload
         );
       } else {
-        // Add new prescription
         res = await axios.post(
           "http://localhost:4000/Prescription/addPresciption",
           payload
@@ -116,18 +117,15 @@ export const PrescriptionDialog = ({ open, onClose, onSubmit, initialData }) => 
       }
 
       console.log("Prescription saved:", res.data);
-    
-      if (onSubmit) onSubmit(res.data);  // Pass the new/updated data to the parent
+
+      // ✅ Trigger refresh from parent
+      if (onPrescriptionUpdated) onPrescriptionUpdated();
+
       resetForm();
       onClose();
     } catch (error) {
       console.error("Error submitting prescription:", error);
-      if (error.response) {
-        console.log("Backend Error:", error.response.data);
-        alert(`Failed to save prescription: ${error.response.data.message || "Server error"}`);
-      } else {
-        alert("Failed to save prescription: Network or unknown error.");
-      }
+      alert("Failed to save prescription.");
     }
   };
 
