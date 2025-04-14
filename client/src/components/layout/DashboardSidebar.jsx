@@ -1,5 +1,6 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
+
 import {
   Sidebar,
   SidebarContent,
@@ -26,11 +27,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 const sidebarItems = [
   { name: "Dashboard", icon: Home, path: "/" },
   { name: "Prescriptions", icon: FileText, path: "/prescriptions" },
-  { name: "Doctors", icon: Calendar, path: "/doctors" },
+  { name: "Doctors Deatils", icon: Calendar, path: "/doctors" },
   { name: "Medicine Management", icon: Pill, path: "/medicine" },
-  { name: "Bed Status", icon: BedDouble, path: "/bed-status" },
+  { name: "Staff Details", icon: User, path: "/bed-status" },
   { name: "Financial", icon: DollarSign, path: "/financial" },
-  { name: "Patients", icon: User, path: "/patients" },
+  { name: "Patients Details", icon: User, path: "/patients" },
 ];
 
 const DashboardSidebar = () => {
