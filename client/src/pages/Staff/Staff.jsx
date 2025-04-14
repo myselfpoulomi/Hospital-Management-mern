@@ -1,41 +1,37 @@
 import { useState } from "react";
-import { Copy, Eye, FileEdit, Search, Trash2, UserPlus, View } from "lucide-react";
+import { Copy, Eye, FileEdit, Search, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-// import { useToast } from "@/components/ui/use-toast";
+import AddStaffDialog from "./AddStaffDialog";
 
 const initialStaffData = [
-  { id: 1, name: "John Smith", gender: "Male", contact: "+12345678901", staffType: "Doctor" },
-  { id: 2, name: "Sarah Johnson", gender: "Female", contact: "9876543210", staffType: "Nurse" },
-  { id: 3, name: "Mike Williams", gender: "Male", contact: "+12345678902", staffType: "Admin" },
-  { id: 4, name: "Emily Davis", gender: "Female", contact: "+12345678903", staffType: "Doctor" },
-  { id: 5, name: "Alex Turner", gender: "Other", contact: "9876543211", staffType: "Technician" },
-  { id: 6, name: "Jessica Parker", gender: "Female", contact: "+12345678904", staffType: "Nurse" },
-  { id: 7, name: "David Miller", gender: "Male", contact: "9876543212", staffType: "Admin" },
+  { id: 1, name: "John Smith", gender: "Male", contact: "+12345678901", staffType: "Doctor", age: 45 },
+  { id: 2, name: "Sarah Johnson", gender: "Female", contact: "9876543210", staffType: "Nurse", age: 32 },
+  // ... other staff
 ];
 
 const Staff = () => {
   const [staffData, setStaffData] = useState(initialStaffData);
   const [searchTerm, setSearchTerm] = useState("");
-  // const { toast } = useToast();
 
-  const filteredStaff = staffData.filter(staff =>
+  const filteredStaff = staffData.filter((staff) =>
     staff.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleCopy = (staff) => {
-    const staffInfo = `Name: ${staff.name}, Gender: ${staff.gender}, Contact: ${staff.contact}, Staff Type: ${staff.staffType}`;
-    navigator.clipboard.writeText(staffInfo);
-    // toast({ title: "Copied", description: "Staff info copied to clipboard" });
+    const info = `Name: ${staff.name}, Gender: ${staff.gender}, Age: ${staff.age}, Contact: ${staff.contact}, Type: ${staff.staffType}`;
+    navigator.clipboard.writeText(info);
   };
 
   const handleDelete = (id) => {
-    const updated = staffData.filter(staff => staff.id !== id);
-    setStaffData(updated);
-    // toast({ title: "Deleted", description: "Staff removed" });
+    setStaffData(staffData.filter((s) => s.id !== id));
+  };
+
+  const handleAddStaff = (newStaff) => {
+    setStaffData((prev) => [...prev, newStaff]);
   };
 
   return (
@@ -47,10 +43,7 @@ const Staff = () => {
             <h1 className="text-2xl font-bold text-blue-600">Staff</h1>
             <p className="text-gray-600">Manage staff records and information</p>
           </div>
-          <Button className="bg-blue-600 hover:bg-blue-700">
-            <UserPlus className="mr-2 h-4 w-4" />
-            Add Staff
-          </Button>
+          <AddStaffDialog onAdd={handleAddStaff} />
         </div>
 
         {/* Search bar */}
@@ -77,11 +70,10 @@ const Staff = () => {
                 <TableHead className="px-6 py-3">SI No</TableHead>
                 <TableHead className="px-6 py-3">Name</TableHead>
                 <TableHead className="px-6 py-3">Gender</TableHead>
+                <TableHead className="px-6 py-3">Age</TableHead>
                 <TableHead className="px-6 py-3">Contact</TableHead>
                 <TableHead className="px-6 py-3">Staff Type</TableHead>
                 <TableHead className="px-6 py-3 text-center">Actions</TableHead>
-
-
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -90,15 +82,16 @@ const Staff = () => {
                   <TableCell className="px-6 py-3">{index + 1}</TableCell>
                   <TableCell className="px-6 py-3">{staff.name}</TableCell>
                   <TableCell className="px-6 py-3">{staff.gender}</TableCell>
+                  <TableCell className="px-6 py-3">{staff.age}</TableCell>
                   <TableCell className="px-6 py-3">{staff.contact}</TableCell>
                   <TableCell className="px-6 py-3">
                     <Badge
                       variant="outline"
                       className={`
-                        ${staff.staffType === 'Doctor' && 'bg-blue-50 text-blue-700 border-blue-200'}
-                        ${staff.staffType === 'Nurse' && 'bg-green-50 text-green-700 border-green-200'}
-                        ${staff.staffType === 'Admin' && 'bg-purple-50 text-purple-700 border-purple-200'}
-                        ${staff.staffType === 'Technician' && 'bg-orange-50 text-orange-700 border-orange-200'}
+                        ${staff.staffType === "Doctor" && "bg-blue-50 text-blue-700 border-blue-200"}
+                        ${staff.staffType === "Nurse" && "bg-green-50 text-green-700 border-green-200"}
+                        ${staff.staffType === "Admin" && "bg-purple-50 text-purple-700 border-purple-200"}
+                        ${staff.staffType === "Technician" && "bg-orange-50 text-orange-700 border-orange-200"}
                       `}
                     >
                       {staff.staffType}
