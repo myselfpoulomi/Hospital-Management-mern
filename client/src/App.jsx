@@ -5,7 +5,7 @@ import Dashboard from "./pages/dashboard";
 import Prescriptions from "./pages/Prescription/Prescriptions";
 import DoctorSchedules from "./pages/DoctorSchedules";
 import Medicine from "./pages/Medicine";
-import BedStatus from "./pages/BedStatus";
+import Staff from "./pages/Staff/Staff";
 import Financial from "./pages/Financial";
 import NotFound from "./pages/NotFound";
 
@@ -28,7 +28,7 @@ const App = () => (
           <Route path="/prescription/:id" element={<PrescriptionDetails />} />
           <Route path="/doctors" element={<DoctorsPage />} />
           <Route path="/medicine" element={<Medicine />} />
-          <Route path="/bed-status" element={<BedStatus />} />
+          <Route path="/staff" element={<Staff />} />
           <Route path="/financial" element={<Financial />} />
           <Route path="/patients" element={<PatientsPage />} />
           <Route path="*" element={<NotFound />} />

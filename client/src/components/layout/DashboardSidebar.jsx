@@ -29,7 +29,7 @@ const sidebarItems = [
   { name: "Prescriptions", icon: FileText, path: "/prescriptions" },
   { name: "Doctors Deatils", icon: Calendar, path: "/doctors" },
   { name: "Medicine Management", icon: Pill, path: "/medicine" },
-  { name: "Staff Details", icon: User, path: "/bed-status" },
+  { name: "Staff Details", icon: User, path: "/staff" },
   { name: "Financial", icon: DollarSign, path: "/financial" },
   { name: "Patients Details", icon: User, path: "/patients" },
 ];
