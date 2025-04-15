@@ -1,5 +1,5 @@
-// components/staff/AddStaffDialog.jsx
 import { useState } from "react";
+import axios from "axios";
 import {
   Dialog,
   DialogContent,
@@ -10,7 +10,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { UserPlus } from "lucide-react";
 
 const AddStaffDialog = ({ onAdd }) => {
@@ -23,11 +29,44 @@ const AddStaffDialog = ({ onAdd }) => {
     staffType: "",
   });
 
-  const handleSubmit = () => {
-    const entry = { ...newStaff, id: Date.now() };
-    onAdd(entry);
-    setNewStaff({ name: "", gender: "", age: "", contact: "", staffType: "" });
-    setOpen(false);
+  const handleSubmit = async () => {
+    const { name, gender, age, contact, staffType } = newStaff;
+
+    // Check for empty fields
+    if (!name || !gender || !age || !contact || !staffType) {
+      alert("Please fill out all fields.");
+      return;
+    }
+
+    // Validate contact number
+    const isValidContact = /^[0-9]{10}$/.test(contact.trim());
+    if (!isValidContact) {
+      alert("Enter a valid 10-digit contact number.");
+      return;
+    }
+
+    const payload = {
+      full_name: name.trim(),
+      gender: gender.toLowerCase(),
+      age: parseInt(age),
+      contact_number: contact.trim(),
+      staff_type: staffType.toLowerCase(),
+    };
+
+    try {
+      const res = await axios.post("http://localhost:4000/Staffs/addStaff", payload);
+
+      console.log("Response:", res.data);
+      onAdd(res.data);
+      setOpen(false);
+      setNewStaff({ name: "", gender: "", age: "", contact: "", staffType: "" });
+    } catch (err) {
+      console.error("Submission Error:", err);
+      alert(
+        err.response?.data?.message ||
+          "Server error. Check backend logs for details."
+      );
+    }
   };
 
   return (
@@ -44,11 +83,11 @@ const AddStaffDialog = ({ onAdd }) => {
         </DialogHeader>
         <div className="space-y-4">
           <div>
-            <Label className="">Full Name</Label>
+            <Label>Full Name</Label>
             <Input
               value={newStaff.name}
               onChange={(e) => setNewStaff({ ...newStaff, name: e.target.value })}
-              className="mt-3"
+              className="mt-2"
             />
           </div>
           <div>
@@ -57,13 +96,13 @@ const AddStaffDialog = ({ onAdd }) => {
               value={newStaff.gender}
               onValueChange={(value) => setNewStaff({ ...newStaff, gender: value })}
             >
-              <SelectTrigger  className="mt-3">
+              <SelectTrigger className="mt-2">
                 <SelectValue placeholder="Select Gender" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Male">Male</SelectItem>
-                <SelectItem value="Female">Female</SelectItem>
-                <SelectItem value="Other">Other</SelectItem>
+                <SelectItem value="male">Male</SelectItem>
+                <SelectItem value="female">Female</SelectItem>
+                <SelectItem value="other">Other</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -73,7 +112,7 @@ const AddStaffDialog = ({ onAdd }) => {
               type="number"
               value={newStaff.age}
               onChange={(e) => setNewStaff({ ...newStaff, age: e.target.value })}
-               className="mt-3"
+              className="mt-2"
             />
           </div>
           <div>
@@ -81,7 +120,7 @@ const AddStaffDialog = ({ onAdd }) => {
             <Input
               value={newStaff.contact}
               onChange={(e) => setNewStaff({ ...newStaff, contact: e.target.value })}
-               className="mt-3"
+              className="mt-2"
             />
           </div>
           <div>
@@ -90,14 +129,14 @@ const AddStaffDialog = ({ onAdd }) => {
               value={newStaff.staffType}
               onValueChange={(value) => setNewStaff({ ...newStaff, staffType: value })}
             >
-              <SelectTrigger  className="mt-3">
-                <SelectValue placeholder="Select Type" />
+              <SelectTrigger className="mt-2">
+                <SelectValue placeholder="Select Staff Type" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Doctor">Doctor</SelectItem>
-                <SelectItem value="Nurse">Nurse</SelectItem>
-                <SelectItem value="Admin">Admin</SelectItem>
-                <SelectItem value="Technician">Technician</SelectItem>
+                <SelectItem value="doctor">Doctor</SelectItem>
+                <SelectItem value="nurse">Nurse</SelectItem>
+                <SelectItem value="admin">Admin</SelectItem>
+                <SelectItem value="technician">Technician</SelectItem>
               </SelectContent>
             </Select>
           </div>

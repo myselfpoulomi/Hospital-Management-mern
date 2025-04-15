@@ -1,37 +1,96 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 import { Copy, Eye, FileEdit, Search, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import AddStaffDialog from "./AddStaffDialog";
 
-const initialStaffData = [
-  { id: 1, name: "John Smith", gender: "Male", contact: "+12345678901", staffType: "Doctor", age: 45 },
-  { id: 2, name: "Sarah Johnson", gender: "Female", contact: "9876543210", staffType: "Nurse", age: 32 },
-  // ... other staff
-];
-
 const Staff = () => {
-  const [staffData, setStaffData] = useState(initialStaffData);
+  const [staffData, setStaffData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const filteredStaff = staffData.filter((staff) =>
-    staff.name.toLowerCase().includes(searchTerm.toLowerCase())
+  // Fetch staff data from backend
+  useEffect(() => {
+    const fetchStaff = async () => {
+      try {
+        const response = await axios.get("http://localhost:4000/Staffs");
+        const formatted = response.data.map((staff) => ({
+          id: staff._id,
+          name: staff.full_name,
+          gender: staff.gender,
+          age: staff.age,
+          contact: staff.contact_number,
+          staffType: staff.staff_type,
+        }));
+        setStaffData(formatted);
+      } catch (error) {
+        console.error("Error fetching staff:", error);
+      }
+    };
+    fetchStaff();
+  }, []);
+
+  // Add new staff to list
+  const handleAddStaff = (newStaff) => {
+    const formatted = {
+      id: newStaff._id,
+      name: newStaff.full_name,
+      gender: newStaff.gender,
+      age: newStaff.age,
+      contact: newStaff.contact_number,
+      staffType: newStaff.staff_type,
+    };
+    setStaffData((prev) => [...prev, formatted]);
+  };
+
+  // Update existing staff
+  const handleUpdateStaff = async (updatedStaff) => {
+    try {
+      const response = await axios.put(
+        `http://localhost:4000/Staffs/updateStaff/${updatedStaff.id}`,
+        updatedStaff
+      );
+      const updatedList = staffData.map((staff) =>
+        staff.id === updatedStaff.id ? updatedStaff : staff
+      );
+      setStaffData(updatedList);
+      console.log("Staff updated successfully:", response.data);
+    } catch (error) {
+      console.error("Error updating staff:", error);
+    }
+  };
+
+  // Delete staff from list
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`http://localhost:4000/Staffs/DeleteStaff/${id}`);
+      setStaffData((prev) => prev.filter((s) => s.id !== id));
+      console.log("Staff deleted successfully");
+    } catch (error) {
+      console.error("Error deleting staff:", error);
+    }
+  };
+
+  // Safe search filter
+  const filteredStaff = staffData.filter(
+    (staff) =>
+      staff.name &&
+      staff.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleCopy = (staff) => {
     const info = `Name: ${staff.name}, Gender: ${staff.gender}, Age: ${staff.age}, Contact: ${staff.contact}, Type: ${staff.staffType}`;
     navigator.clipboard.writeText(info);
-  };
-
-  const handleDelete = (id) => {
-    setStaffData(staffData.filter((s) => s.id !== id));
-  };
-
-  const handleAddStaff = (newStaff) => {
-    setStaffData((prev) => [...prev, newStaff]);
   };
 
   return (
@@ -87,25 +146,44 @@ const Staff = () => {
                   <TableCell className="px-6 py-3">
                     <Badge
                       variant="outline"
-                      className={`
-                        ${staff.staffType === "Doctor" && "bg-blue-50 text-blue-700 border-blue-200"}
-                        ${staff.staffType === "Nurse" && "bg-green-50 text-green-700 border-green-200"}
-                        ${staff.staffType === "Admin" && "bg-purple-50 text-purple-700 border-purple-200"}
-                        ${staff.staffType === "Technician" && "bg-orange-50 text-orange-700 border-orange-200"}
-                      `}
+                      className={`${
+                        staff.staffType === "Doctor" &&
+                        "bg-blue-50 text-blue-700 border-blue-200"
+                      } ${
+                        staff.staffType === "Nurse" &&
+                        "bg-green-50 text-green-700 border-green-200"
+                      } ${
+                        staff.staffType === "Admin" &&
+                        "bg-purple-50 text-purple-700 border-purple-200"
+                      } ${
+                        staff.staffType === "Technician" &&
+                        "bg-orange-50 text-orange-700 border-orange-200"
+                      }`}
                     >
                       {staff.staffType}
                     </Badge>
                   </TableCell>
                   <TableCell className="px-6 py-3">
                     <div className="flex justify-center space-x-2">
-                      <Button variant="ghost" size="icon" onClick={() => handleCopy(staff)}>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleCopy(staff)}
+                      >
                         <Eye className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="icon">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleUpdateStaff(staff)}
+                      >
                         <FileEdit className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="icon" onClick={() => handleDelete(staff.id)}>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleDelete(staff.id)}
+                      >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
