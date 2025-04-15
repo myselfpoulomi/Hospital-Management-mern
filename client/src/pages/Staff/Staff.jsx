@@ -40,7 +40,7 @@ const Staff = () => {
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-blue-600">Staff</h1>
+            <h1 className="text-2xl font-bold text-blue-600">Staff Details</h1>
             <p className="text-gray-600">Manage staff records and information</p>
           </div>
           <AddStaffDialog onAdd={handleAddStaff} />

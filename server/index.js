@@ -7,6 +7,7 @@ import PatientRoutes from './routes/PatientRoutes.js';
 import MedicineRoutes from './routes/MedicineRoutes.js'
 import PrescriptionRoutes from './routes/PrescriptionRoutes.js'
 import AdminRoutes from './routes/AdminRoutes.js'
+import StaffRoutes from './routes/StaffRoutes.js'
 // Load environment variables
 dotenv.config();
 
@@ -28,6 +29,7 @@ app.use("/Patients", PatientRoutes);
 app.use("/Medicine", MedicineRoutes);
 app.use("/Prescription", PrescriptionRoutes);
 app.use("/Admin", AdminRoutes);
+app.use("/Staffs", StaffRoutes);
 
 
 
