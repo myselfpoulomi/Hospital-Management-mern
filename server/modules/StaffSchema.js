@@ -24,9 +24,10 @@ const staffSchema = new mongoose.Schema({
   },
   staff_type: {
     type: String,
-    enum: ["nurse", "admin"],
+    enum: ["nurse", "admin", "doctor", "technician"], // <-- Add missing types
     required: true,
   },
 }, { timestamps: true });
+
 
 export default mongoose.model("Staff", staffSchema);
