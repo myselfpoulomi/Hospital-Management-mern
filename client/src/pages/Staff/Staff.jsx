@@ -58,10 +58,8 @@ const Staff = () => {
     }
   };
 
-  const filteredStaff = staffData.filter(
-    (staff) =>
-      staff.name &&
-      staff.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredStaff = staffData.filter((staff) =>
+    staff.name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleCopy = (staff) => {
@@ -77,7 +75,10 @@ const Staff = () => {
             <h1 className="text-2xl font-bold text-blue-600">Staff Details</h1>
             <p className="text-gray-600">Manage staff records and information</p>
           </div>
-          <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => setAddDialogOpen(true)}>
+          <Button
+            className="bg-blue-600 hover:bg-blue-700"
+            onClick={() => setAddDialogOpen(true)}
+          >
             <UserPlus className="mr-2 h-4 w-4" />
             Add Staff
           </Button>
@@ -93,7 +94,7 @@ const Staff = () => {
               className="pl-8 w-full"
             />
           </div>
-          <Button variant="outline" className="ml-4">
+          <Button variant="outline" className="ml-4" onClick={() => setSearchTerm("")}>
             All Staff
           </Button>
         </div>
