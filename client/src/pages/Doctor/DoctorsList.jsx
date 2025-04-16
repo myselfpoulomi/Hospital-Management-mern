@@ -10,11 +10,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import RegisterDoctorDialog from "./RegisterDoctorDialog"; // Import the dialog component
 
-const DoctorsList = ({ refresh, search, onEdit }) => {
+const DoctorsList = ({ refresh, search }) => {
   const [doctors, setDoctors] = useState([]);
   const [filteredDoctors, setFilteredDoctors] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [dialogOpen, setDialogOpen] = useState(false); // State to control dialog visibility
+  const [doctorToEdit, setDoctorToEdit] = useState(null); // Store doctor being edited
 
   const fetchDoctors = async () => {
     try {
@@ -52,7 +55,8 @@ const DoctorsList = ({ refresh, search, onEdit }) => {
   };
 
   const handleEdit = (doctor) => {
-    onEdit(doctor);
+    setDoctorToEdit(doctor); // Set the doctor to edit
+    setDialogOpen(true); // Open the dialog
   };
 
   const handleDelete = async (id) => {
@@ -114,6 +118,14 @@ const DoctorsList = ({ refresh, search, onEdit }) => {
           )}
         </TableBody>
       </Table>
+
+      {/* Register or Edit Doctor Dialog */}
+      <RegisterDoctorDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        onSuccess={() => fetchDoctors()} // Refresh the list after successful update
+        doctorToEdit={doctorToEdit}
+      />
     </div>
   );
 };

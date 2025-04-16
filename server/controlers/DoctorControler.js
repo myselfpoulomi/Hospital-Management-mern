@@ -43,18 +43,26 @@ const addDoctor = async (req, res) => {
 
 // Update a doctor
 const updateDoctor = async (req, res) => {
+    console.log("Request body:", req.body); // Log request body to see what's being sent
     try {
-        const updatedDoctor = await DoctorModel.findOneAndUpdate(
-            { doctor_id: req.params.id },
-            req.body,
-            { new: true }
+        const updatedDoctor = await DoctorModel.findByIdAndUpdate(
+            req.params.id, // The MongoDB ObjectId
+            req.body, // The data to update
+            { new: true } // Return the updated document
         );
-        if (!updatedDoctor) return res.status(404).json({ message: "Doctor not found" });
+
+        if (!updatedDoctor) {
+            return res.status(404).json({ message: "Doctor not found" });
+        }
+
         res.status(200).json(updatedDoctor);
     } catch (err) {
+        console.error("Error updating doctor:", err); // Log the error
         res.status(400).json({ message: err.message });
     }
 };
+
+
 
 // Delete a doctor
 // Updated delete route to use MongoDB ObjectId (_id)
