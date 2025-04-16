@@ -20,37 +20,30 @@ const Staff = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
   // Fetch staff data from backend
+  const fetchStaff = async () => {
+    try {
+      const response = await axios.get("http://localhost:4000/Staffs");
+      const formatted = response.data.map((staff) => ({
+        id: staff._id,
+        name: staff.full_name,
+        gender: staff.gender,
+        age: staff.age,
+        contact: staff.contact_number,
+        staffType: staff.staff_type,
+      }));
+      setStaffData(formatted);
+    } catch (error) {
+      console.error("Error fetching staff:", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchStaff = async () => {
-      try {
-        const response = await axios.get("http://localhost:4000/Staffs");
-        const formatted = response.data.map((staff) => ({
-          id: staff._id,
-          name: staff.full_name,
-          gender: staff.gender,
-          age: staff.age,
-          contact: staff.contact_number,
-          staffType: staff.staff_type,
-        }));
-        setStaffData(formatted);
-      } catch (error) {
-        console.error("Error fetching staff:", error);
-      }
-    };
     fetchStaff();
   }, []);
 
   // Add new staff to list
-  const handleAddStaff = (newStaff) => {
-    const formatted = {
-      id: newStaff._id,
-      name: newStaff.full_name,
-      gender: newStaff.gender,
-      age: newStaff.age,
-      contact: newStaff.contact_number,
-      staffType: newStaff.staff_type,
-    };
-    setStaffData((prev) => [...prev, formatted]);
+  const handleAddStaff = async (newStaff) => {
+    await fetchStaff(); // Ensure updated list
   };
 
   // Update existing staff
@@ -60,11 +53,8 @@ const Staff = () => {
         `http://localhost:4000/Staffs/updateStaff/${updatedStaff.id}`,
         updatedStaff
       );
-      const updatedList = staffData.map((staff) =>
-        staff.id === updatedStaff.id ? updatedStaff : staff
-      );
-      setStaffData(updatedList);
       console.log("Staff updated successfully:", response.data);
+      await fetchStaff(); // Refresh list
     } catch (error) {
       console.error("Error updating staff:", error);
     }
@@ -74,14 +64,14 @@ const Staff = () => {
   const handleDelete = async (id) => {
     try {
       await axios.delete(`http://localhost:4000/Staffs/DeleteStaff/${id}`);
-      setStaffData((prev) => prev.filter((s) => s.id !== id));
       console.log("Staff deleted successfully");
+      await fetchStaff(); // Refresh list
     } catch (error) {
       console.error("Error deleting staff:", error);
     }
   };
 
-  // Safe search filter
+  // Filter by search term
   const filteredStaff = staffData.filter(
     (staff) =>
       staff.name &&
