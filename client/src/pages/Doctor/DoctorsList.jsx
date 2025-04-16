@@ -10,14 +10,15 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import RegisterDoctorDialog from "./RegisterDoctorDialog"; // Import the dialog component
+import DoctorDetailsDialog from "./DoctorDeatilsDialog"
 
-const DoctorsList = ({ refresh, search }) => {
+const DoctorsList = ({ refresh, search, onEdit }) => {
   const [doctors, setDoctors] = useState([]);
   const [filteredDoctors, setFilteredDoctors] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [dialogOpen, setDialogOpen] = useState(false); // State to control dialog visibility
-  const [doctorToEdit, setDoctorToEdit] = useState(null); // Store doctor being edited
+
+  const [selectedDoctor, setSelectedDoctor] = useState(null);
+  const [viewDialogOpen, setViewDialogOpen] = useState(false);
 
   const fetchDoctors = async () => {
     try {
@@ -50,29 +51,28 @@ const DoctorsList = ({ refresh, search }) => {
     }
   }, [search, doctors]);
 
-  const handleView = (id) => {
-    console.log("View doctor:", id);
+  const handleView = (doctor) => {
+    setSelectedDoctor(doctor);
+    setViewDialogOpen(true);
   };
 
   const handleEdit = (doctor) => {
-    setDoctorToEdit(doctor); // Set the doctor to edit
-    setDialogOpen(true); // Open the dialog
+    onEdit(doctor);
   };
 
   const handleDelete = async (id) => {
-    // Confirm before deletion
     if (window.confirm("Are you sure you want to delete this doctor?")) {
       try {
-        // Send the delete request using MongoDB _id
         await axios.delete(`http://localhost:4000/doctors/deleteDoctor/${id}`);
-        setDoctors(doctors.filter((d) => d._id !== id)); // Remove the doctor from the state
+        setDoctors(doctors.filter((d) => d._id !== id));
       } catch (error) {
         console.error("Error deleting doctor:", error);
       }
     }
   };
 
-  if (loading) return <p className="text-center text-gray-500">Loading doctors...</p>;
+  if (loading)
+    return <p className="text-center text-gray-500">Loading doctors...</p>;
 
   return (
     <div className="bg-white rounded-lg shadow border border-gray-200 overflow-x-auto ml-4">
@@ -96,13 +96,25 @@ const DoctorsList = ({ refresh, search }) => {
                 <TableCell>{doctor.specialization}</TableCell>
                 <TableCell>
                   <div className="flex justify-center space-x-2">
-                    <Button variant="ghost" size="icon" onClick={() => handleView(doctor._id)}>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleView(doctor)}
+                    >
                       <Eye className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="icon" onClick={() => handleEdit(doctor)}>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleEdit(doctor)}
+                    >
                       <Pencil className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="icon" onClick={() => handleDelete(doctor._id)}>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleDelete(doctor._id)}
+                    >
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
@@ -119,12 +131,11 @@ const DoctorsList = ({ refresh, search }) => {
         </TableBody>
       </Table>
 
-      {/* Register or Edit Doctor Dialog */}
-      <RegisterDoctorDialog
-        open={dialogOpen}
-        onOpenChange={setDialogOpen}
-        onSuccess={() => fetchDoctors()} // Refresh the list after successful update
-        doctorToEdit={doctorToEdit}
+      {/* View Popup Dialog */}
+      <DoctorDetailsDialog
+        open={viewDialogOpen}
+        onOpenChange={setViewDialogOpen}
+        doctor={selectedDoctor}
       />
     </div>
   );
