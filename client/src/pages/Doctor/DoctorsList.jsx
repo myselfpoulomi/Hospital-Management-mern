@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Badge } from "@/components/ui/badge";
+import { Eye, Pencil, Trash2 } from "lucide-react";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button"; // Assuming you have a Button component
 
 const DoctorsList = ({ refresh, search }) => {
   const [doctors, setDoctors] = useState([]);
@@ -29,66 +31,106 @@ const DoctorsList = ({ refresh, search }) => {
     fetchDoctors();
   }, [refresh]);
 
-  // Filter doctors when `search` or `doctors` change
   useEffect(() => {
     if (!search.trim()) {
       setFilteredDoctors(doctors);
     } else {
       const lowerSearch = search.toLowerCase();
-      const filtered = doctors.filter(
-        (doctor) =>
-          doctor.full_name?.toLowerCase().includes(lowerSearch) ||
-          doctor.specialization?.toLowerCase().includes(lowerSearch) ||
-          doctor.degree?.toLowerCase().includes(lowerSearch) ||
-          doctor.doctor_id?.toLowerCase().includes(lowerSearch)
+      setFilteredDoctors(
+        doctors.filter(
+          (doctor) =>
+            doctor.full_name?.toLowerCase().includes(lowerSearch) ||
+            doctor.specialization?.toLowerCase().includes(lowerSearch) ||
+            doctor.degree?.toLowerCase().includes(lowerSearch)
+        )
       );
-      setFilteredDoctors(filtered);
     }
   }, [search, doctors]);
 
-  if (loading) return <p>Loading doctors...</p>;
+  const handleView = (doctorId) => {
+    // Implement logic to view doctor details (e.g., navigate to doctor detail page)
+    console.log(`View doctor with ID: ${doctorId}`);
+  };
+
+  const handleEdit = (doctorId) => {
+    // Implement logic to edit doctor details (e.g., show edit modal)
+    console.log(`Edit doctor with ID: ${doctorId}`);
+  };
+
+  const handleDelete = async (doctorId) => {
+    try {
+      await axios.delete(`http://localhost:4000/doctors/${doctorId}`);
+      setDoctors(doctors.filter((doctor) => doctor.id !== doctorId));
+      setFilteredDoctors(
+        filteredDoctors.filter((doctor) => doctor.id !== doctorId)
+      );
+      console.log(`Doctor with ID: ${doctorId} deleted`);
+    } catch (error) {
+      console.error("Error deleting doctor:", error);
+    }
+  };
+
+  if (loading)
+    return <p className="text-gray-500 text-center">Loading doctors...</p>;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<div className="bg-white rounded-lg shadow border border-gray-200 overflow-x-auto ml-4">
+  <Table>
+    <TableHeader>
+      <TableRow>
+        <TableHead>Sl No</TableHead>
+        <TableHead>Name</TableHead>
+        <TableHead>Degree</TableHead>
+        <TableHead>Specialization</TableHead>
+        <TableHead className="text-center">Actions</TableHead>
+      </TableRow>
+    </TableHeader>
+    <TableBody>
       {filteredDoctors.length > 0 ? (
-        filteredDoctors.map((doctor) => (
-          <Card key={doctor.id} className="hover:shadow-md transition-shadow p-3">
-            <CardHeader className="p-2">
-              <CardTitle className="text-xl">{doctor.full_name}</CardTitle>
-              <CardDescription>{doctor.degree}</CardDescription>
-              <p className="text-sm text-gray-500 mt-1">ID: {doctor.doctor_id}</p>
-            </CardHeader>
-            <CardContent className="p-2">
-              <div className="grid gap-2">
-                <div className="flex justify-between">
-                  <span className="text-sm font-medium">Specialization</span>
-                  <span className="text-sm">{doctor.specialization}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm font-medium">Current Patients</span>
-                  <span className="text-sm">{doctor.patient_count}</span>
-                </div>
-                <div className="flex justify-between items-center mt-1">
-                  <span className="text-sm font-medium">Status</span>
-                  <Badge
-                    variant="outline"
-                    className={`${
-                      doctor.status === "Active"
-                        ? "bg-green-100 text-green-800 border-green-200"
-                        : "bg-gray-100 text-gray-800 border-gray-200"
-                    }`}
-                  >
-                    {doctor.status || "Active"}
-                  </Badge>
-                </div>
+        filteredDoctors.map((doctor, index) => (
+          <TableRow key={doctor.id} className="hover:bg-gray-50 transition">
+            <TableCell className="pl-4">{index + 1}</TableCell>
+            <TableCell className="pl-4">{doctor.full_name}</TableCell>
+            <TableCell className="pl-4">{doctor.degree}</TableCell>
+            <TableCell className="pl-4">{doctor.specialization}</TableCell>
+            <TableCell className="px-6 py-3">
+              <div className="flex justify-center space-x-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleView(doctor.id)}
+                >
+                  <Eye className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleEdit(doctor.id)}
+                >
+                  <Pencil className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleDelete(doctor.id)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
               </div>
-            </CardContent>
-          </Card>
+            </TableCell>
+          </TableRow>
         ))
       ) : (
-        <p className="text-center col-span-full text-gray-500">No doctors found.</p>
+        <TableRow>
+          <TableCell colSpan="5" className="text-center text-gray-500 py-6">
+            No doctors found.
+          </TableCell>
+        </TableRow>
       )}
-    </div>
+    </TableBody>
+  </Table>
+</div>
+
   );
 };
 

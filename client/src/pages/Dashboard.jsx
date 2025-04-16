@@ -3,7 +3,7 @@ import axios from "axios";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import StatCard from "@/components/dashboard/StatCard";
 import RevenueChart from "@/components/dashboard/RevenueChart";
-import { Calendar, DollarSign, Users, Pill } from "lucide-react";
+import { Calendar, DollarSign, Users, Pill, Syringe, Stethoscope } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -138,7 +138,7 @@ const Dashboard = () => {
           <StatCard
             title="Doctors"
             value={doctorsCount}
-            icon={<Users size={20} className="text-blue-500" />}
+            icon={<Stethoscope size={20} className="text-blue-500" />}
             change={{
               ...getChange(doctorsCount, prevDoctorsCount),
               period: "from last month",
@@ -147,7 +147,7 @@ const Dashboard = () => {
           <StatCard
             title="Patients"
             value={patientsCount}
-            icon={<Calendar size={20} className="text-green-500" />}
+            icon={<Users size={20} className="text-green-500" />}
             change={{
               ...getChange(patientsCount, prevPatientsCount),
               period: "from last month",

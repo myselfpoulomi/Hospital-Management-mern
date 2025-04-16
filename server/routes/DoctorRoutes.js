@@ -6,7 +6,7 @@ import {getAllDoctors,getDoctorById,addDoctor,updateDoctor,deleteDoctor} from '.
 router.get("/", getAllDoctors);
 router.get("/:id",getDoctorById);
 router.post("/addDoc",addDoctor);
-router.put("/:id",updateDoctor);
-router.delete("/:id",deleteDoctor);
+router.put("/updateDoctor/:id",updateDoctor);
+router.delete("/deleteDoctor/:id",deleteDoctor);
 
 export default router

@@ -21,6 +21,7 @@ import {
   LogOut,
   BedDouble,
   Users,
+  Stethoscope,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -28,7 +29,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 const sidebarItems = [
   { name: "Dashboard", icon: Home, path: "/" },
   { name: "Prescriptions", icon: FileText, path: "/prescriptions" },
-  { name: "Doctors Deatils", icon: Calendar, path: "/doctors" },
+  { name: "Doctors Deatils", icon: Stethoscope, path: "/doctors" },
   { name: "Medicine Management", icon: Pill, path: "/medicine" },
   { name: "Staff Details", icon: Users, path: "/staff" },
   { name: "Financial", icon: DollarSign, path: "/financial" },

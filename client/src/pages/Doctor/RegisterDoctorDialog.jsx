@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
 
-const RegisterDoctorDialog = ({ open, onOpenChange, onSuccess }) => {
+const RegisterDoctorDialog = ({ open, onOpenChange, onSuccess, doctorToEdit }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [name, setName] = useState("");
   const [doctorId, setDoctorId] = useState("");
@@ -18,6 +18,16 @@ const RegisterDoctorDialog = ({ open, onOpenChange, onSuccess }) => {
   const [specialization, setSpecialization] = useState("");
   const [numOfPatients, setNumOfPatients] = useState("");
   const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    if (doctorToEdit) {
+      setName(doctorToEdit.full_name);
+      setDoctorId(doctorToEdit.doctor_id);
+      setDegree(doctorToEdit.degree);
+      setSpecialization(doctorToEdit.specialization);
+      setNumOfPatients(doctorToEdit.patient_count.toString());
+    }
+  }, [doctorToEdit]);
 
   const validate = () => {
     let newErrors = {};
@@ -37,17 +47,29 @@ const RegisterDoctorDialog = ({ open, onOpenChange, onSuccess }) => {
 
     setIsSubmitting(true);
     try {
-      const response = await axios.post("http://localhost:4000/doctors/addDoc", {
-        doctor_id: doctorId,
-        full_name: name,
-        degree,
-        specialization,
-        patient_count: Number(numOfPatients), // ✅ FIXED here
-      });
+      if (doctorToEdit) {
+        // Update existing doctor
+        const response = await axios.put(`http://localhost:4000/Doctors/updateDoctor/${doctorToEdit._id}`, {
+          doctor_id: doctorId,
+          full_name: name,
+          degree,
+          specialization,
+          patient_count: Number(numOfPatients),
+        });
+        console.log("Doctor updated successfully:", response.data);
+      } else {
+        // Add new doctor
+        const response = await axios.post("http://localhost:4000/Doctors/addDoctor", {
+          doctor_id: doctorId,
+          full_name: name,
+          degree,
+          specialization,
+          patient_count: Number(numOfPatients),
+        });
+        console.log("Doctor registered successfully:", response.data);
+      }
 
-      console.log("Doctor registered successfully:", response.data);
       onSuccess();
-
       setName("");
       setDoctorId("");
       setDegree("");
@@ -55,7 +77,7 @@ const RegisterDoctorDialog = ({ open, onOpenChange, onSuccess }) => {
       setNumOfPatients("");
       onOpenChange(false);
     } catch (error) {
-      console.error("Error registering doctor:", error.response?.data?.message || error.message);
+      console.error("Error submitting doctor:", error.response?.data?.message || error.message);
     } finally {
       setIsSubmitting(false);
     }
@@ -65,7 +87,7 @@ const RegisterDoctorDialog = ({ open, onOpenChange, onSuccess }) => {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Register New Doctor</DialogTitle>
+          <DialogTitle>{doctorToEdit ? "Update Doctor" : "Register New Doctor"}</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -133,7 +155,7 @@ const RegisterDoctorDialog = ({ open, onOpenChange, onSuccess }) => {
               Cancel
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Registering..." : "Register Doctor"}
+              {isSubmitting ? (doctorToEdit ? "Updating..." : "Registering...") : (doctorToEdit ? "Update Doctor" : "Register Doctor")}
             </Button>
           </DialogFooter>
         </form>
