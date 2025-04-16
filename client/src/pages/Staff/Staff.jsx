@@ -14,6 +14,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import AddStaffDialog from "./AddStaffDialog";
+import StaffDetailsDialog from "./StaffDetailsDialog"; // 👈 import the dialog
 
 const Staff = () => {
   const [staffData, setStaffData] = useState([]);
@@ -21,7 +22,10 @@ const Staff = () => {
 
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
+
   const [staffToEdit, setStaffToEdit] = useState(null);
+  const [staffToView, setStaffToView] = useState(null);
 
   const fetchStaff = async () => {
     try {
@@ -33,6 +37,8 @@ const Staff = () => {
         age: staff.age,
         contact: staff.contact_number,
         staffType: staff.staff_type,
+        email: staff.email,
+        address: staff.address,
       }));
       setStaffData(formatted);
     } catch (error) {
@@ -61,11 +67,6 @@ const Staff = () => {
   const filteredStaff = staffData.filter((staff) =>
     staff.name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  const handleCopy = (staff) => {
-    const info = `Name: ${staff.name}, Gender: ${staff.gender}, Age: ${staff.age}, Contact: ${staff.contact}, Type: ${staff.staffType}`;
-    navigator.clipboard.writeText(info);
-  };
 
   return (
     <DashboardLayout>
@@ -142,7 +143,14 @@ const Staff = () => {
                   </TableCell>
                   <TableCell className="px-6 py-3">
                     <div className="flex justify-center space-x-2">
-                      <Button variant="ghost" size="icon" onClick={() => handleCopy(staff)}>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => {
+                          setStaffToView(staff);
+                          setDetailsDialogOpen(true);
+                        }}
+                      >
                         <Eye className="h-4 w-4" />
                       </Button>
                       <Button
@@ -187,6 +195,15 @@ const Staff = () => {
           setOpen={setEditDialogOpen}
           staffToEdit={staffToEdit}
           onUpdate={fetchStaff}
+        />
+      )}
+
+      {/* View Staff Details Dialog */}
+      {staffToView && (
+        <StaffDetailsDialog
+          open={detailsDialogOpen}
+          onOpenChange={setDetailsDialogOpen}
+          staff={staffToView}
         />
       )}
     </DashboardLayout>
