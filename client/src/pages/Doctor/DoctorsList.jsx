@@ -9,9 +9,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button"; // Assuming you have a Button component
+import { Button } from "@/components/ui/button";
 
-const DoctorsList = ({ refresh, search }) => {
+const DoctorsList = ({ refresh, search, onEdit }) => {
   const [doctors, setDoctors] = useState([]);
   const [filteredDoctors, setFilteredDoctors] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -47,90 +47,70 @@ const DoctorsList = ({ refresh, search }) => {
     }
   }, [search, doctors]);
 
-  const handleView = (doctorId) => {
-    // Implement logic to view doctor details (e.g., navigate to doctor detail page)
-    console.log(`View doctor with ID: ${doctorId}`);
+  const handleView = (id) => {
+    console.log("View doctor:", id);
   };
 
-  const handleEdit = (doctorId) => {
-    // Implement logic to edit doctor details (e.g., show edit modal)
-    console.log(`Edit doctor with ID: ${doctorId}`);
+  const handleEdit = (doctor) => {
+    onEdit(doctor);
   };
 
-  const handleDelete = async (doctorId) => {
+  const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:4000/doctors/${doctorId}`);
-      setDoctors(doctors.filter((doctor) => doctor.id !== doctorId));
-      setFilteredDoctors(
-        filteredDoctors.filter((doctor) => doctor.id !== doctorId)
-      );
-      console.log(`Doctor with ID: ${doctorId} deleted`);
+      await axios.delete(`http://localhost:4000/doctors/${id}`);
+      setDoctors(doctors.filter((d) => d._id !== id));
     } catch (error) {
       console.error("Error deleting doctor:", error);
     }
   };
 
-  if (loading)
-    return <p className="text-gray-500 text-center">Loading doctors...</p>;
+  if (loading) return <p className="text-center text-gray-500">Loading doctors...</p>;
 
   return (
-<div className="bg-white rounded-lg shadow border border-gray-200 overflow-x-auto ml-4">
-  <Table>
-    <TableHeader>
-      <TableRow>
-        <TableHead>Sl No</TableHead>
-        <TableHead>Name</TableHead>
-        <TableHead>Degree</TableHead>
-        <TableHead>Specialization</TableHead>
-        <TableHead className="text-center">Actions</TableHead>
-      </TableRow>
-    </TableHeader>
-    <TableBody>
-      {filteredDoctors.length > 0 ? (
-        filteredDoctors.map((doctor, index) => (
-          <TableRow key={doctor.id} className="hover:bg-gray-50 transition">
-            <TableCell className="pl-4">{index + 1}</TableCell>
-            <TableCell className="pl-4">{doctor.full_name}</TableCell>
-            <TableCell className="pl-4">{doctor.degree}</TableCell>
-            <TableCell className="pl-4">{doctor.specialization}</TableCell>
-            <TableCell className="px-6 py-3">
-              <div className="flex justify-center space-x-2">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => handleView(doctor.id)}
-                >
-                  <Eye className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => handleEdit(doctor.id)}
-                >
-                  <Pencil className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => handleDelete(doctor.id)}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            </TableCell>
+    <div className="bg-white rounded-lg shadow border border-gray-200 overflow-x-auto ml-4">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Sl No</TableHead>
+            <TableHead>Name</TableHead>
+            <TableHead>Degree</TableHead>
+            <TableHead>Specialization</TableHead>
+            <TableHead className="text-center">Actions</TableHead>
           </TableRow>
-        ))
-      ) : (
-        <TableRow>
-          <TableCell colSpan="5" className="text-center text-gray-500 py-6">
-            No doctors found.
-          </TableCell>
-        </TableRow>
-      )}
-    </TableBody>
-  </Table>
-</div>
-
+        </TableHeader>
+        <TableBody>
+          {filteredDoctors.length ? (
+            filteredDoctors.map((doctor, index) => (
+              <TableRow key={doctor._id}>
+                <TableCell>{index + 1}</TableCell>
+                <TableCell>{doctor.full_name}</TableCell>
+                <TableCell>{doctor.degree}</TableCell>
+                <TableCell>{doctor.specialization}</TableCell>
+                <TableCell>
+                  <div className="flex justify-center space-x-2">
+                    <Button variant="ghost" size="icon" onClick={() => handleView(doctor._id)}>
+                      <Eye className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="icon" onClick={() => handleEdit(doctor)}>
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="icon" onClick={() => handleDelete(doctor._id)}>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan="5" className="text-center text-gray-500 py-6">
+                No doctors found.
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+    </div>
   );
 };
 
