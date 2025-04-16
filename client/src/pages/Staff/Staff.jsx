@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Copy, Eye, FileEdit, Search, Trash2 } from "lucide-react";
+import { Eye, Pencil, Trash2, Search, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -19,7 +19,10 @@ const Staff = () => {
   const [staffData, setStaffData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Fetch staff data from backend
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [staffToEdit, setStaffToEdit] = useState(null);
+
   const fetchStaff = async () => {
     try {
       const response = await axios.get("http://localhost:4000/Staffs");
@@ -41,37 +44,20 @@ const Staff = () => {
     fetchStaff();
   }, []);
 
-  // Add new staff to list
-  const handleAddStaff = async (newStaff) => {
-    await fetchStaff(); // Ensure updated list
+  const handleAddStaff = async () => {
+    await fetchStaff();
   };
 
-  // Update existing staff
-  const handleUpdateStaff = async (updatedStaff) => {
-    try {
-      const response = await axios.put(
-        `http://localhost:4000/Staffs/updateStaff/${updatedStaff.id}`,
-        updatedStaff
-      );
-      console.log("Staff updated successfully:", response.data);
-      await fetchStaff(); // Refresh list
-    } catch (error) {
-      console.error("Error updating staff:", error);
-    }
-  };
-
-  // Delete staff from list
   const handleDelete = async (id) => {
     try {
       await axios.delete(`http://localhost:4000/Staffs/DeleteStaff/${id}`);
       console.log("Staff deleted successfully");
-      await fetchStaff(); // Refresh list
+      await fetchStaff();
     } catch (error) {
       console.error("Error deleting staff:", error);
     }
   };
 
-  // Filter by search term
   const filteredStaff = staffData.filter(
     (staff) =>
       staff.name &&
@@ -86,16 +72,17 @@ const Staff = () => {
   return (
     <DashboardLayout>
       <div className="container mx-auto">
-        {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <div>
             <h1 className="text-2xl font-bold text-blue-600">Staff Details</h1>
             <p className="text-gray-600">Manage staff records and information</p>
           </div>
-          <AddStaffDialog onAdd={handleAddStaff} />
+          <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => setAddDialogOpen(true)}>
+            <UserPlus className="mr-2 h-4 w-4" />
+            Add Staff
+          </Button>
         </div>
 
-        {/* Search bar */}
         <div className="flex justify-between items-center mb-6">
           <div className="relative w-full">
             <Search className="absolute left-2 top-3 h-4 w-4 text-gray-500" />
@@ -111,7 +98,6 @@ const Staff = () => {
           </Button>
         </div>
 
-        {/* Table */}
         <div className="border rounded-md overflow-x-auto">
           <Table>
             <TableHeader>
@@ -155,19 +141,18 @@ const Staff = () => {
                   </TableCell>
                   <TableCell className="px-6 py-3">
                     <div className="flex justify-center space-x-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleCopy(staff)}
-                      >
+                      <Button variant="ghost" size="icon" onClick={() => handleCopy(staff)}>
                         <Eye className="h-4 w-4" />
                       </Button>
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => handleUpdateStaff(staff)}
+                        onClick={() => {
+                          setStaffToEdit(staff);
+                          setEditDialogOpen(true);
+                        }}
                       >
-                        <FileEdit className="h-4 w-4" />
+                        <Pencil className="h-4 w-4" />
                       </Button>
                       <Button
                         variant="ghost"
@@ -184,6 +169,25 @@ const Staff = () => {
           </Table>
         </div>
       </div>
+
+      {/* Add Staff Dialog */}
+      <AddStaffDialog
+        mode="add"
+        open={addDialogOpen}
+        setOpen={setAddDialogOpen}
+        onAdd={handleAddStaff}
+      />
+
+      {/* Edit Staff Dialog */}
+      {staffToEdit && (
+        <AddStaffDialog
+          mode="edit"
+          open={editDialogOpen}
+          setOpen={setEditDialogOpen}
+          staffToEdit={staffToEdit}
+          onUpdate={fetchStaff}
+        />
+      )}
     </DashboardLayout>
   );
 };
