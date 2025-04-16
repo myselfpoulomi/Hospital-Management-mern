@@ -56,11 +56,15 @@ const DoctorsList = ({ refresh, search, onEdit }) => {
   };
 
   const handleDelete = async (id) => {
-    try {
-      await axios.delete(`http://localhost:4000/doctors/${id}`);
-      setDoctors(doctors.filter((d) => d._id !== id));
-    } catch (error) {
-      console.error("Error deleting doctor:", error);
+    // Confirm before deletion
+    if (window.confirm("Are you sure you want to delete this doctor?")) {
+      try {
+        // Send the delete request using MongoDB _id
+        await axios.delete(`http://localhost:4000/doctors/deleteDoctor/${id}`);
+        setDoctors(doctors.filter((d) => d._id !== id)); // Remove the doctor from the state
+      } catch (error) {
+        console.error("Error deleting doctor:", error);
+      }
     }
   };
 

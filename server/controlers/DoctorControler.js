@@ -57,15 +57,17 @@ const updateDoctor = async (req, res) => {
 };
 
 // Delete a doctor
+// Updated delete route to use MongoDB ObjectId (_id)
 const deleteDoctor = async (req, res) => {
     try {
-        const deletedDoctor = await DoctorModel.findOneAndDelete({ doctor_id: req.params.id });
+        const deletedDoctor = await DoctorModel.findByIdAndDelete(req.params.id);
         if (!deletedDoctor) return res.status(404).json({ message: "Doctor not found" });
         res.status(200).json({ message: "Doctor deleted successfully" });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
 };
+
 
 export  {getAllDoctors,getDoctorById,addDoctor,updateDoctor,deleteDoctor}
 
