@@ -21,7 +21,7 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs";
 
-// Modified formatCurrency for INR
+// Format revenue to INR currency
 const formatCurrency = (value) =>
   new Intl.NumberFormat("en-IN", {
     style: "currency",
@@ -35,7 +35,7 @@ const RevenueChart = ({ prescriptions = [], totalRevenue = 0 }) => {
     let data = [];
 
     if (timeframe === "daily") {
-      // Group by 4-hour intervals for today
+      // Group revenue by 4-hour intervals
       data = Array(6)
         .fill(0)
         .map((_, i) => {
@@ -55,28 +55,32 @@ const RevenueChart = ({ prescriptions = [], totalRevenue = 0 }) => {
           if (data[index]) data[index].revenue += p.price;
         }
       });
-    } else if (timeframe === "weekly") {
-      // Group by days of the week
+    }
+
+    if (timeframe === "weekly") {
+      // Group revenue by days of the week
       const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-      data = weekDays.map((d) => ({ name: d, revenue: 0 }));
+      data = weekDays.map((day) => ({ name: day, revenue: 0 }));
 
       prescriptions.forEach((p) => {
         const createdAt = new Date(p.createdAt);
         const dayIndex = createdAt.getDay();
-        if (data[dayIndex]) data[dayIndex].revenue += p.price;
+        data[dayIndex].revenue += p.price;
       });
-    } else if (timeframe === "monthly") {
-      // Group by months
+    }
+
+    if (timeframe === "monthly") {
+      // Group revenue by months
       const months = [
         "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
       ];
-      data = months.map((m) => ({ name: m, revenue: 0 }));
+      data = months.map((month) => ({ name: month, revenue: 0 }));
 
       prescriptions.forEach((p) => {
         const createdAt = new Date(p.createdAt);
         const monthIndex = createdAt.getMonth();
-        if (data[monthIndex]) data[monthIndex].revenue += p.price;
+        data[monthIndex].revenue += p.price;
       });
     }
 
@@ -101,8 +105,8 @@ const RevenueChart = ({ prescriptions = [], totalRevenue = 0 }) => {
             </div>
           </div>
 
-          {["daily", "weekly", "monthly"].map((timeframe, index) => (
-            <TabsContent key={index} value={timeframe} className="mt-0">
+          {["daily", "weekly", "monthly"].map((timeframe) => (
+            <TabsContent key={timeframe} value={timeframe} className="mt-0">
               <ResponsiveContainer width="100%" height={300}>
                 <AreaChart
                   data={calculateRevenueData(timeframe)}

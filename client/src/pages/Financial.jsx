@@ -26,7 +26,7 @@ const Financial = () => {
         (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
       );
       setPrescriptions(sorted);
-      setFilteredPrescriptions(sorted); // Set initially to all
+      setFilteredPrescriptions(sorted);
       const total = sorted.reduce((sum, p) => sum + p.price, 0);
       setTotalRevenue(total);
     } catch (error) {
@@ -39,15 +39,17 @@ const Financial = () => {
     setSearchQuery(value);
 
     if (value.trim() === "") {
-      // Show all if input is empty
       setFilteredPrescriptions(prescriptions);
       const total = prescriptions.reduce((sum, p) => sum + p.price, 0);
       setTotalRevenue(total);
     } else {
-      // Filter by patient name (case-insensitive)
-      const filtered = prescriptions.filter((p) =>
-        p.patientName.toLowerCase().includes(value.toLowerCase())
-      );
+      const filtered = prescriptions.filter((p) => {
+        const name =
+          p.patientName?.full_name ||
+          `${p.patientName?.firstName || ""} ${p.patientName?.lastName || ""}`;
+        return name.toLowerCase().includes(value.toLowerCase());
+      });
+
       setFilteredPrescriptions(filtered);
       const total = filtered.reduce((sum, p) => sum + p.price, 0);
       setTotalRevenue(total);
@@ -111,7 +113,10 @@ const Financial = () => {
                       <TableCell className="font-medium">
                         {new Date(item.createdAt).toLocaleString()}
                       </TableCell>
-                      <TableCell>{item.patientName}</TableCell>
+                      <TableCell>
+                        {item.patientName?.full_name ||
+                          `${item.patientName?.firstName || ""} ${item.patientName?.lastName || ""}`}
+                      </TableCell>
                       <TableCell>Prescription</TableCell>
                       <TableCell className="font-medium">
                         ₹{item.price}
