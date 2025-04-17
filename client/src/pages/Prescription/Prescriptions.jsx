@@ -82,7 +82,6 @@ const Prescriptions = ({ setIsAuthenticated }) => {
         </div>
 
         <div>
-          <h2 className="text-lg font-semibold mb-2">Recent Prescriptions</h2>
           <PrescriptionTable
             prescriptions={filteredPrescriptions}
             onEdit={handleEdit}
