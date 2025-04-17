@@ -10,24 +10,24 @@ const seedAdmin = async () => {
         });
         console.log("Connected to MongoDB");
 
-        const existing = await AdminModel.findOne({ username: "admin" });
+        const existing = await AdminModel.findOne({ username: "rec" });
         if (existing) {
             console.log("Admin already exists");
             return process.exit(0);
         }
 
         const admin = new AdminModel({
-            username: "admin",
-            email: "admin@gmail.com",
-            password: "qqq", // 🔥 Plain text for seeding only!
+            username: "rec",
+            email: "receptionist@gmail.com",
+            password: "111",
             access: {
-                dashboard: true,
+                dashboard: false,
                 prescription: true,
                 doctordetails: true,
-                medicinemanagement: true,
-                staffdetails: true,
+                medicinemanagement: false,
+                staffdetails: false,
                 patientdetails: true,
-                financial: true,
+                financial: false,
             },
         });
 

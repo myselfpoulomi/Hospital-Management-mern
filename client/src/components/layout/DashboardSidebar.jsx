@@ -1,31 +1,24 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import {
-  Activity,
-  Calendar,
   FileText,
   Home,
   Pill,
   DollarSign,
-  Clipboard,
   User,
-  Settings,
   LogOut,
-  BedDouble,
   Users,
   Stethoscope,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useNavigate } from "react-router-dom";
+
 const sidebarItems = [
   { name: "Dashboard", icon: Home, path: "/" },
   { name: "Prescriptions", icon: FileText, path: "/prescriptions" },
@@ -47,6 +40,17 @@ const DashboardSidebar = ({ setIsAuthenticated, session }) => {
     setIsAuthenticated(false);
   };
 
+  // Map route paths to access keys
+  const accessMap = {
+    "/": "dashboard",
+    "/prescriptions": "prescription",
+    "/doctors": "doctordetails",
+    "/medicine": "medicinemanagement",
+    "/staff": "staffdetails",
+    "/financial": "financial",
+    "/patients": "patientdetails",
+  };
+
   return (
     <Sidebar className="border-r border-gray-200">
       <SidebarHeader className="px-6 py-5 flex items-center justify-between">
@@ -60,25 +64,29 @@ const DashboardSidebar = ({ setIsAuthenticated, session }) => {
       <SidebarContent className="px-3">
         <div className="mb-6 mt-2">
           <nav className="space-y-1">
-            {sidebarItems.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${currentPath === item.path
-                  ? "bg-medical-primary text-blue-700"
-                  : "text-medical-gray-700 hover:bg-medical-light hover:text-medical-primary"
-                  }`}
-              >
-                <item.icon
-                  size={18}
-                  className={`$${currentPath === item.path
-                    ? "text-white"
-                    : "text-medical-gray-500"
+            {sidebarItems
+              .filter(
+                (item) => session?.access?.[accessMap[item.path]] // Only show if access is true
+              )
+              .map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${currentPath === item.path
+                    ? "bg-medical-primary text-blue-700"
+                    : "text-medical-gray-700 hover:bg-medical-light hover:text-medical-primary"
                     }`}
-                />
-                <span>{item.name}</span>
-              </Link>
-            ))}
+                >
+                  <item.icon
+                    size={18}
+                    className={`${currentPath === item.path
+                      ? "text-blue-700"
+                      : "text-medical-gray-500"
+                      }`}
+                  />
+                  <span>{item.name}</span>
+                </Link>
+              ))}
           </nav>
         </div>
       </SidebarContent>
@@ -87,9 +95,11 @@ const DashboardSidebar = ({ setIsAuthenticated, session }) => {
         <div className="flex items-center mb-4 px-3">
           <div className="ml-3">
             <div className="text-sm font-semibold text-medical-gray-800 text-black">
-              {session && session.username}
+              {session?.username}
             </div>
-            <div className="text-xs text-medical-gray-500">{session && session.email}</div>
+            <div className="text-xs text-medical-gray-500">
+              {session?.email}
+            </div>
           </div>
         </div>
         <div className="space-y-1">
@@ -101,7 +111,6 @@ const DashboardSidebar = ({ setIsAuthenticated, session }) => {
           >
             <LogOut size={16} className="mr-2" />
             Logout
-
           </Button>
         </div>
       </SidebarFooter>
