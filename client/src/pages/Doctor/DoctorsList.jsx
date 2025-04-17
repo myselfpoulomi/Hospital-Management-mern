@@ -1,3 +1,4 @@
+// DoctorsList.jsx
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Eye, Pencil, Trash2 } from "lucide-react";
@@ -11,6 +12,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import DoctorDetailsDialog from "./DoctorDeatilsDialog";
+import RegisterDoctorDialog from "./RegisterDoctorDialog";
 
 const DoctorsList = ({ refresh, search, onEdit }) => {
   const [doctors, setDoctors] = useState([]);
@@ -19,6 +21,9 @@ const DoctorsList = ({ refresh, search, onEdit }) => {
 
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
+
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [doctorToEdit, setDoctorToEdit] = useState(null);
 
   const [specializationFilter, setSpecializationFilter] = useState("All");
   const [specializations, setSpecializations] = useState([]);
@@ -71,7 +76,8 @@ const DoctorsList = ({ refresh, search, onEdit }) => {
   };
 
   const handleEdit = (doctor) => {
-    onEdit(doctor);
+    setDoctorToEdit(doctor);
+    setEditDialogOpen(true);
   };
 
   const handleDelete = async (id) => {
@@ -162,11 +168,22 @@ const DoctorsList = ({ refresh, search, onEdit }) => {
         </TableBody>
       </Table>
 
-      {/* View Popup Dialog */}
+      {/* View Dialog */}
       <DoctorDetailsDialog
         open={viewDialogOpen}
         onOpenChange={setViewDialogOpen}
         doctor={selectedDoctor}
+      />
+
+      {/* Edit Dialog */}
+      <RegisterDoctorDialog
+        open={editDialogOpen}
+        onOpenChange={(open) => {
+          setEditDialogOpen(open);
+          if (!open) setDoctorToEdit(null);
+        }}
+        onSuccess={fetchDoctors}
+        doctorToEdit={doctorToEdit}
       />
     </div>
   );
