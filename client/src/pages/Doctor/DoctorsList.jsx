@@ -61,14 +61,14 @@ const DoctorsList = ({ refresh, search, onEdit }) => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this doctor?")) {
+     
       try {
         await axios.delete(`http://localhost:4000/doctors/deleteDoctor/${id}`);
         setDoctors(doctors.filter((d) => d._id !== id));
       } catch (error) {
         console.error("Error deleting doctor:", error);
       }
-    }
+    
   };
 
   if (loading)
