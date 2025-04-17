@@ -14,7 +14,7 @@ import {
 import { Eye, EyeOff, Lock, User } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-const Login = ({ setIsAuthenticated } ) => {
+const Login = ({ setIsAuthenticated }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);

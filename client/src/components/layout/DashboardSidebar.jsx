@@ -36,7 +36,7 @@ const sidebarItems = [
   { name: "Patients Details", icon: User, path: "/patients" },
 ];
 
-const DashboardSidebar = ({ setIsAuthenticated }) => {
+const DashboardSidebar = ({ setIsAuthenticated, session }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const currentPath = location.pathname;
@@ -85,17 +85,11 @@ const DashboardSidebar = ({ setIsAuthenticated }) => {
 
       <SidebarFooter className="px-3 py-4 border-t border-gray-200">
         <div className="flex items-center mb-4 px-3">
-          <Avatar className="h-10 w-10">
-            <AvatarImage src="" />
-            <AvatarFallback className="bg-medical-primary text-white">
-              AD
-            </AvatarFallback>
-          </Avatar>
           <div className="ml-3">
             <div className="text-sm font-semibold text-medical-gray-800 text-black">
-              Dr. Smith
+              {session && session.username}
             </div>
-            <div className="text-xs text-medical-gray-500">Administrator</div>
+            <div className="text-xs text-medical-gray-500">{session && session.email}</div>
           </div>
         </div>
         <div className="space-y-1">

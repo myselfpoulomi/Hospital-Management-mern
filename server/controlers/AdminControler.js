@@ -70,6 +70,7 @@ import AdminModel from "../modules/AdminSchema.js";
         id: admin._id,
         username: admin.username,
         access: admin.access,
+        email: admin.email,
       },
     });
   } catch (error) {
