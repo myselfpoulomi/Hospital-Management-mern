@@ -1,4 +1,5 @@
 import DoctorModel from '../modules/DoctorSchema.js'
+import Prescription from '../modules/PresciptionSchema.js';
 
 // Get all doctors
 const getAllDoctors = async (req, res) => {
@@ -76,7 +77,19 @@ const deleteDoctor = async (req, res) => {
     }
 };
 
+const patientCount = async (req, res) => {
+    try {
+      const doctorId = req.params.id;
+  
+      const count = await Prescription.countDocuments({ assignedDoctor: doctorId });
+  
+      res.status(200).json({ count });
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  };
 
-export  {getAllDoctors,getDoctorById,addDoctor,updateDoctor,deleteDoctor}
+
+export  {getAllDoctors,getDoctorById,addDoctor,updateDoctor,deleteDoctor,patientCount}
 
 

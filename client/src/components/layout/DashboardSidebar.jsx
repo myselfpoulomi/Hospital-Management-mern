@@ -45,7 +45,7 @@ const DashboardSidebar = () => {
       <SidebarHeader className="px-6 py-5 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="text-[25px] font-bold text-medical-gray-800 text-blue-700">
-            HealthBoard
+            HealthHub
           </span>
         </div>
       </SidebarHeader>
