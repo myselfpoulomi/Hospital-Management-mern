@@ -10,29 +10,30 @@ const seedAdmin = async () => {
         });
         console.log("Connected to MongoDB");
 
-        const existing = await AdminModel.findOne({ username: "rec" });
-        if (existing) {
-            console.log("Admin already exists");
-            return process.exit(0);
-        }
-
-        const admin = new AdminModel({
-            username: "rec",
-            email: "receptionist@gmail.com",
-            password: "111",
-            access: {
-                dashboard: false,
-                prescription: true,
-                doctordetails: true,
-                medicinemanagement: false,
-                staffdetails: false,
-                patientdetails: true,
-                financial: false,
+        const updatedAdmin = await AdminModel.findOneAndUpdate(
+            { username: "rec" },
+            {
+                username: "rec",
+                email: "receptionist@gmail.com",
+                password: "111",
+                access: {
+                    dashboard: true,
+                    prescription: true,
+                    doctordetails: true,
+                    medicinemanagement: false,
+                    staffdetails: false,
+                    patientdetails: true,
+                    financial: false,
+                },
             },
-        });
+            {
+                new: true,
+                upsert: true,
+                setDefaultsOnInsert: true,
+            }
+        );
 
-        await admin.save();
-        console.log("Admin user created");
+        console.log("Admin user created or updated:", updatedAdmin.username);
         process.exit(0);
     } catch (err) {
         console.error("Error seeding admin:", err);
