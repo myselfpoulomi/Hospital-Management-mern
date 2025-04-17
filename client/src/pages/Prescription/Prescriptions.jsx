@@ -7,7 +7,7 @@ import { Search } from "lucide-react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import axios from "axios";
 
-const Prescriptions = () => {
+const Prescriptions = ({ setIsAuthenticated }) => {
   const [prescriptions, setPrescriptions] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -59,7 +59,7 @@ const Prescriptions = () => {
   );
 
   return (
-    <DashboardLayout>
+    <DashboardLayout setIsAuthenticated={setIsAuthenticated}>
       <div className="space-y-4">
         <div className="flex justify-between items-center gap-2">
           <div className="w-[350px]">

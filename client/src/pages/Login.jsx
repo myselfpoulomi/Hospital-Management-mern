@@ -12,7 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Eye, EyeOff, Lock, User } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
 const Login = ({ setIsAuthenticated }) => {
   const [username, setUsername] = useState("");
@@ -20,7 +20,6 @@ const Login = ({ setIsAuthenticated }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { toast } = useToast();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -37,28 +36,17 @@ const Login = ({ setIsAuthenticated }) => {
       console.log("Login response:", data); // 👈 For debugging
 
       if (response.ok && data.admin) {
-        toast({
-          title: "Login successful",
-          description: `Welcome, ${data.admin.username}`,
-        });
+        toast.success(`Welcome, ${data.admin.username}`);
 
         localStorage.setItem("session", JSON.stringify(data.admin));
         setIsAuthenticated(true);
         navigate("/");
       } else {
-        toast({
-          title: "Login failed",
-          description: data.message || "Invalid credentials",
-          variant: "destructive",
-        });
+        toast.error(data.message || "Invalid credentials");
       }
     } catch (error) {
       console.error("Login error:", error);
-      toast({
-        title: "Network error",
-        description: "Unable to connect to server",
-        variant: "destructive",
-      });
+      toast.error("Network error");
     } finally {
       setIsLoading(false);
     }

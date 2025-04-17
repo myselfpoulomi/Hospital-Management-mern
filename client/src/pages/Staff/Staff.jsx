@@ -16,7 +16,7 @@ import DashboardLayout from "@/components/layout/DashboardLayout";
 import AddStaffDialog from "./AddStaffDialog";
 import StaffDetailsDialog from "./StaffDetailsDialog"; // 👈 import the dialog
 
-const Staff = () => {
+const Staff = ({ setIsAuthenticated }) => {
   const [staffData, setStaffData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -69,7 +69,7 @@ const Staff = () => {
   );
 
   return (
-    <DashboardLayout>
+    <DashboardLayout setIsAuthenticated={setIsAuthenticated}>
       <div className="container mx-auto">
         <div className="flex justify-between items-center mb-6">
           <div>

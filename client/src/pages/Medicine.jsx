@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Funnel, Download } from "lucide-react";
 
-const Medicine = () => {
+const Medicine = ({ setIsAuthenticated }) => {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [medicines, setMedicines] = useState([]);
   const [allMedicines, setAllMedicines] = useState([]);
@@ -77,7 +77,7 @@ const Medicine = () => {
   });
 
   return (
-    <DashboardLayout className="w-full">
+    <DashboardLayout setIsAuthenticated={setIsAuthenticated}>
       <div className="mb-4 flex justify-between items-start">
         <div>
           <h2 className="text-xl font-bold text-blue-700">Medicine Management</h2>

@@ -8,8 +8,7 @@ import Medicine from "./pages/Medicine";
 import Staff from "./pages/Staff/Staff";
 import Financial from "./pages/Financial";
 import NotFound from "./pages/NotFound";
-
-import { LogIn } from "lucide-react";
+import { Toaster } from "sonner"
 import Login from "./pages/Login";
 import PatientsPage from "./pages/Patient/PatientsPage";
 import DoctorsPage from "./pages/Doctor/DoctorsPage";
@@ -34,22 +33,23 @@ const App = () => {
   }, [session]);
 
   if (isLoading) {
-    return <div className="flex justify-center items-center h-screen">Loading...</div>;
+    return <div className="flex justify-center items-center h-screen">I loveeeeeee youuuuuu Rituuuuuuu bebeeeeeeeeeee... loading...</div>;
   }
 
   return <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <BrowserRouter>
+        <Toaster position="top-center" />
         <Routes>
           <Route path="/" element={isAuthenticated ? <Dashboard setIsAuthenticated={setIsAuthenticated} /> : <Navigate to="/login" />} />
           <Route path="/login" element={isAuthenticated ? <Navigate to="/" /> : <Login setIsAuthenticated={setIsAuthenticated} />} />
-          <Route path="/prescriptions" element={<Prescriptions />} />
-          <Route path="/prescription/:id" element={<PrescriptionDetails />} />
-          <Route path="/doctors" element={<DoctorsPage />} />
-          <Route path="/medicine" element={<Medicine />} />
-          <Route path="/staff" element={<Staff />} />
-          <Route path="/financial" element={<Financial />} />
-          <Route path="/patients" element={<PatientsPage />} />
+          <Route path="/prescriptions" element={<Prescriptions setIsAuthenticated={setIsAuthenticated} />} />
+          <Route path="/prescription/:id" element={isAuthenticated ? <PrescriptionDetails /> : <Navigate to="/login" />} />
+          <Route path="/doctors" element={isAuthenticated ? <DoctorsPage setIsAuthenticated={setIsAuthenticated} /> : <Navigate to="/login" />} />
+          <Route path="/medicine" element={isAuthenticated ? <Medicine setIsAuthenticated={setIsAuthenticated} /> : <Navigate to="/login" />} />
+          <Route path="/staff" element={isAuthenticated ? <Staff setIsAuthenticated={setIsAuthenticated} /> : <Navigate to="/login" />} />
+          <Route path="/financial" element={isAuthenticated ? <Financial setIsAuthenticated={setIsAuthenticated} /> : <Navigate to="/login" />} />
+          <Route path="/patients" element={isAuthenticated ? <PatientsPage setIsAuthenticated={setIsAuthenticated} /> : <Navigate to="/login" />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

@@ -21,7 +21,7 @@ import AddPatientForm from "./AddPatientForm";
 import PatientDetails from "./PatientDetails";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 
-const PatientsPage = () => {
+const PatientsPage = ({ setIsAuthenticated }) => {
   const { toast } = useToast();
   const [patients, setPatients] = useState([]);
   const [allPatients, setAllPatients] = useState([]); // to store the full list
@@ -141,7 +141,7 @@ const PatientsPage = () => {
   };
 
   return (
-    <DashboardLayout>
+    <DashboardLayout setIsAuthenticated={setIsAuthenticated}>
       <div>
         <div className="flex justify-between items-center mb-6">
           <div>

@@ -13,7 +13,7 @@ import { Search } from "lucide-react";
 import RevenueChart from "@/components/dashboard/RevenueChart";
 import axios from "axios";
 
-const Financial = () => {
+const Financial = ({ setIsAuthenticated }) => {
   const [prescriptions, setPrescriptions] = useState([]);
   const [filteredPrescriptions, setFilteredPrescriptions] = useState([]);
   const [totalRevenue, setTotalRevenue] = useState(0);
@@ -61,7 +61,7 @@ const Financial = () => {
   }, []);
 
   return (
-    <DashboardLayout>
+    <DashboardLayout setIsAuthenticated={setIsAuthenticated}>
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-medical-gray-900 text-blue-700">
           Financial Overview

@@ -7,7 +7,7 @@ import DoctorsList from "./DoctorsList";
 import RegisterDoctorDialog from "./RegisterDoctorDialog";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 
-const DoctorsPage = () => {
+const DoctorsPage = ({ setIsAuthenticated }) => {
   const [isRegisterDialogOpen, setIsRegisterDialogOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
@@ -22,7 +22,7 @@ const DoctorsPage = () => {
   };
 
   return (
-    <DashboardLayout className="w-full">
+    <DashboardLayout setIsAuthenticated={setIsAuthenticated}>
       <div className="container mx-auto">
         <div className="flex justify-between items-center mb-6">
           <div>
