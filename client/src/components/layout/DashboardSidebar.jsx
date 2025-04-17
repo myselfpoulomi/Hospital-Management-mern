@@ -25,7 +25,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-
+import { useNavigate } from "react-router-dom";
 const sidebarItems = [
   { name: "Dashboard", icon: Home, path: "/" },
   { name: "Prescriptions", icon: FileText, path: "/prescriptions" },
@@ -36,9 +36,16 @@ const sidebarItems = [
   { name: "Patients Details", icon: User, path: "/patients" },
 ];
 
-const DashboardSidebar = () => {
+const DashboardSidebar = ({ setIsAuthenticated }) => {
+  const navigate = useNavigate();
   const location = useLocation();
   const currentPath = location.pathname;
+
+  const handleLogout = () => {
+    localStorage.removeItem("session");
+    navigate("/login");
+    setIsAuthenticated(false);
+  };
 
   return (
     <Sidebar className="border-r border-gray-200">
@@ -57,19 +64,17 @@ const DashboardSidebar = () => {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                  currentPath === item.path
-                    ? "bg-medical-primary text-blue-700"
-                    : "text-medical-gray-700 hover:bg-medical-light hover:text-medical-primary"
-                }`}
+                className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${currentPath === item.path
+                  ? "bg-medical-primary text-blue-700"
+                  : "text-medical-gray-700 hover:bg-medical-light hover:text-medical-primary"
+                  }`}
               >
                 <item.icon
                   size={18}
-                  className={`$${
-                    currentPath === item.path
-                      ? "text-white"
-                      : "text-medical-gray-500"
-                  }`}
+                  className={`$${currentPath === item.path
+                    ? "text-white"
+                    : "text-medical-gray-500"
+                    }`}
                 />
                 <span>{item.name}</span>
               </Link>
@@ -97,13 +102,12 @@ const DashboardSidebar = () => {
           <Button
             variant="ghost"
             size="sm"
+            onClick={handleLogout}
             className="w-full justify-start text-medical-gray-600 hover:text-medical-gray-900"
           >
-            <Link to="/login" className="flex items-center">
             <LogOut size={16} className="mr-2" />
             Logout
-            </Link>
-           
+
           </Button>
         </div>
       </SidebarFooter>

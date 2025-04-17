@@ -14,7 +14,7 @@ import {
 import { Eye, EyeOff, Lock, User } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-const Login = () => {
+const Login = ({ setIsAuthenticated } ) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -42,7 +42,8 @@ const Login = () => {
           description: `Welcome, ${data.admin.username}`,
         });
 
-        localStorage.setItem("admin", JSON.stringify(data.admin));
+        localStorage.setItem("session", JSON.stringify(data.admin));
+        setIsAuthenticated(true);
         navigate("/");
       } else {
         toast({

@@ -18,14 +18,15 @@ const adminSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  // access: {
-  //   medicine: { type: Boolean, default: false },
-  //   bedStatus: { type: Boolean, default: false },
-  //   prescription: { type: Boolean, default: false },
-  //   financial: { type: Boolean, default: false },
-  //   doctors: { type: Boolean, default: false },
-  //   patients: { type: Boolean, default: false },
-  // },
+  access: {
+    dashboard: { type: Boolean, default: false },
+    prescription: { type: Boolean, default: false },
+    doctordetails: { type: Boolean, default: false },
+    medicinemanagement: { type: Boolean, default: false },
+    staffdetails: { type: Boolean, default: false },
+    patientdetails: { type: Boolean, default: false },
+    financial: { type: Boolean, default: false },
+  },
 }, {
   timestamps: true,
 });

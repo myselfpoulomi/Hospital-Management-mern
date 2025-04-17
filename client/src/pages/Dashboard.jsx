@@ -13,7 +13,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-const Dashboard = () => {
+const Dashboard = ({ setIsAuthenticated }) => {
   const [prescriptions, setPrescriptions] = useState([]);
   const [filteredPrescriptions, setFilteredPrescriptions] = useState([]);
   const [totalRevenue, setTotalRevenue] = useState(0);
@@ -125,7 +125,7 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <DashboardLayout>
+    <DashboardLayout setIsAuthenticated={setIsAuthenticated}>
       <>
         {/* Header */}
         <div className="mb-6">
