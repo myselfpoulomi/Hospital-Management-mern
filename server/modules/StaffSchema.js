@@ -24,7 +24,7 @@ const staffSchema = new mongoose.Schema({
   },
   staff_type: {
     type: String,
-    enum: ["nurse", "admin", "doctor", "technician"], // <-- Add missing types
+    enum: ["nurse", "technician", "pharmacist","radiologist", "lab_technician", "cleaning_staff", "security","receptionist","it_support",],// <-- Add missing types  
     required: true,
   },
 }, { timestamps: true });
