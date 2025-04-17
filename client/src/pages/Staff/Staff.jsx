@@ -12,13 +12,15 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import AddStaffDialog from "./AddStaffDialog";
-import StaffDetailsDialog from "./StaffDetailsDialog"; // 👈 import the dialog
+import StaffDetailsDialog from "./StaffDetailsDialog";
 
 const Staff = ({ setIsAuthenticated }) => {
   const [staffData, setStaffData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [filterType, setFilterType] = useState("All");
 
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -64,9 +66,11 @@ const Staff = ({ setIsAuthenticated }) => {
     }
   };
 
-  const filteredStaff = staffData.filter((staff) =>
-    staff.name?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredStaff = staffData.filter((staff) => {
+    const matchesSearch = staff.name?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesType = filterType === "All" || staff.staffType === filterType;
+    return matchesSearch && matchesType;
+  });
 
   return (
     <DashboardLayout setIsAuthenticated={setIsAuthenticated}>
@@ -76,17 +80,14 @@ const Staff = ({ setIsAuthenticated }) => {
             <h1 className="text-2xl font-bold text-blue-600">Staff Details</h1>
             <p className="text-gray-600">Manage staff records and information</p>
           </div>
-          <Button
-            className="bg-blue-600 hover:bg-blue-700"
-            onClick={() => setAddDialogOpen(true)}
-          >
+          <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => setAddDialogOpen(true)}>
             <UserPlus className="mr-2 h-4 w-4" />
             Add Staff
           </Button>
         </div>
 
-        <div className="flex justify-between items-center mb-6">
-          <div className="relative w-full">
+        <div className="flex justify-between items-center mb-6 gap-4 flex-wrap">
+          <div className="relative w-[1300px]">
             <Search className="absolute left-2 top-3 h-4 w-4 text-gray-500" />
             <Input
               placeholder="Search staff by name..."
@@ -95,9 +96,24 @@ const Staff = ({ setIsAuthenticated }) => {
               className="pl-8 w-full"
             />
           </div>
-          <Button variant="outline" className="ml-4" onClick={() => setSearchTerm("")}>
-            All Staff
-          </Button>
+
+          <Select value={filterType} onValueChange={setFilterType}>
+            <SelectTrigger className="w-[200px]">
+              <SelectValue placeholder="Filter by type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="All">All Types</SelectItem>
+              <SelectItem value="nurse">Nurse</SelectItem>
+              <SelectItem value="technician">Technician</SelectItem>
+              <SelectItem value="pharmacist">Pharmacist</SelectItem>
+              <SelectItem value="radiologist">Radiologist</SelectItem>
+              <SelectItem value="lab_technician">Lab Technician</SelectItem>
+              <SelectItem value="cleaning_staff">Cleaning Staff</SelectItem>
+              <SelectItem value="security">Security</SelectItem>
+              <SelectItem value="receptionist">Receptionist</SelectItem>
+              <SelectItem value="it_support">IT Support</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="border rounded-md overflow-x-auto">
@@ -124,50 +140,30 @@ const Staff = ({ setIsAuthenticated }) => {
                   <TableCell className="px-6 py-3">
                     <Badge
                       variant="outline"
-                      className={`${
-                        staff.staffType === "Doctor" &&
-                        "bg-blue-50 text-blue-700 border-blue-200"
-                      } ${
-                        staff.staffType === "Nurse" &&
-                        "bg-green-50 text-green-700 border-green-200"
-                      } ${
-                        staff.staffType === "Admin" &&
-                        "bg-purple-50 text-purple-700 border-purple-200"
-                      } ${
-                        staff.staffType === "Technician" &&
-                        "bg-orange-50 text-orange-700 border-orange-200"
-                      }`}
+                      className={`
+                        ${staff.staffType === "nurse" && "bg-green-50 text-green-700 border-green-200"}
+                        ${staff.staffType === "technician" && "bg-orange-50 text-orange-700 border-orange-200"}
+                        ${staff.staffType === "pharmacist" && "bg-yellow-50 text-yellow-700 border-yellow-200"}
+                        ${staff.staffType === "radiologist" && "bg-indigo-50 text-indigo-700 border-indigo-200"}
+                        ${staff.staffType === "lab_technician" && "bg-sky-50 text-sky-700 border-sky-200"}
+                        ${staff.staffType === "cleaning_staff" && "bg-rose-50 text-rose-700 border-rose-200"}
+                        ${staff.staffType === "security" && "bg-neutral-100 text-neutral-800 border-neutral-300"}
+                        ${staff.staffType === "receptionist" && "bg-purple-50 text-purple-700 border-purple-200"}
+                        ${staff.staffType === "it_support" && "bg-cyan-50 text-cyan-700 border-cyan-200"}
+                      `}
                     >
                       {staff.staffType}
                     </Badge>
                   </TableCell>
                   <TableCell className="px-6 py-3">
                     <div className="flex justify-center space-x-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => {
-                          setStaffToView(staff);
-                          setDetailsDialogOpen(true);
-                        }}
-                      >
+                      <Button variant="ghost" size="icon" onClick={() => { setStaffToView(staff); setDetailsDialogOpen(true); }}>
                         <Eye className="h-4 w-4" />
                       </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => {
-                          setStaffToEdit(staff);
-                          setEditDialogOpen(true);
-                        }}
-                      >
+                      <Button variant="ghost" size="icon" onClick={() => { setStaffToEdit(staff); setEditDialogOpen(true); }}>
                         <Pencil className="h-4 w-4" />
                       </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleDelete(staff.id)}
-                      >
+                      <Button variant="ghost" size="icon" onClick={() => handleDelete(staff.id)}>
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
@@ -179,32 +175,14 @@ const Staff = ({ setIsAuthenticated }) => {
         </div>
       </div>
 
-      {/* Add Staff Dialog */}
-      <AddStaffDialog
-        mode="add"
-        open={addDialogOpen}
-        setOpen={setAddDialogOpen}
-        onAdd={handleAddStaff}
-      />
+      <AddStaffDialog mode="add" open={addDialogOpen} setOpen={setAddDialogOpen} onAdd={handleAddStaff} />
 
-      {/* Edit Staff Dialog */}
       {staffToEdit && (
-        <AddStaffDialog
-          mode="edit"
-          open={editDialogOpen}
-          setOpen={setEditDialogOpen}
-          staffToEdit={staffToEdit}
-          onUpdate={fetchStaff}
-        />
+        <AddStaffDialog mode="edit" open={editDialogOpen} setOpen={setEditDialogOpen} staffToEdit={staffToEdit} onUpdate={fetchStaff} />
       )}
 
-      {/* View Staff Details Dialog */}
       {staffToView && (
-        <StaffDetailsDialog
-          open={detailsDialogOpen}
-          onOpenChange={setDetailsDialogOpen}
-          staff={staffToView}
-        />
+        <StaffDetailsDialog open={detailsDialogOpen} onOpenChange={setDetailsDialogOpen} staff={staffToView} />
       )}
     </DashboardLayout>
   );

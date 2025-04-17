@@ -33,7 +33,7 @@ const App = () => {
   }, [session]);
 
   if (isLoading) {
-    return <div className="flex justify-center items-center h-screen">I loveeeeeee youuuuuu Rituuuuuuu bebeeeeeeeeeee... loading...</div>;
+    return <div className="flex justify-center items-center h-screen">Loading...</div>;
   }
 
   return <QueryClientProvider client={queryClient}>
