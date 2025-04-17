@@ -110,9 +110,6 @@ const Medicine = ({ setIsAuthenticated }) => {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <Button variant="outline" className="flex items-center gap-1">
-            <Download className="h-4 w-4" /> Export
-          </Button>
         </div>
       </div>
 
