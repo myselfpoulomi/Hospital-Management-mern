@@ -41,8 +41,6 @@ const RegisterDoctorDialog = ({ open, onOpenChange, onSuccess, doctorToEdit }) =
     if (!doctorId.trim()) newErrors.doctorId = "Doctor ID is required";
     if (!degree.trim()) newErrors.degree = "Degree is required";
     if (!specialization.trim()) newErrors.specialization = "Specialization is required";
-    if (!numOfPatients || isNaN(numOfPatients) || Number(numOfPatients) <= 0)
-      newErrors.numOfPatients = "Enter a valid number of patients";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -104,7 +102,7 @@ const RegisterDoctorDialog = ({ open, onOpenChange, onSuccess, doctorToEdit }) =
             <Input value={specialization} onChange={(e) => setSpecialization(e.target.value)} />
             {errors.specialization && <p className="text-red-500 text-sm">{errors.specialization}</p>}
           </div>
-          <div>
+          {/* <div>
             <label className="block mb-1">Number of Patients</label>
             <Input
               type="number"
@@ -112,7 +110,7 @@ const RegisterDoctorDialog = ({ open, onOpenChange, onSuccess, doctorToEdit }) =
               onChange={(e) => setNumOfPatients(e.target.value)}
             />
             {errors.numOfPatients && <p className="text-red-500 text-sm">{errors.numOfPatients}</p>}
-          </div>
+          </div> */}
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel

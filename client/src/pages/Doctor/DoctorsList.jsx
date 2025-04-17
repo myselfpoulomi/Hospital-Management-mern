@@ -10,7 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import DoctorDetailsDialog from "./DoctorDeatilsDialog"
+import DoctorDetailsDialog from "./DoctorDeatilsDialog";
 
 const DoctorsList = ({ refresh, search, onEdit }) => {
   const [doctors, setDoctors] = useState([]);
@@ -20,10 +20,18 @@ const DoctorsList = ({ refresh, search, onEdit }) => {
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
 
+  const [specializationFilter, setSpecializationFilter] = useState("All");
+  const [specializations, setSpecializations] = useState([]);
+
   const fetchDoctors = async () => {
     try {
       const response = await axios.get("http://localhost:4000/doctors/");
       setDoctors(response.data);
+
+      const uniqueSpecs = Array.from(
+        new Set(response.data.map((doc) => doc.specialization))
+      );
+      setSpecializations(uniqueSpecs);
     } catch (error) {
       console.error("Error fetching doctors:", error);
     } finally {
@@ -36,20 +44,26 @@ const DoctorsList = ({ refresh, search, onEdit }) => {
   }, [refresh]);
 
   useEffect(() => {
-    if (!search.trim()) {
-      setFilteredDoctors(doctors);
-    } else {
-      const lowerSearch = search.toLowerCase();
-      setFilteredDoctors(
-        doctors.filter(
-          (doctor) =>
-            doctor.full_name?.toLowerCase().includes(lowerSearch) ||
-            doctor.specialization?.toLowerCase().includes(lowerSearch) ||
-            doctor.degree?.toLowerCase().includes(lowerSearch)
-        )
+    let filtered = [...doctors];
+
+    if (specializationFilter !== "All") {
+      filtered = filtered.filter(
+        (doctor) => doctor.specialization === specializationFilter
       );
     }
-  }, [search, doctors]);
+
+    if (search.trim()) {
+      const lowerSearch = search.toLowerCase();
+      filtered = filtered.filter(
+        (doctor) =>
+          doctor.full_name?.toLowerCase().includes(lowerSearch) ||
+          doctor.specialization?.toLowerCase().includes(lowerSearch) ||
+          doctor.degree?.toLowerCase().includes(lowerSearch)
+      );
+    }
+
+    setFilteredDoctors(filtered);
+  }, [search, specializationFilter, doctors]);
 
   const handleView = (doctor) => {
     setSelectedDoctor(doctor);
@@ -61,21 +75,38 @@ const DoctorsList = ({ refresh, search, onEdit }) => {
   };
 
   const handleDelete = async (id) => {
-     
-      try {
-        await axios.delete(`http://localhost:4000/doctors/deleteDoctor/${id}`);
-        setDoctors(doctors.filter((d) => d._id !== id));
-      } catch (error) {
-        console.error("Error deleting doctor:", error);
-      }
-    
+    try {
+      await axios.delete(`http://localhost:4000/doctors/deleteDoctor/${id}`);
+      setDoctors(doctors.filter((d) => d._id !== id));
+    } catch (error) {
+      console.error("Error deleting doctor:", error);
+    }
   };
 
   if (loading)
     return <p className="text-center text-gray-500">Loading doctors...</p>;
 
   return (
-    <div className="bg-white rounded-lg shadow border border-gray-200 overflow-x-auto ml-4">
+    <div className="bg-white rounded-lg shadow border border-gray-200 overflow-x-auto ml-4 p-4">
+      {/* Specialization Filter */}
+      <div className="flex items-center justify-between mb-4">
+        <label className="text-sm font-medium text-gray-700">
+          Filter by Specialization:
+        </label>
+        <select
+          className="border rounded px-3 py-1 text-sm"
+          value={specializationFilter}
+          onChange={(e) => setSpecializationFilter(e.target.value)}
+        >
+          <option value="All">All</option>
+          {specializations.map((spec) => (
+            <option key={spec} value={spec}>
+              {spec}
+            </option>
+          ))}
+        </select>
+      </div>
+
       <Table>
         <TableHeader>
           <TableRow>
