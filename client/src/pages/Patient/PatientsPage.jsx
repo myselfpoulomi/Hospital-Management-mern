@@ -195,17 +195,6 @@ const PatientsPage = ({ setIsAuthenticated }) => {
               />
             </div>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="flex items-center">
-                  <Filter className="mr-2 h-4 w-4" />
-                  All Patients
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem>All Patients</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
           </div>
 
           <div className="overflow-x-auto">
