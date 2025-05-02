@@ -1,110 +1,174 @@
 import React, { useState } from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { AlertTriangle, BedIcon, Check, Plus } from "lucide-react";
+import {
+  AlertTriangle,
+  BedIcon,
+  Check,
+  Plus,
+  Eye,
+  Pencil,
+  Trash,
+  Search,
+} from "lucide-react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
+import { UserPlus } from "lucide-react";
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const initialBeds = [
-  { id: 1, roomNumber: "101-A", type: "ICU", status: "occupied", patient: "John Doe", admissionDate: "2025-04-30" },
-  { id: 2, roomNumber: "101-B", type: "ICU", status: "available", patient: "", admissionDate: "" },
-  { id: 3, roomNumber: "102-A", type: "General", status: "occupied", patient: "Jane Smith", admissionDate: "2025-05-01" },
-  { id: 4, roomNumber: "102-B", type: "General", status: "maintenance", patient: "", admissionDate: "" },
-  { id: 5, roomNumber: "103-A", type: "Private", status: "available", patient: "", admissionDate: "" },
-  { id: 6, roomNumber: "103-B", type: "Private", status: "occupied", patient: "Robert Johnson", admissionDate: "2025-04-28" },
-  { id: 7, roomNumber: "104-A", type: "Emergency", status: "available", patient: "", admissionDate: "" },
-  { id: 8, roomNumber: "104-B", type: "Emergency", status: "occupied", patient: "Emily Davis", admissionDate: "2025-05-02" },
+  {
+    id: 1,
+    roomNumber: "101-A",
+    type: "ICU",
+    status: "occupied",
+    patient: "John Doe",
+    admissionDate: "2025-04-30",
+  },
+  {
+    id: 2,
+    roomNumber: "101-B",
+    type: "ICU",
+    status: "available",
+    patient: "",
+    admissionDate: "",
+  },
+  {
+    id: 3,
+    roomNumber: "102-A",
+    type: "General",
+    status: "occupied",
+    patient: "Jane Smith",
+    admissionDate: "2025-05-01",
+  },
+  {
+    id: 4,
+    roomNumber: "102-B",
+    type: "General",
+    status: "maintenance",
+    patient: "",
+    admissionDate: "",
+  },
+  {
+    id: 5,
+    roomNumber: "103-A",
+    type: "Private",
+    status: "available",
+    patient: "",
+    admissionDate: "",
+  },
+  {
+    id: 6,
+    roomNumber: "103-B",
+    type: "Private",
+    status: "occupied",
+    patient: "Robert Johnson",
+    admissionDate: "2025-04-28",
+  },
+  {
+    id: 7,
+    roomNumber: "104-A",
+    type: "Emergency",
+    status: "available",
+    patient: "",
+    admissionDate: "",
+  },
+  {
+    id: 8,
+    roomNumber: "104-B",
+    type: "Emergency",
+    status: "occupied",
+    patient: "Emily Davis",
+    admissionDate: "2025-05-02",
+  },
 ];
 
-function BedStatus({ setIsAuthenticated }) {
+const statusStyles = {
+  available: "bg-green-100 text-green-700",
+  occupied: "bg-blue-100 text-blue-700",
+  maintenance: "bg-yellow-100 text-yellow-700",
+};
+
+const statusIcons = {
+  available: <Check className="h-3.5 w-3.5 mr-1 text-green-600" />,
+  occupied: <BedIcon className="h-3.5 w-3.5 mr-1 text-blue-600" />,
+  maintenance: <AlertTriangle className="h-3.5 w-3.5 mr-1 text-yellow-600" />,
+};
+
+export default function BedStatus({ setIsAuthenticated }) {
   const [beds, setBeds] = useState(initialBeds);
-  const [filter, setFilter] = useState("all");
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
 
-  const filteredBeds = filter === "all" 
-    ? beds 
-    : beds.filter(bed => bed.status === filter);
+  const filteredBeds = beds.filter((bed) => {
+    const matchesSearch =
+      bed.roomNumber.toLowerCase().includes(search.toLowerCase()) ||
+      bed.type.toLowerCase().includes(search.toLowerCase()) ||
+      bed.patient.toLowerCase().includes(search.toLowerCase());
 
-  const getStatusStyling = (status) => {
-    switch(status) {
-      case "available":
-        return { 
-          bg: "bg-green-100", 
-          text: "text-green-700", 
-          icon: <Check className="h-4 w-4 text-green-600 mr-1" /> 
-        };
-      case "occupied":
-        return { 
-          bg: "bg-blue-100", 
-          text: "text-blue-700",
-          icon: <BedIcon className="h-4 w-4 text-blue-600 mr-1" />
-        };
-      case "maintenance":
-        return { 
-          bg: "bg-amber-100", 
-          text: "text-amber-700",
-          icon: <AlertTriangle className="h-4 w-4 text-amber-600 mr-1" />
-        };
-      default:
-        return { 
-          bg: "bg-gray-100", 
-          text: "text-gray-700",
-          icon: null
-        };
-    }
-  };
+    const matchesStatus = statusFilter === "all" || bed.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
 
   return (
     <DashboardLayout setIsAuthenticated={setIsAuthenticated}>
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-blue-600">Bed Status Management</h1>
-          <p className="text-gray-600">Monitor and manage hospital bed availability</p>
-        </div>
-
+      <div className="container mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <div className="flex gap-2">
-            <Button 
-              variant={filter === "all" ? "default" : "outline"} 
-              onClick={() => setFilter("all")}
-              className={filter === "all" ? "bg-blue-600" : ""}
-            >
-              All Beds
-            </Button>
-            <Button 
-              variant={filter === "available" ? "default" : "outline"} 
-              onClick={() => setFilter("available")}
-              className={filter === "available" ? "bg-green-600" : ""}
-            >
-              Available
-            </Button>
-            <Button 
-              variant={filter === "occupied" ? "default" : "outline"} 
-              onClick={() => setFilter("occupied")}
-              className={filter === "occupied" ? "bg-blue-600" : ""}
-            >
-              Occupied
-            </Button>
-            <Button 
-              variant={filter === "maintenance" ? "default" : "outline"} 
-              onClick={() => setFilter("maintenance")}
-              className={filter === "maintenance" ? "bg-amber-600" : ""}
-            >
-              Maintenance
-            </Button>
-          </div>
-          
           <div>
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-              <Plus className="mr-2 h-4 w-4" /> Add Bed
-            </Button>
+            <h1 className="text-2xl font-bold text-blue-600">Bed Status</h1>
+            <p className="text-gray-600">
+              Manage Bed records and information
+            </p>
           </div>
+          <Button className="bg-blue-600 hover:bg-blue-700">
+            <UserPlus className="mr-2 h-4 w-4" />
+            Add Staff
+          </Button>
         </div>
 
+        <div className="flex justify-between items-center mb-6 gap-4 flex-wrap">
+          <div className="relative w-[1300px]">
+            <Search className="absolute left-2 top-3 h-4 w-4 text-gray-500" />
+            <Input
+              placeholder="Search staff by name..."
+              className="pl-8 w-full"
+            />
+          </div>
+
+          <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value)}>
+  <SelectTrigger className="w-[200px]">
+    <SelectValue placeholder="Filter by status" />
+  </SelectTrigger>
+  <SelectContent>
+    <SelectItem value="all">All Statuses</SelectItem>
+    <SelectItem value="occupied">Occupied</SelectItem>
+    <SelectItem value="available">Available</SelectItem>
+    <SelectItem value="maintenance">Maintenance</SelectItem>
+  </SelectContent>
+</Select>
+
+        </div>
+
+        {/* Table */}
         <div className="bg-white rounded-lg shadow overflow-hidden">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Bed ID</TableHead>
+                <TableHead>Sl No</TableHead>
                 <TableHead>Room Number</TableHead>
                 <TableHead>Bed Type</TableHead>
                 <TableHead>Status</TableHead>
@@ -114,32 +178,37 @@ function BedStatus({ setIsAuthenticated }) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredBeds.map((bed) => {
-                const statusStyle = getStatusStyling(bed.status);
-                
-                return (
-                  <TableRow key={bed.id}>
-                    <TableCell className="font-medium">{bed.id}</TableCell>
-                    <TableCell>{bed.roomNumber}</TableCell>
-                    <TableCell>{bed.type}</TableCell>
-                    <TableCell>
-                      <span className={`inline-flex items-center px-2 py-1 rounded-full ${statusStyle.bg} ${statusStyle.text} text-xs font-medium`}>
-                        {statusStyle.icon}
-                        {bed.status.charAt(0).toUpperCase() + bed.status.slice(1)}
-                      </span>
-                    </TableCell>
-                    <TableCell>{bed.patient || "-"}</TableCell>
-                    <TableCell>{bed.admissionDate || "-"}</TableCell>
-                    <TableCell>
-                      <Button variant="outline" size="sm">Edit</Button>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
+              {filteredBeds.map((bed, index) => (
+                <TableRow key={bed.id}>
+                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>{bed.roomNumber}</TableCell>
+                  <TableCell>{bed.type}</TableCell>
+                  <TableCell>
+                    <span
+                      className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                        statusStyles[bed.status]
+                      }`}
+                    >
+                      {statusIcons[bed.status]}
+                      {bed.status}
+                    </span>
+                  </TableCell>
+                  <TableCell>{bed.patient || "-"}</TableCell>
+                  <TableCell>{bed.admissionDate || "-"}</TableCell>
+                  <TableCell className="space-x-2">
+                    <Eye className="inline h-4 w-4 text-gray-600 hover:text-blue-600 cursor-pointer" />
+                    <Pencil className="inline h-4 w-4 text-gray-600 hover:text-yellow-600 cursor-pointer" />
+                    <Trash className="inline h-4 w-4 text-gray-600 hover:text-red-600 cursor-pointer" />
+                  </TableCell>
+                </TableRow>
+              ))}
               {filteredBeds.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8 text-gray-500">
-                    No beds found with the selected filter.
+                  <TableCell
+                    colSpan={7}
+                    className="text-center py-6 text-gray-500"
+                  >
+                    No matching beds found.
                   </TableCell>
                 </TableRow>
               )}
@@ -147,15 +216,11 @@ function BedStatus({ setIsAuthenticated }) {
           </Table>
         </div>
 
-        <div className="mt-6 flex justify-between items-center">
-          <div className="text-sm text-gray-600">
-            Showing {filteredBeds.length} of {beds.length} beds
-          </div>
+        {/* Footer Info */}
+        <div className="mt-2 text-sm text-gray-500">
+          Showing {filteredBeds.length} of {beds.length} beds
         </div>
       </div>
-    </div>
     </DashboardLayout>
   );
 }
-
-export default BedStatus;

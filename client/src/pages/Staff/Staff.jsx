@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import clsx from "clsx";
 import { Eye, Pencil, Trash2, Search, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,7 +13,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import AddStaffDialog from "./AddStaffDialog";
 import StaffDetailsDialog from "./StaffDetailsDialog";
@@ -140,27 +147,41 @@ const Staff = ({ setIsAuthenticated }) => {
                   <TableCell className="px-6 py-3">
                     <Badge
                       variant="outline"
-                      className={`
-                        ${staff.staffType === "nurse" && "bg-green-50 text-green-700 border-green-200"}
-                        ${staff.staffType === "technician" && "bg-orange-50 text-orange-700 border-orange-200"}
-                        ${staff.staffType === "pharmacist" && "bg-yellow-50 text-yellow-700 border-yellow-200"}
-                        ${staff.staffType === "radiologist" && "bg-indigo-50 text-indigo-700 border-indigo-200"}
-                        ${staff.staffType === "lab_technician" && "bg-sky-50 text-sky-700 border-sky-200"}
-                        ${staff.staffType === "cleaning_staff" && "bg-rose-50 text-rose-700 border-rose-200"}
-                        ${staff.staffType === "security" && "bg-neutral-100 text-neutral-800 border-neutral-300"}
-                        ${staff.staffType === "receptionist" && "bg-purple-50 text-purple-700 border-purple-200"}
-                        ${staff.staffType === "it_support" && "bg-cyan-50 text-cyan-700 border-cyan-200"}
-                      `}
+                      className={clsx(
+                        staff.staffType === "nurse" && "bg-green-50 text-green-700 border-green-200",
+                        staff.staffType === "technician" && "bg-orange-50 text-orange-700 border-orange-200",
+                        staff.staffType === "pharmacist" && "bg-yellow-50 text-yellow-700 border-yellow-200",
+                        staff.staffType === "radiologist" && "bg-indigo-50 text-indigo-700 border-indigo-200",
+                        staff.staffType === "lab_technician" && "bg-sky-50 text-sky-700 border-sky-200",
+                        staff.staffType === "cleaning_staff" && "bg-rose-50 text-rose-700 border-rose-200",
+                        staff.staffType === "security" && "bg-neutral-100 text-neutral-800 border-neutral-300",
+                        staff.staffType === "receptionist" && "bg-purple-50 text-purple-700 border-purple-200",
+                        staff.staffType === "it_support" && "bg-cyan-50 text-cyan-700 border-cyan-200"
+                      )}
                     >
                       {staff.staffType}
                     </Badge>
                   </TableCell>
                   <TableCell className="px-6 py-3">
                     <div className="flex justify-center space-x-2">
-                      <Button variant="ghost" size="icon" onClick={() => { setStaffToView(staff); setDetailsDialogOpen(true); }}>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => {
+                          setStaffToView(staff);
+                          setDetailsDialogOpen(true);
+                        }}
+                      >
                         <Eye className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="icon" onClick={() => { setStaffToEdit(staff); setEditDialogOpen(true); }}>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => {
+                          setStaffToEdit(staff);
+                          setEditDialogOpen(true);
+                        }}
+                      >
                         <Pencil className="h-4 w-4" />
                       </Button>
                       <Button variant="ghost" size="icon" onClick={() => handleDelete(staff.id)}>
@@ -175,14 +196,29 @@ const Staff = ({ setIsAuthenticated }) => {
         </div>
       </div>
 
-      <AddStaffDialog mode="add" open={addDialogOpen} setOpen={setAddDialogOpen} onAdd={handleAddStaff} />
+      <AddStaffDialog
+        mode="add"
+        open={addDialogOpen}
+        setOpen={setAddDialogOpen}
+        onAdd={handleAddStaff}
+      />
 
       {staffToEdit && (
-        <AddStaffDialog mode="edit" open={editDialogOpen} setOpen={setEditDialogOpen} staffToEdit={staffToEdit} onUpdate={fetchStaff} />
+        <AddStaffDialog
+          mode="edit"
+          open={editDialogOpen}
+          setOpen={setEditDialogOpen}
+          staffToEdit={staffToEdit}
+          onUpdate={fetchStaff}
+        />
       )}
 
       {staffToView && (
-        <StaffDetailsDialog open={detailsDialogOpen} onOpenChange={setDetailsDialogOpen} staff={staffToView} />
+        <StaffDetailsDialog
+          open={detailsDialogOpen}
+          onOpenChange={setDetailsDialogOpen}
+          staff={staffToView}
+        />
       )}
     </DashboardLayout>
   );
