@@ -14,6 +14,7 @@ import PatientsPage from "./pages/Patient/PatientsPage";
 import DoctorsPage from "./pages/Doctor/DoctorsPage";
 import PrescriptionDetails from "./pages/Prescription/PrescriptionDetails";
 import { useState, useEffect } from "react";
+import BedStatus from "./pages/BedStatus";
 const queryClient = new QueryClient();
 
 const App = () => {
@@ -46,6 +47,7 @@ const App = () => {
           <Route path="/prescriptions" element={<Prescriptions setIsAuthenticated={setIsAuthenticated} />} />
           <Route path="/prescription/:id" element={isAuthenticated ? <PrescriptionDetails /> : <Navigate to="/login" />} />
           <Route path="/doctors" element={isAuthenticated ? <DoctorsPage setIsAuthenticated={setIsAuthenticated} /> : <Navigate to="/login" />} />
+          <Route path="/beds" element={isAuthenticated ? <BedStatus setIsAuthenticated={setIsAuthenticated} /> : <Navigate to="/login" />} />
           <Route path="/medicine" element={isAuthenticated ? <Medicine setIsAuthenticated={setIsAuthenticated} /> : <Navigate to="/login" />} />
           <Route path="/staff" element={isAuthenticated ? <Staff setIsAuthenticated={setIsAuthenticated} /> : <Navigate to="/login" />} />
           <Route path="/financial" element={isAuthenticated ? <Financial setIsAuthenticated={setIsAuthenticated} /> : <Navigate to="/login" />} />

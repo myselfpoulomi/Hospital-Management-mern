@@ -16,6 +16,7 @@ import {
   LogOut,
   Users,
   Stethoscope,
+  BedIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -24,6 +25,7 @@ const sidebarItems = [
   { name: "Prescriptions", icon: FileText, path: "/prescriptions" },
   { name: "Doctors Deatils", icon: Stethoscope, path: "/doctors" },
   { name: "Medicine Management", icon: Pill, path: "/medicine" },
+  { name: "Bed Status", icon: BedIcon, path: "/beds" }, // ✅ fixed path key
   { name: "Staff Details", icon: Users, path: "/staff" },
   { name: "Financial", icon: DollarSign, path: "/financial" },
   { name: "Patients Details", icon: User, path: "/patients" },
@@ -46,10 +48,12 @@ const DashboardSidebar = ({ setIsAuthenticated, session }) => {
     "/prescriptions": "prescription",
     "/doctors": "doctordetails",
     "/medicine": "medicinemanagement",
+    "/beds": "bedstatus", // ✅ Must match
     "/staff": "staffdetails",
     "/financial": "financial",
     "/patients": "patientdetails",
   };
+  
 
   return (
     <Sidebar className="border-r border-gray-200">
@@ -66,23 +70,27 @@ const DashboardSidebar = ({ setIsAuthenticated, session }) => {
           <nav className="space-y-1">
             {sidebarItems
               .filter(
-                (item) => session?.access?.[accessMap[item.path]] // Only show if access is true
+                (item) =>
+                  item.path &&
+                  session?.access?.[accessMap[item.path]] // ✅ ensure path and access key match
               )
               .map((item) => (
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${currentPath === item.path
-                    ? "bg-medical-primary text-blue-700"
-                    : "text-medical-gray-700 hover:bg-medical-light hover:text-medical-primary"
-                    }`}
+                  className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    currentPath === item.path
+                      ? "bg-medical-primary text-blue-700"
+                      : "text-medical-gray-700 hover:bg-medical-light hover:text-medical-primary"
+                  }`}
                 >
                   <item.icon
                     size={18}
-                    className={`${currentPath === item.path
-                      ? "text-blue-700"
-                      : "text-medical-gray-500"
-                      }`}
+                    className={`${
+                      currentPath === item.path
+                        ? "text-blue-700"
+                        : "text-medical-gray-500"
+                    }`}
                   />
                   <span>{item.name}</span>
                 </Link>

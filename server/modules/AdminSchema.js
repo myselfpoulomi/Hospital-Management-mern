@@ -1,5 +1,6 @@
 // models/Admin.js
 import mongoose from "mongoose";
+
 const adminSchema = new mongoose.Schema({
   username: {
     type: String,
@@ -23,6 +24,7 @@ const adminSchema = new mongoose.Schema({
     prescription: { type: Boolean, default: false },
     doctordetails: { type: Boolean, default: false },
     medicinemanagement: { type: Boolean, default: false },
+    bedstatus: { type: Boolean, default: false }, // ✅ added bedstatus access key
     staffdetails: { type: Boolean, default: false },
     patientdetails: { type: Boolean, default: false },
     financial: { type: Boolean, default: false },
@@ -33,4 +35,4 @@ const adminSchema = new mongoose.Schema({
 
 const AdminModel = mongoose.model('Admin', adminSchema);
 
-export default AdminModel
+export default AdminModel;
