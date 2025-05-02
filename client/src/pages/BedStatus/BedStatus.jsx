@@ -21,6 +21,8 @@ import {
 } from "lucide-react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { UserPlus } from "lucide-react";
+import BedDialogForm from "./BedDialogForm";
+import BedDetailsModal from "./BedDetailsModal";
 
 import {
   Select,
@@ -113,6 +115,9 @@ export default function BedStatus({ setIsAuthenticated }) {
   const [beds, setBeds] = useState(initialBeds);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editBed, setEditBed] = useState(null);
+  const [viewBed, setViewBed] = useState(null);
 
   const filteredBeds = beds.filter((bed) => {
     const matchesSearch =
@@ -130,13 +135,17 @@ export default function BedStatus({ setIsAuthenticated }) {
         <div className="flex justify-between items-center mb-6">
           <div>
             <h1 className="text-2xl font-bold text-blue-600">Bed Status</h1>
-            <p className="text-gray-600">
-              Manage Bed records and information
-            </p>
+            <p className="text-gray-600">Manage Bed records and information</p>
           </div>
-          <Button className="bg-blue-600 hover:bg-blue-700">
+          <Button
+            className="bg-blue-600 hover:bg-blue-700"
+            onClick={() => {
+              setEditBed(null);
+              setDialogOpen(true);
+            }}
+          >
             <UserPlus className="mr-2 h-4 w-4" />
-            Add Staff
+            Add Bed
           </Button>
         </div>
 
@@ -144,23 +153,27 @@ export default function BedStatus({ setIsAuthenticated }) {
           <div className="relative w-[1300px]">
             <Search className="absolute left-2 top-3 h-4 w-4 text-gray-500" />
             <Input
-              placeholder="Search staff by name..."
+              placeholder="Search staff by bed type..."
               className="pl-8 w-full"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
             />
           </div>
 
-          <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value)}>
-  <SelectTrigger className="w-[200px]">
-    <SelectValue placeholder="Filter by status" />
-  </SelectTrigger>
-  <SelectContent>
-    <SelectItem value="all">All Statuses</SelectItem>
-    <SelectItem value="occupied">Occupied</SelectItem>
-    <SelectItem value="available">Available</SelectItem>
-    <SelectItem value="maintenance">Maintenance</SelectItem>
-  </SelectContent>
-</Select>
-
+          <Select
+            value={statusFilter}
+            onValueChange={(value) => setStatusFilter(value)}
+          >
+            <SelectTrigger className="w-[200px]">
+              <SelectValue placeholder="Filter by status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Statuses</SelectItem>
+              <SelectItem value="occupied">Occupied</SelectItem>
+              <SelectItem value="available">Available</SelectItem>
+              <SelectItem value="maintenance">Maintenance</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Table */}
@@ -196,8 +209,18 @@ export default function BedStatus({ setIsAuthenticated }) {
                   <TableCell>{bed.patient || "-"}</TableCell>
                   <TableCell>{bed.admissionDate || "-"}</TableCell>
                   <TableCell className="space-x-2">
-                    <Eye className="inline h-4 w-4 text-gray-600 hover:text-blue-600 cursor-pointer" />
-                    <Pencil className="inline h-4 w-4 text-gray-600 hover:text-yellow-600 cursor-pointer" />
+                    <Eye
+                      className="inline h-4 w-4 text-gray-600 hover:text-blue-600 cursor-pointer"
+                      onClick={() => setViewBed(bed)}
+                    />
+
+                    <Pencil
+                      className="inline h-4 w-4 text-gray-600 hover:text-yellow-600 cursor-pointer"
+                      onClick={() => {
+                        setEditBed(bed);
+                        setDialogOpen(true);
+                      }}
+                    />
                     <Trash className="inline h-4 w-4 text-gray-600 hover:text-red-600 cursor-pointer" />
                   </TableCell>
                 </TableRow>
@@ -216,11 +239,34 @@ export default function BedStatus({ setIsAuthenticated }) {
           </Table>
         </div>
 
-        {/* Footer Info */}
         <div className="mt-2 text-sm text-gray-500">
           Showing {filteredBeds.length} of {beds.length} beds
         </div>
       </div>
+
+      <BedDialogForm
+        isOpen={dialogOpen}
+        setIsOpen={setDialogOpen}
+        editBed={editBed}
+        onAddBed={(newBed) => {
+          const entry = {
+            ...newBed,
+            id: beds.length + 1,
+          };
+          setBeds([...beds, entry]);
+        }}
+        onUpdateBed={(updatedBed) => {
+          setBeds((prev) =>
+            prev.map((b) => (b.id === updatedBed.id ? updatedBed : b))
+          );
+        }}
+      />
+      <BedDetailsModal
+  open={!!viewBed}
+  onClose={() => setViewBed(null)}
+  bed={viewBed}
+/>
+
     </DashboardLayout>
   );
 }

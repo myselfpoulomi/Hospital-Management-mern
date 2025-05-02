@@ -14,7 +14,7 @@ import PatientsPage from "./pages/Patient/PatientsPage";
 import DoctorsPage from "./pages/Doctor/DoctorsPage";
 import PrescriptionDetails from "./pages/Prescription/PrescriptionDetails";
 import { useState, useEffect } from "react";
-import BedStatus from "./pages/BedStatus";
+import BedStatus from "./pages/BedStatus/BedStatus";
 const queryClient = new QueryClient();
 
 const App = () => {
