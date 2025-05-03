@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
+
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -28,20 +30,31 @@ export default function BedDialogForm({
 
   const [formBed, setFormBed] = useState({
     roomNumber: "",
-    type: "",
-    status: "available",
+    bedType: "",
+    status: "Available",
     patient: "",
     admissionDate: "",
   });
 
+  const [patients, setPatients] = useState([]);
+
+  // Fetch patients from backend
+  useEffect(() => {
+    axios
+      .get("http://localhost:4000/patients/")
+      .then((res) => setPatients(res.data))
+      .catch((err) => console.error("Failed to fetch patients:", err));
+  }, []);
+
+  // Load existing bed or reset
   useEffect(() => {
     if (editBed) {
       setFormBed(editBed);
     } else {
       setFormBed({
         roomNumber: "",
-        type: "",
-        status: "available",
+        bedType: "",
+        status: "Available",
         patient: "",
         admissionDate: "",
       });
@@ -53,15 +66,41 @@ export default function BedDialogForm({
     setFormBed((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = () => {
-    if (!formBed.roomNumber || !formBed.type) return;
+  const handleSubmit = async () => {
+    const { roomNumber, bedType, status, patient, admissionDate } = formBed;
 
-    if (isEdit) {
-      onUpdateBed(formBed);
-    } else {
-      onAddBed(formBed);
+    if (!roomNumber || !bedType || !status) {
+      alert("Room number, bed type, and status are required.");
+      return;
     }
-    setIsOpen(false);
+
+    if (status === "Occupied" && (!patient || !admissionDate)) {
+      alert("Patient and admission date are required for Occupied beds.");
+      return;
+    }
+
+    const payload = { ...formBed };
+    if (status !== "Occupied") {
+      delete payload.patient;
+      delete payload.admissionDate;
+    }
+
+    try {
+      const response = await axios.post(
+        "http://localhost:4000/Beds/createBed",
+        payload
+      );
+      isEdit ? onUpdateBed(response.data) : onAddBed(response.data);
+      setIsOpen(false);
+    } catch (error) {
+      if (error.response) {
+        console.error("Server error:", error.response.data);
+        alert("Server error: " + error.response.data.error);
+      } else {
+        console.error("Error:", error.message);
+        alert("Failed to submit form.");
+      }
+    }
   };
 
   return (
@@ -83,9 +122,9 @@ export default function BedDialogForm({
           <div>
             <Label>Bed Type</Label>
             <Input
-              name="type"
+              name="bedType"
               placeholder="e.g. ICU, General"
-              value={formBed.type}
+              value={formBed.bedType}
               onChange={handleChange}
             />
           </div>
@@ -98,33 +137,55 @@ export default function BedDialogForm({
               }
             >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Status" />
+                <SelectValue placeholder="Select Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="available">Available</SelectItem>
-                <SelectItem value="occupied">Occupied</SelectItem>
-                <SelectItem value="maintenance">Maintenance</SelectItem>
+                <SelectItem value="Available">Available</SelectItem>
+                <SelectItem value="Occupied">Occupied</SelectItem>
               </SelectContent>
             </Select>
           </div>
-          <div>
-            <Label>Patient Name</Label>
-            <Input
-              name="patient"
-              placeholder="Patient Name"
-              value={formBed.patient}
-              onChange={handleChange}
-            />
-          </div>
-          <div>
-            <Label>Admission Date</Label>
-            <Input
-              type="date"
-              name="admissionDate"
-              value={formBed.admissionDate}
-              onChange={handleChange}
-            />
-          </div>
+
+          {formBed.status === "Occupied" && (
+            <>
+              <div>
+                <Label>Patient</Label>
+                <Select
+                  value={formBed.patient}
+                  onValueChange={(value) =>
+                    setFormBed((prev) => ({ ...prev, patient: value }))
+                  }
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue
+                      placeholder="Select Patient"
+                      children={
+                        patients.find((p) => p._id === formBed.patient)
+                          ? `${patients.find((p) => p._id === formBed.patient).firstName} ${patients.find((p) => p._id === formBed.patient).lastName}`
+                          : "Select Patient"
+                      }
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {patients.map((patient) => (
+                      <SelectItem key={patient._id} value={patient._id}>
+                        {patient.firstName} {patient.lastName}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Admission Date</Label>
+                <Input
+                  type="date"
+                  name="admissionDate"
+                  value={formBed.admissionDate}
+                  onChange={handleChange}
+                />
+              </div>
+            </>
+          )}
         </div>
         <DialogFooter>
           <Button

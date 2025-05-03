@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -13,14 +15,13 @@ import {
   AlertTriangle,
   BedIcon,
   Check,
-  Plus,
   Eye,
   Pencil,
   Trash,
   Search,
+  UserPlus,
 } from "lucide-react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import { UserPlus } from "lucide-react";
 import BedDialogForm from "./BedDialogForm";
 import BedDetailsModal from "./BedDetailsModal";
 
@@ -31,73 +32,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-const initialBeds = [
-  {
-    id: 1,
-    roomNumber: "101-A",
-    type: "ICU",
-    status: "occupied",
-    patient: "John Doe",
-    admissionDate: "2025-04-30",
-  },
-  {
-    id: 2,
-    roomNumber: "101-B",
-    type: "ICU",
-    status: "available",
-    patient: "",
-    admissionDate: "",
-  },
-  {
-    id: 3,
-    roomNumber: "102-A",
-    type: "General",
-    status: "occupied",
-    patient: "Jane Smith",
-    admissionDate: "2025-05-01",
-  },
-  {
-    id: 4,
-    roomNumber: "102-B",
-    type: "General",
-    status: "maintenance",
-    patient: "",
-    admissionDate: "",
-  },
-  {
-    id: 5,
-    roomNumber: "103-A",
-    type: "Private",
-    status: "available",
-    patient: "",
-    admissionDate: "",
-  },
-  {
-    id: 6,
-    roomNumber: "103-B",
-    type: "Private",
-    status: "occupied",
-    patient: "Robert Johnson",
-    admissionDate: "2025-04-28",
-  },
-  {
-    id: 7,
-    roomNumber: "104-A",
-    type: "Emergency",
-    status: "available",
-    patient: "",
-    admissionDate: "",
-  },
-  {
-    id: 8,
-    roomNumber: "104-B",
-    type: "Emergency",
-    status: "occupied",
-    patient: "Emily Davis",
-    admissionDate: "2025-05-02",
-  },
-];
 
 const statusStyles = {
   available: "bg-green-100 text-green-700",
@@ -112,22 +46,67 @@ const statusIcons = {
 };
 
 export default function BedStatus({ setIsAuthenticated }) {
-  const [beds, setBeds] = useState(initialBeds);
+  const [beds, setBeds] = useState([]);
+  const [patients, setPatients] = useState([]);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editBed, setEditBed] = useState(null);
   const [viewBed, setViewBed] = useState(null);
 
-  const filteredBeds = beds.filter((bed) => {
-    const matchesSearch =
-      bed.roomNumber.toLowerCase().includes(search.toLowerCase()) ||
-      bed.type.toLowerCase().includes(search.toLowerCase()) ||
-      bed.patient.toLowerCase().includes(search.toLowerCase());
+  // Fetch beds and patients
+  useEffect(() => {
+    axios
+      .get("http://localhost:4000/beds")
+      .then((res) => setBeds(res.data))
+      .catch((err) => console.error("Failed to fetch beds:", err));
 
-    const matchesStatus = statusFilter === "all" || bed.status === statusFilter;
+    axios
+      .get("http://localhost:4000/patients")
+      .then((res) => setPatients(res.data))
+      .catch((err) => console.error("Failed to fetch patients:", err));
+  }, []);
+
+  const getPatientName = (patientField) => {
+    if (!patientField) return "-";
+    if (typeof patientField === "object" && patientField.firstName) {
+      return `${patientField.firstName} ${patientField.lastName}`;
+    }
+    const found = patients.find((p) => p._id === patientField);
+    return found ? `${found.firstName} ${found.lastName}` : "-";
+  };
+
+  const filteredBeds = beds.filter((bed) => {
+    const patientName = getPatientName(bed.patient);
+    const matchesSearch =
+      bed.roomNumber?.toLowerCase().includes(search.toLowerCase()) ||
+      bed.bedType?.toLowerCase().includes(search.toLowerCase()) ||
+      patientName.toLowerCase().includes(search.toLowerCase());
+    const matchesStatus =
+      statusFilter === "all" || bed.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
+
+  const handleAddBed = (newBed) => {
+    setBeds((prev) => [...prev, newBed]);
+  };
+
+  const handleUpdateBed = (updatedBed) => {
+    setBeds((prev) =>
+      prev.map((bed) => (bed._id === updatedBed._id ? updatedBed : bed))
+    );
+  };
+
+  const handleDeleteBed = async (bedId) => {
+    if (!window.confirm("Are you sure you want to delete this bed?")) return;
+    try {
+      await axios.delete(`http://localhost:4000/beds/deleteBed/${bedId}`);
+      setBeds((prev) => prev.filter((bed) => bed._id !== bedId));
+    } catch (error) {
+      console.error("Failed to delete bed:", error);
+      alert("Failed to delete bed. Please try again.");
+    }
+  };
 
   return (
     <DashboardLayout setIsAuthenticated={setIsAuthenticated}>
@@ -153,7 +132,7 @@ export default function BedStatus({ setIsAuthenticated }) {
           <div className="relative w-[1300px]">
             <Search className="absolute left-2 top-3 h-4 w-4 text-gray-500" />
             <Input
-              placeholder="Search staff by bed type..."
+              placeholder="Search bed by type or patient name..."
               className="pl-8 w-full"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -176,7 +155,6 @@ export default function BedStatus({ setIsAuthenticated }) {
           </Select>
         </div>
 
-        {/* Table */}
         <div className="bg-white rounded-lg shadow overflow-hidden">
           <Table>
             <TableHeader>
@@ -192,10 +170,10 @@ export default function BedStatus({ setIsAuthenticated }) {
             </TableHeader>
             <TableBody>
               {filteredBeds.map((bed, index) => (
-                <TableRow key={bed.id}>
+                <TableRow key={bed._id || index}>
                   <TableCell>{index + 1}</TableCell>
                   <TableCell>{bed.roomNumber}</TableCell>
-                  <TableCell>{bed.type}</TableCell>
+                  <TableCell>{bed.bedType}</TableCell>
                   <TableCell>
                     <span
                       className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
@@ -206,14 +184,17 @@ export default function BedStatus({ setIsAuthenticated }) {
                       {bed.status}
                     </span>
                   </TableCell>
-                  <TableCell>{bed.patient || "-"}</TableCell>
-                  <TableCell>{bed.admissionDate || "-"}</TableCell>
+                  <TableCell>{getPatientName(bed.patient)}</TableCell>
+                  <TableCell>
+                    {bed.admissionDate
+                      ? new Date(bed.admissionDate).toLocaleDateString("en-CA")
+                      : "-"}
+                  </TableCell>
                   <TableCell className="space-x-2">
                     <Eye
                       className="inline h-4 w-4 text-gray-600 hover:text-blue-600 cursor-pointer"
                       onClick={() => setViewBed(bed)}
                     />
-
                     <Pencil
                       className="inline h-4 w-4 text-gray-600 hover:text-yellow-600 cursor-pointer"
                       onClick={() => {
@@ -221,7 +202,10 @@ export default function BedStatus({ setIsAuthenticated }) {
                         setDialogOpen(true);
                       }}
                     />
-                    <Trash className="inline h-4 w-4 text-gray-600 hover:text-red-600 cursor-pointer" />
+                    <Trash
+                      className="inline h-4 w-4 text-gray-600 hover:text-red-600 cursor-pointer"
+                      onClick={() => handleDeleteBed(bed._id)}
+                    />
                   </TableCell>
                 </TableRow>
               ))}
@@ -248,25 +232,15 @@ export default function BedStatus({ setIsAuthenticated }) {
         isOpen={dialogOpen}
         setIsOpen={setDialogOpen}
         editBed={editBed}
-        onAddBed={(newBed) => {
-          const entry = {
-            ...newBed,
-            id: beds.length + 1,
-          };
-          setBeds([...beds, entry]);
-        }}
-        onUpdateBed={(updatedBed) => {
-          setBeds((prev) =>
-            prev.map((b) => (b.id === updatedBed.id ? updatedBed : b))
-          );
-        }}
+        onAddBed={handleAddBed}
+        onUpdateBed={handleUpdateBed}
       />
-      <BedDetailsModal
-  open={!!viewBed}
-  onClose={() => setViewBed(null)}
-  bed={viewBed}
-/>
 
+      <BedDetailsModal
+        open={!!viewBed}
+        onClose={() => setViewBed(null)}
+        bed={viewBed}
+      />
     </DashboardLayout>
   );
 }
