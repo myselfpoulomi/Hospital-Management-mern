@@ -115,7 +115,7 @@ export default function BedStatus({ setIsAuthenticated }) {
   };
 
   const handleDeleteBed = async (bedId) => {
-    if (!window.confirm("Are you sure you want to delete this bed?")) return;
+   
     try {
       await axios.delete(`http://localhost:4000/beds/deleteBed/${bedId}`);
       setBeds((prev) => prev.filter((bed) => bed._id !== bedId));
