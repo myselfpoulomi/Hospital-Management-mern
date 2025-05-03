@@ -54,7 +54,6 @@ export default function BedStatus({ setIsAuthenticated }) {
   const [editBed, setEditBed] = useState(null);
   const [viewBed, setViewBed] = useState(null);
 
-  // Fetch beds and patients
   useEffect(() => {
     axios
       .get("http://localhost:4000/beds")
@@ -77,11 +76,11 @@ export default function BedStatus({ setIsAuthenticated }) {
   };
 
   const filteredBeds = beds.filter((bed) => {
-    const patientName = getPatientName(bed.patient);
+    const patientName = getPatientName(bed.patient).toLowerCase();
     const matchesSearch =
       bed.roomNumber?.toLowerCase().includes(search.toLowerCase()) ||
       bed.bedType?.toLowerCase().includes(search.toLowerCase()) ||
-      patientName.toLowerCase().includes(search.toLowerCase());
+      patientName.includes(search.toLowerCase());
     const matchesStatus =
       statusFilter === "all" || bed.status === statusFilter;
     return matchesSearch && matchesStatus;
@@ -132,7 +131,7 @@ export default function BedStatus({ setIsAuthenticated }) {
           <div className="relative w-[1300px]">
             <Search className="absolute left-2 top-3 h-4 w-4 text-gray-500" />
             <Input
-              placeholder="Search bed by type or patient name..."
+              placeholder="Search by room number, bed type, or patient name..."
               className="pl-8 w-full"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
