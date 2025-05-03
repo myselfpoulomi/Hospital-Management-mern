@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import axios from "axios";
 
 import { Input } from "@/components/ui/input";
@@ -53,17 +53,24 @@ export default function BedStatus({ setIsAuthenticated }) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editBed, setEditBed] = useState(null);
   const [viewBed, setViewBed] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios
-      .get("http://localhost:4000/beds")
-      .then((res) => setBeds(res.data))
-      .catch((err) => console.error("Failed to fetch beds:", err));
-
-    axios
-      .get("http://localhost:4000/patients")
-      .then((res) => setPatients(res.data))
-      .catch((err) => console.error("Failed to fetch patients:", err));
+    async function fetchData() {
+      try {
+        const [bedsRes, patientsRes] = await Promise.all([
+          axios.get("http://localhost:4000/beds"),
+          axios.get("http://localhost:4000/patients"),
+        ]);
+        setBeds(bedsRes.data);
+        setPatients(patientsRes.data);
+      } catch (error) {
+        console.error("Failed to fetch data:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
   }, []);
 
   const getPatientName = (patientField) => {
@@ -75,16 +82,27 @@ export default function BedStatus({ setIsAuthenticated }) {
     return found ? `${found.firstName} ${found.lastName}` : "-";
   };
 
-  const filteredBeds = beds.filter((bed) => {
-    const patientName = getPatientName(bed.patient).toLowerCase();
-    const matchesSearch =
-      bed.roomNumber?.toLowerCase().includes(search.toLowerCase()) ||
-      bed.bedType?.toLowerCase().includes(search.toLowerCase()) ||
-      patientName.includes(search.toLowerCase());
-    const matchesStatus =
-      statusFilter === "all" || bed.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
+  const filteredBeds = useMemo(() => {
+    const searchLower = search.toLowerCase();
+
+    return beds.filter((bed) => {
+      const room = bed.roomNumber?.toString().toLowerCase() || "";
+      const type = bed.bedType?.toLowerCase() || "";
+      const patientName = getPatientName(bed.patient)?.toLowerCase() || "";
+      const bedStatus = bed.status?.toLowerCase() || "";
+
+      const matchesSearch =
+        search === "" ||
+        room.includes(searchLower) ||
+        type.includes(searchLower) ||
+        patientName.includes(searchLower);
+
+      const matchesStatus =
+        statusFilter === "all" || bedStatus === statusFilter;
+
+      return matchesSearch && matchesStatus;
+    });
+  }, [beds, patients, search, statusFilter]);
 
   const handleAddBed = (newBed) => {
     setBeds((prev) => [...prev, newBed]);
@@ -147,9 +165,8 @@ export default function BedStatus({ setIsAuthenticated }) {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Statuses</SelectItem>
-              <SelectItem value="occupied">Occupied</SelectItem>
               <SelectItem value="available">Available</SelectItem>
-              <SelectItem value="maintenance">Maintenance</SelectItem>
+              <SelectItem value="occupied">Occupied</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -176,10 +193,10 @@ export default function BedStatus({ setIsAuthenticated }) {
                   <TableCell>
                     <span
                       className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                        statusStyles[bed.status]
+                        statusStyles[bed.status?.toLowerCase()] || ""
                       }`}
                     >
-                      {statusIcons[bed.status]}
+                      {statusIcons[bed.status?.toLowerCase()] || null}
                       {bed.status}
                     </span>
                   </TableCell>
