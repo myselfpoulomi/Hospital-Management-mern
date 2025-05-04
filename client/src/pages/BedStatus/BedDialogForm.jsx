@@ -38,7 +38,7 @@ export default function BedDialogForm({
 
   const [patients, setPatients] = useState([]);
 
-  // Fetch patients from backend
+  // Fetch patients
   useEffect(() => {
     axios
       .get("http://localhost:4000/patients/")
@@ -46,10 +46,18 @@ export default function BedDialogForm({
       .catch((err) => console.error("Failed to fetch patients:", err));
   }, []);
 
-  // Load existing bed or reset
+  // Load or reset form
   useEffect(() => {
     if (editBed) {
-      setFormBed(editBed);
+      setFormBed({
+        roomNumber: editBed.roomNumber || "",
+        bedType: editBed.bedType || "",
+        status: editBed.status || "Available",
+        patient: typeof editBed.patient === "object" ? editBed.patient._id : editBed.patient || "",
+        admissionDate: editBed.admissionDate
+          ? new Date(editBed.admissionDate).toISOString().split("T")[0]
+          : "",
+      });
     } else {
       setFormBed({
         roomNumber: "",
@@ -86,21 +94,30 @@ export default function BedDialogForm({
     }
 
     try {
-      const response = await axios.post(
-        "http://localhost:4000/Beds/createBed",
-        payload
-      );
-      isEdit ? onUpdateBed(response.data) : onAddBed(response.data);
+      let response;
+      if (isEdit) {
+        response = await axios.put(
+          `http://localhost:4000/beds/updateBed/${editBed._id}`,
+          payload
+        );
+        onUpdateBed(response.data);
+      } else {
+        response = await axios.post(
+          "http://localhost:4000/beds/createBed",
+          payload
+        );
+        onAddBed(response.data);
+      }
       setIsOpen(false);
     } catch (error) {
-      if (error.response) {
-        console.error("Server error:", error.response.data);
-        alert("Server error: " + error.response.data.error);
-      } else {
-        console.error("Error:", error.message);
-        alert("Failed to submit form.");
-      }
+      console.error("Submission error:", error);
+      alert("Failed to submit form. Please check the data or try again.");
     }
+  };
+
+  const getPatientName = (id) => {
+    const patient = patients.find((p) => p._id === id);
+    return patient ? `${patient.firstName} ${patient.lastName}` : "Select Patient";
   };
 
   return (
@@ -157,14 +174,9 @@ export default function BedDialogForm({
                   }
                 >
                   <SelectTrigger className="w-full">
-                    <SelectValue
-                      placeholder="Select Patient"
-                      children={
-                        patients.find((p) => p._id === formBed.patient)
-                          ? `${patients.find((p) => p._id === formBed.patient).firstName} ${patients.find((p) => p._id === formBed.patient).lastName}`
-                          : "Select Patient"
-                      }
-                    />
+                    <SelectValue placeholder="Select Patient">
+                      {getPatientName(formBed.patient)}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     {patients.map((patient) => (
