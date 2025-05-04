@@ -130,7 +130,7 @@ const Dashboard = ({ setIsAuthenticated }) => {
         {/* Header */}
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-blue-600">Dashboard</h1>
-          <p className="text-gray-600">Welcome back, Dr. Smith</p>
+          <p className="text-gray-600">Welcome back.</p>
         </div>
 
         {/* KPI Cards */}
