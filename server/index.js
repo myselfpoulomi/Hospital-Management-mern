@@ -16,7 +16,7 @@ const app = express();
 
 // Enable CORS with specific options (optional)
 app.use(cors({
-  origin: "http://localhost:5173", // Update for production
+  origin: process.env.CLIENT_URL, // Update for production
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));

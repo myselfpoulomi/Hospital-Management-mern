@@ -36,7 +36,7 @@ const Medicine = ({ setIsAuthenticated }) => {
 
   const fetchMedicines = async () => {
     try {
-      const response = await axios.get("http://localhost:4000/medicine/");
+      const response = await axios.get(`${BASE_URL}/medicine/`);
       setMedicines(response.data);
       setAllMedicines(response.data);
     } catch (error) {
@@ -56,7 +56,7 @@ const Medicine = ({ setIsAuthenticated }) => {
 
   const handleMedicineDelete = async (_id) => {
     try {
-      await axios.delete(`http://localhost:4000/medicine/deleteMedicine/${_id}`);
+      await axios.delete(`${BASE_URL}/medicine/deleteMedicine/${_id}`);
       setMedicines((prev) => prev.filter((m) => m._id !== _id));
       setAllMedicines((prev) => prev.filter((m) => m._id !== _id));
     } catch (error) {

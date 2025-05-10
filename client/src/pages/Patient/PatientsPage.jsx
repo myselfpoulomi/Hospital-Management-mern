@@ -37,7 +37,7 @@ const PatientsPage = ({ setIsAuthenticated }) => {
 
   const fetchPatients = async () => {
     try {
-      const response = await axios.get("http://localhost:4000/Patients/");
+      const response = await axios.get(`${BASE_URL}/Patients/`);
       setPatients(response.data);
       setAllPatients(response.data);
     } catch (error) {
@@ -78,7 +78,7 @@ const PatientsPage = ({ setIsAuthenticated }) => {
     }
 
     try {
-      const res = await axios.get(`http://localhost:4000/patients/${match._id}`);
+      const res = await axios.get(`${BASE_URL}/patients/${match._id}`);
       setPatients([res.data]);
     } catch (err) {
       console.error("Error fetching patient by ID:", err);
@@ -94,7 +94,7 @@ const PatientsPage = ({ setIsAuthenticated }) => {
     try {
       if (editingPatient) {
         await axios.put(
-          `http://localhost:4000/Patients/updatePatient/${editingPatient._id}`,
+          `${BASE_URL}/Patients/updatePatient/${editingPatient._id}`,
           data
         );
         toast({
@@ -102,7 +102,7 @@ const PatientsPage = ({ setIsAuthenticated }) => {
           description: "Patient updated successfully.",
         });
       } else {
-        await axios.post("http://localhost:4000/Patients/addPatient", data);
+        await axios.post(`${BASE_URL}/Patients/addPatient`, data);
         toast({
           title: "Patient added",
           description: "New patient added successfully.",
@@ -124,7 +124,7 @@ const PatientsPage = ({ setIsAuthenticated }) => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:4000/Patients/deletePatient/${id}`);
+      await axios.delete(`${BASE_URL}/Patients/deletePatient/${id}`);
       fetchPatients();
       toast({
         title: "Patient deleted",

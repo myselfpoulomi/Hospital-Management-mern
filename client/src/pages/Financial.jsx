@@ -21,7 +21,7 @@ const Financial = ({ setIsAuthenticated }) => {
 
   const fetchPrescriptions = async () => {
     try {
-      const response = await axios.get("http://localhost:4000/prescription/");
+      const response = await axios.get(`${BASE_URL}/prescription/`);
       const sorted = response.data.sort(
         (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
       );

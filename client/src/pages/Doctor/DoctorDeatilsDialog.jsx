@@ -17,7 +17,7 @@ const DoctorDetailsDialog = ({ open, onOpenChange, doctor }) => {
       if (doctor?.doctor_id && open) {
         try {
           const response = await axios.get(
-            `http://localhost:4000/doctors/getPatientCount/${doctor._id}`
+            `${BASE_URL}/doctors/getPatientCount/${doctor._id}`
           );
           console.log(response);
           

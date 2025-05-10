@@ -38,7 +38,7 @@ const Staff = ({ setIsAuthenticated }) => {
 
   const fetchStaff = async () => {
     try {
-      const response = await axios.get("http://localhost:4000/Staffs");
+      const response = await axios.get(`${BASE_URL}/Staffs`);
       const formatted = response.data.map((staff) => ({
         id: staff._id,
         name: staff.full_name,
@@ -65,7 +65,7 @@ const Staff = ({ setIsAuthenticated }) => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:4000/Staffs/DeleteStaff/${id}`);
+      await axios.delete(`${BASE_URL}/Staffs/DeleteStaff/${id}`);
       console.log("Staff deleted successfully");
       await fetchStaff();
     } catch (error) {

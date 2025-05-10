@@ -12,6 +12,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+const BASE_URL=import.meta.env.VITE_SERVER_BASE_URL
+
 
 const Dashboard = ({ setIsAuthenticated }) => {
   const [prescriptions, setPrescriptions] = useState([]);
@@ -34,9 +36,11 @@ const Dashboard = ({ setIsAuthenticated }) => {
     };
   };
 
+
+
   const fetchPrescriptions = async () => {
     try {
-      const response = await axios.get("http://localhost:4000/prescription/");
+      const response = await axios.get(`${BASE_URL}/prescription/`);
       const all = response.data;
 
       const sorted = all.sort(
@@ -71,7 +75,7 @@ const Dashboard = ({ setIsAuthenticated }) => {
 
   const fetchDoctors = async () => {
     try {
-      const res = await axios.get("http://localhost:4000/Doctors");
+      const res = await axios.get(`${BASE_URL}/Doctors`);
       setDoctorsCount(res.data.length);
 
       const lastMonthCount = res.data.filter((doc) => {
@@ -87,7 +91,7 @@ const Dashboard = ({ setIsAuthenticated }) => {
 
   const fetchPatients = async () => {
     try {
-      const res = await axios.get("http://localhost:4000/Patients");
+      const res = await axios.get(`${BASE_URL}/Patients`);
       setPatientsCount(res.data.length);
 
       const lastMonthCount = res.data.filter((p) => {
@@ -103,7 +107,7 @@ const Dashboard = ({ setIsAuthenticated }) => {
 
   const fetchMedicines = async () => {
     try {
-      const res = await axios.get("http://localhost:4000/Medicine");
+      const res = await axios.get(`${BASE_URL}/Medicine`);
       setMedicinesCount(res.data.length);
 
       const lastMonthCount = res.data.filter((m) => {

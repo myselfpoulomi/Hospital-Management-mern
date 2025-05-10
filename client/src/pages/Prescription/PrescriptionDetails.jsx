@@ -17,7 +17,7 @@ const PrescriptionDetails = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get(`http://localhost:4000/Prescription/${id}`);
+        const res = await axios.get(`${BASE_URL}/Prescription/${id}`);
         const data = res.data;
         setPrescription(data);
 

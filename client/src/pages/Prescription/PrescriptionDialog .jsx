@@ -36,11 +36,11 @@ export const PrescriptionDialog = ({
   const [patients, setPatients] = useState([]);
 
   useEffect(() => {
-    axios.get("http://localhost:4000/doctors/")
+    axios.get(`${BASE_URL}/doctors/`)
       .then((res) => setDoctors(res.data))
       .catch((err) => console.error("Failed to fetch doctors", err));
 
-    axios.get("http://localhost:4000/Patients/")
+    axios.get(`${BASE_URL}/Patients/`)
       .then((res) => setPatients(res.data))
       .catch((err) => console.error("Failed to fetch patients", err));
   }, []);
@@ -106,12 +106,12 @@ export const PrescriptionDialog = ({
       let res;
       if (initialData) {
         res = await axios.put(
-          `http://localhost:4000/Prescription/updatePresciption/${initialData._id}`,
+          `${BASE_URL}/Prescription/updatePresciption/${initialData._id}`,
           payload
         );
       } else {
         res = await axios.post(
-          "http://localhost:4000/Prescription/addPresciption",
+          `${BASE_URL}/Prescription/addPresciption`,
           payload
         );
       }

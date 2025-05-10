@@ -97,13 +97,13 @@ export default function BedDialogForm({
       let response;
       if (isEdit) {
         response = await axios.put(
-          `http://localhost:4000/beds/updateBed/${editBed._id}`,
+          `${BASE_URL}/beds/updateBed/${editBed._id}`,
           payload
         );
         onUpdateBed(response.data);
       } else {
         response = await axios.post(
-          "http://localhost:4000/beds/createBed",
+          `${BASE_URL}/beds/createBed`,
           payload
         );
         onAddBed(response.data);

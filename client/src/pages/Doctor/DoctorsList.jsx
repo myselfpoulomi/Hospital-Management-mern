@@ -30,7 +30,7 @@ const DoctorsList = ({ refresh, search, onEdit }) => {
 
   const fetchDoctors = async () => {
     try {
-      const response = await axios.get("http://localhost:4000/doctors/");
+      const response = await axios.get(`${BASE_URL}/doctors/`);
       setDoctors(response.data);
 
       const uniqueSpecs = Array.from(
@@ -82,7 +82,7 @@ const DoctorsList = ({ refresh, search, onEdit }) => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:4000/doctors/deleteDoctor/${id}`);
+      await axios.delete(`${BASE_URL}/doctors/deleteDoctor/${id}`);
       setDoctors(doctors.filter((d) => d._id !== id));
     } catch (error) {
       console.error("Error deleting doctor:", error);

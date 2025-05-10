@@ -85,10 +85,10 @@ const AddMedicineForm = ({ isOpen, onClose, onMedicineAdded, selectedMedicine })
 
     try {
       if (selectedMedicine) {
-        await axios.put(`http://localhost:4000/medicine/updateMedicine/${selectedMedicine._id}`, payload);
+        await axios.put(`${BASE_URL}/medicine/updateMedicine/${selectedMedicine._id}`, payload);
         toast({ title: "Medicine Updated", description: `${data.name} updated successfully.` });
       } else {
-        await axios.post("http://localhost:4000/medicine/addMedicine", payload);
+        await axios.post(`${BASE_URL}/medicine/addMedicine`, payload);
         toast({ title: "Medicine Added", description: `${data.name} added to inventory.` });
       }
 

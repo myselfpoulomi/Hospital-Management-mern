@@ -59,8 +59,8 @@ export default function BedStatus({ setIsAuthenticated }) {
     async function fetchData() {
       try {
         const [bedsRes, patientsRes] = await Promise.all([
-          axios.get("http://localhost:4000/beds"),
-          axios.get("http://localhost:4000/patients"),
+          axios.get(`${BASE_URL}/beds`),
+          axios.get(`${BASE_URL}/patients`),
         ]);
         setBeds(bedsRes.data);
         setPatients(patientsRes.data);
@@ -117,7 +117,7 @@ export default function BedStatus({ setIsAuthenticated }) {
   const handleDeleteBed = async (bedId) => {
    
     try {
-      await axios.delete(`http://localhost:4000/beds/deleteBed/${bedId}`);
+      await axios.delete(`${BASE_URL}/beds/deleteBed/${bedId}`);
       setBeds((prev) => prev.filter((bed) => bed._id !== bedId));
     } catch (error) {
       console.error("Failed to delete bed:", error);

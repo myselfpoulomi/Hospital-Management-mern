@@ -60,10 +60,10 @@ const RegisterDoctorDialog = ({ open, onOpenChange, onSuccess, doctorToEdit }) =
 
     try {
       if (doctorToEdit?._id) {
-        await axios.put(`http://localhost:4000/Doctors/updateDoctor/${doctorToEdit._id}`, payload);
-        await axios.put(`http://localhost:4000/Doctors/updateDoctor/${doctorToEdit._id}`, payload);
+        await axios.put(`${BASE_URL}/Doctors/updateDoctor/${doctorToEdit._id}`, payload);
+        await axios.put(`${BASE_URL}/Doctors/updateDoctor/${doctorToEdit._id}`, payload);
       } else {
-        await axios.post("http://localhost:4000/doctors/addDoc", payload);
+        await axios.post(`${BASE_URL}/doctors/addDoc`, payload);
       }
 
       onSuccess();

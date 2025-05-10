@@ -62,10 +62,10 @@ const AddStaffDialog = ({ onAdd, onUpdate, staffToEdit = null, mode = "add", ope
 
     try {
       if (mode === "edit" && staffToEdit?.id) {
-        await axios.put(`http://localhost:4000/Staffs/updateStaff/${staffToEdit.id}`, payload);
+        await axios.put(`${BASE_URL}/Staffs/updateStaff/${staffToEdit.id}`, payload);
         onUpdate?.();
       } else {
-        const res = await axios.post("http://localhost:4000/Staffs/addStaff", payload);
+        const res = await axios.post(`${BASE_URL}/Staffs/addStaff`, payload);
         onAdd?.(res.data);
       }
 
