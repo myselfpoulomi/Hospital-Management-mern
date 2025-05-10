@@ -26,6 +26,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Funnel, Download } from "lucide-react";
 
+const BASE_URL = import.meta.env.VITE_SERVER_BASE_URL;
+
 const Medicine = ({ setIsAuthenticated }) => {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [medicines, setMedicines] = useState([]);

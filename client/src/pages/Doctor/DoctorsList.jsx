@@ -14,6 +14,8 @@ import { Button } from "@/components/ui/button";
 import DoctorDetailsDialog from "./DoctorDeatilsDialog";
 import RegisterDoctorDialog from "./RegisterDoctorDialog";
 
+const BASE_URL = import.meta.env.VITE_SERVER_BASE_URL;
+
 const DoctorsList = ({ refresh, search, onEdit }) => {
   const [doctors, setDoctors] = useState([]);
   const [filteredDoctors, setFilteredDoctors] = useState([]);

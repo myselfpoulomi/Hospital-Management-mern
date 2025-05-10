@@ -10,6 +10,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
 
+const BASE_URL = import.meta.env.VITE_SERVER_BASE_URL;
+
 const RegisterDoctorDialog = ({ open, onOpenChange, onSuccess, doctorToEdit }) => {
   const [name, setName] = useState("");
   const [doctorId, setDoctorId] = useState("");

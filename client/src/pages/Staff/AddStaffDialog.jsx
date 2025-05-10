@@ -17,6 +17,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+const BASE_URL = import.meta.env.VITE_SERVER_BASE_URL;
+
 const AddStaffDialog = ({ onAdd, onUpdate, staffToEdit = null, mode = "add", open, setOpen }) => {
   const [formData, setFormData] = useState({
     name: "",

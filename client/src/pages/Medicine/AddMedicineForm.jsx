@@ -28,6 +28,8 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { toast } from "@/hooks/use-toast";
 
+const BASE_URL = import.meta.env.VITE_SERVER_BASE_URL;
+
 const AddMedicineForm = ({ isOpen, onClose, onMedicineAdded, selectedMedicine }) => {
   const [date, setDate] = useState();
   const [category, setCategory] = useState("");

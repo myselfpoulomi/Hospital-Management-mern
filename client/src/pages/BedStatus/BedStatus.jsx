@@ -45,6 +45,8 @@ const statusIcons = {
   maintenance: <AlertTriangle className="h-3.5 w-3.5 mr-1 text-yellow-600" />,
 };
 
+const BASE_URL = import.meta.env.VITE_SERVER_BASE_URL;
+
 export default function BedStatus({ setIsAuthenticated }) {
   const [beds, setBeds] = useState([]);
   const [patients, setPatients] = useState([]);

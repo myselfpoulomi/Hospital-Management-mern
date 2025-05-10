@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
+const BASE_URL = import.meta.env.VITE_SERVER_BASE_URL;
+
 const DoctorDetailsDialog = ({ open, onOpenChange, doctor }) => {
   const [patientCount, setPatientCount] = useState(0);
 

@@ -24,6 +24,8 @@ import DashboardLayout from "@/components/layout/DashboardLayout";
 import AddStaffDialog from "./AddStaffDialog";
 import StaffDetailsDialog from "./StaffDetailsDialog";
 
+const BASE_URL = import.meta.env.VITE_SERVER_BASE_URL;
+
 const Staff = ({ setIsAuthenticated }) => {
   const [staffData, setStaffData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");

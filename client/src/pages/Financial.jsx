@@ -13,6 +13,8 @@ import { Search } from "lucide-react";
 import RevenueChart from "@/components/dashboard/RevenueChart";
 import axios from "axios";
 
+const BASE_URL = import.meta.env.VITE_SERVER_BASE_URL;
+
 const Financial = ({ setIsAuthenticated }) => {
   const [prescriptions, setPrescriptions] = useState([]);
   const [filteredPrescriptions, setFilteredPrescriptions] = useState([]);

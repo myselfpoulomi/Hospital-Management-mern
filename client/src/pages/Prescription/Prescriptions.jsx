@@ -19,7 +19,7 @@ const Prescriptions = ({ setIsAuthenticated }) => {
 
   const fetchPrescriptions = async () => {
     try {
-      const response = await fetch(`${BASE_URL}/Prescription`);
+      const response = await fetch(`${import.meta.env.VITE_SERVER_BASE_URL}/Prescription`);
       const data = await response.json();
       setPrescriptions(data);
     } catch (error) {
@@ -39,7 +39,7 @@ const Prescriptions = ({ setIsAuthenticated }) => {
 
   const handleDelete = async (id) => {
     try {
-      const res = await axios.delete(`${BASE_URL}/Prescription/deletePresciption/${id}`);
+      const res = await axios.delete(`${import.meta.env.VITE_SERVER_BASE_URL}/Prescription/deletePresciption/${id}`);
       if (res.status === 200 || res.status === 204) {
         setPrescriptions((prev) => prev.filter((p) => p._id !== id));
       }
