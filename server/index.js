@@ -24,6 +24,8 @@ app.use(cors({
 // Parse JSON request bodies
 app.use(express.json());
 
+
+
 // Define routes
 app.use("/Doctors", DoctorRoutes);
 app.use("/Patients", PatientRoutes);
@@ -33,7 +35,9 @@ app.use("/Admin", AdminRoutes);
 app.use("/Staffs", StaffRoutes);
 app.use("/Beds", BedRoutes);
 
-
+app.get('/',(req,res)=>{
+res.send("working");
+})
 
 // Connect to MongoDB
 const connectDB = async () => {
